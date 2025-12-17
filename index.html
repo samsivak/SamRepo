@@ -1,4 +1,4 @@
-<html>
+<!--<html>
   <head>
     <title>External Site fot Embedded Chat</title>
   </head>
@@ -28,6 +28,45 @@
 </script>
 <script type='text/javascript' src='https://teamglobalexp--tgedev.sandbox.my.site.com/ESWCustomerServiceBot1764747826568/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
   </body>
+</html> -->
+
+<html>
+  <head>
+    <title>External Site fot Embedded Chat</title>
+  </head>
+  <body>
+	  
+  <div class="container">
+    <h1>External Website to test the Customer Service Chat</h1>
+</div>
+<script type="text/javascript">
+  function initEmbeddedMessaging() {
+    try {
+      // Language
+      embeddedservice_bootstrap.settings.language = 'en_US';
+
+      // ✅ Bot avatar from a Salesforce Static Resource named "Bot"
+      // (single-file static resource). If yours is a ZIP, add the inner path.
+      embeddedservice_bootstrap.settings.chatbotAvatarImgURL =
+        'https://teamglobalexp--tgedev.sandbox.my.site.com/resource/Bot';
+
+      // Init Embedded Messaging
+      embeddedservice_bootstrap.init(
+        '00DAD000008PLr4',                               // Org Id
+        'Customer_Service_Bot',                          // Deployment name
+        'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWCustomerServiceBot1764747826568', // Messaging site URL
+        {
+          scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com'
+        }
+      );
+    } catch (err) {
+      console.error('Error loading Embedded Messaging: ', err);
+    }
+  };
+</script>
+
+<script type='text/javascript' src='https://teamglobalexp--tgedev.sandbox.my.site.com/ESWCustomerServiceBot1764747826568/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
+</body>
 </html>
 
 
