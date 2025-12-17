@@ -1,4 +1,4 @@
-<!--<html>
+<html>
   <head>
     <title>External Site fot Embedded Chat</title>
   </head>
@@ -67,7 +67,7 @@
 
 <script type='text/javascript' src='https://teamglobalexp--tgedev.sandbox.my.site.com/ESWCustomerServiceBot1764747826568/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
 </body>
-</html>  -->
+</html>
 
 
 
@@ -170,83 +170,3 @@
   </script>
 </body>
 </html>  -->
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <title>Embedded Messaging (Enhanced Chat)</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <!-- (Optional) Basic page styles -->
-  <style>
-    /* Example styling for a custom launcher (if you choose to use it) */
-    .custom-chat-launcher {
-      position: fixed;
-      right: 16px;
-      bottom: 16px;
-      background: #007A68;
-      color: #fff;
-      border: none;
-      border-radius: 24px;
-      padding: 12px 16px;
-      font-family: Arial, sans-serif;
-      font-size: 14px;
-      cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    }
-    .custom-chat-launcher:focus {
-      outline: 2px solid #004f44;
-    }
-  </style>
-</head>
-<body>
-  <!-- Initialization script for Embedded Messaging -->
-  <script type="text/javascript">
-    function initEmbeddedMessaging() {
-      try {
-        // Language (examples: 'en', 'en-US', 'en_US')
-        embeddedservice_bootstrap.settings.language = 'en_US';
-
-        // ✅ Set the Einstein Bot avatar from your Static Resource named "Bot".
-        // If "Bot" is a ZIP, use: 'https://.../resource/Bot/path/inside/zip.png'
-        embeddedservice_bootstrap.settings.chatbotAvatarImgURL =
-          'https://teamglobalexp--tgedev.sandbox.my.site.com/resource/Bot';
-
-        // (Optional) Hide the default messaging button if you prefer your own launcher:
-        // embeddedservice_bootstrap.settings.hideChatButtonOnLoad = true;
-
-        // Initialize Messaging (enhanced chat)
-        embeddedservice_bootstrap.init(
-          '00DAD000008PLr4',  // Org ID
-          'Customer_Service_Bot',  // Messaging deployment name
-          'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWCustomerServiceBot1764747826568', // Generated messaging site URL
-          {
-            scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com'
-          }
-        );
-
-        // (Optional) Hook up your custom launcher once bootstrap is available
-        // If you set hideChatButtonOnLoad=true, use this custom button to open chat.
-        const openChatBtn = document.getElementById('openChat');
-        if (openChatBtn) {
-          openChatBtn.addEventListener('click', function () {
-            if (embeddedservice_bootstrap && embeddedservice_bootstrap.utilAPI) {
-              embeddedservice_bootstrap.utilAPI.launchChat();
-            }
-          });
-        }
-      } catch (err) {
-        console.error('Error loading Embedded Messaging: ', err);
-      }
-    }
-  </script>
-
-  <!-- Load the Messaging bootstrap from the generated site, then init -->
-  <script
-   mglobalexp--tgedev.sandbox.my.site.com/ESWCustomerServiceBot1764747826568/assets/js/bootstrap.min.js
-  </script>
-
-</body>
-</html>
