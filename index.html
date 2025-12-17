@@ -1,4 +1,4 @@
-<<html>
+<!--<<html>
   <head>
     <title>External Site fot Embedded Chat</title>
   </head>
@@ -23,7 +23,176 @@
 </script>
 <script type='text/javascript' src='https://teamglobalexp--tgedev.sandbox.my.site.com/ESWCustomerServiceBot1764747826568/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
   </body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Chat on Button Click</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Optional styles for the button -->
+  <style>
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      margin: 2rem;
+      background: #f7f7f9;
+      color: #222;
+    }
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+    h1 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    p {
+      color: #555;
+      line-height: 1.5;
+    }
+    #chatBtn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      border: none;
+      border-radius: 6px;
+      background: #1b73e8; /* Microsoft blue-ish */
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    #chatBtn:hover {
+      background: #165fc1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Customer Service Chat</h1>
+    <p>Click the button below to load and start the embedded messaging chat.</p>
+
+    <!-- The button that triggers the chat -->
+    <button id="chatBtn" type="button">💬 Chat with us</button>
+  </div>
+
+  <!-- All the JS lives here; no ESW script preloaded -->
+  <script type="text/javascript">
+    // ----- Configuration -----
+    const ESW_CONFIG = {
+      language: 'en_US',
+      orgId: '00DAD000008PLr4',
+      deploymentName: 'Customer_Service_Bot',
+      url: 'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWCustomerServiceBot1764747826568',
+      scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com',
+      scriptSrc: 'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWCustomerServiceBot1764747826568/assets/js/bootstrap.min.js',
+
+      // Button ID to wire
+      triggerButtonId: 'chatBtn'
+    };
+
+    // ----- Internal state -----
+    let eswScriptPromise = null;
+    let eswInitialized = false;
+
+    /**
+     * Loads the ESW bootstrap script once.
+     */
+    function loadESWScriptOnce() {
+      if (eswScriptPromise) return eswScriptPromise;
+
+      eswScriptPromise = new Promise((resolve, reject) => {
+        // If already present (included elsewhere), resolve immediately
+        if (window.embeddedservice_bootstrap) {
+          resolve();
+          return;
+        }
+
+        const script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = ESW_CONFIG.scriptSrc;
+        script.async = true;
+        script.crossOrigin = 'anonymous';
+
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error('Failed to load ESW bootstrap script.'));
+        document.head.appendChild(script);
+      });
+
+      return eswScriptPromise;
+    }
+
+    /**
+     * Initializes Embedded Messaging once.
+     */
+    function initEmbeddedMessaging() {
+      if (eswInitialized) {
+        // Already initialized; no-op
+        return;
+      }
+
+      if (!window.embeddedservice_bootstrap) {
+        console.error('ESW bootstrap not available yet.');
+        return;
+      }
+
+      try {
+        window.embeddedservice_bootstrap.settings.language = ESW_CONFIG.language;
+
+        window.embeddedservice_bootstrap.init(
+          ESW_CONFIG.orgId,
+          ESW_CONFIG.deploymentName,
+          ESW_CONFIG.url,
+          { scrt2URL: ESW_CONFIG.scrt2URL }
+        );
+
+        eswInitialized = true;
+      } catch (err) {
+        console.error('Error initializing Embedded Messaging:', err);
+      }
+    }
+
+    /**
+     * Public function: loads script then initializes.
+     */
+    async function startChat() {
+      try {
+        await loadESWScriptOnce(); // load ESW bootstrap once
+        initEmbeddedMessaging();   // initialize once
+      } catch (e) {
+        console.error(e);
+        alert('Unable to start chat right now. Please try again.');
+      }
+    }
+
+    /**
+     * Wire up the button once DOM is ready.
+     */
+    function wireChatButton() {
+      const btn = document.getElementById(ESW_CONFIG.triggerButtonId);
+      if (!btn) {
+        console.warn(`Chat button with id "${ESW_CONFIG.triggerButtonId}" not found.`);
+        return;
+      }
+      btn.addEventListener('click', startChat);
+    }
+
+    // Auto-wire when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', wireChatButton);
+    } else {
+      wireChatButton();
+    }
+
+    // Optional exposure for other UI elements
+    window.startChat = startChat;
+  </script>
+</body>
 </html>
+
 
 
 
