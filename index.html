@@ -1,4 +1,4 @@
-<html>
+<!--<html>
   <head>
     <title>External Site fot Embedded Chat</title>
   </head>
@@ -28,6 +28,204 @@
 </script>
 <script type='text/javascript' src='https://teamglobalexp--tgedev.sandbox.my.site.com/ESWCustomerServiceBot1764747826568/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
   </body>
+</html> -->
+
+<html>
+	<body>
+		
+<!-- Custom Online/Offline Chat Button + Enhanced Web Chat init -->
+<style>
+  #customChatBtn {
+    position: fixed; right: 24px; bottom: 24px;
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 14px; border-radius: 24px; border: 1px solid #ddd;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background: #fff; color: #222; box-shadow: 0 6px 16px rgba(0,0,0,.15);
+    cursor: pointer; z-index: 9999;
+  }
+  #customChatBtn[aria-disabled="true"] { opacity: .6; cursor: default; }
+  #customChatBtn .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  #customChatBtn.online .dot  { background: #28a745; } /* Green */
+  #customChatBtn.offline .dot { background: #6c757d; } /* Gray */
+</style>
+
+
+
+<div id="customChatBtn" class="offline" aria-disabled="true" aria-live="polite" hidden>
+  <span class="dot"></span><span class="label">Chat Offline</span>
+</div>
+
+
+
+<script type="text/javascript">
+  /**
+   * === AU Business Hours (Customer Service Business Hours) ===
+   * Monday–Friday 09:00–17:00 in Australia/Sydney (handles DST automatically).
+   * If you operate in a different AU timezone, change IANA_TZ to e.g. 'Australia/Brisbane'.
+   */
+  const IANA_TZ = 'Australia/Sydney';
+
+
+
+  const BUSINESS_HOURS = {
+    schedule: {
+      1: ['09:00', '17:00'], // Mon
+      2: ['09:00', '17:00'], // Tue
+      3: ['09:00', '17:00'], // Wed
+      4: ['09:00', '17:00'], // Thu
+      5: ['09:00', '17:00']  // Fri
+      // 0 (Sun), 6 (Sat) => Offline
+    },
+    holidays: [
+      // Add YYYY-MM-DD dates here to force Offline on AU public holidays if desired
+      // e.g., "2025-12-25", "2025-12-26"
+    ]
+  };
+
+
+
+  function zonedDate(date = new Date(), tz = IANA_TZ) {
+    // Create a Date that reflects the specified timezone’s local components.
+    const fmt = new Intl.DateTimeFormat('en-AU', {
+      timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit', hour12: false
+    });
+    const parts = fmt.formatToParts(date).reduce((acc, p) => { acc[p.type] = p.value; return acc; }, {});
+    // Compose a local time string and return components to compare against schedule.
+    return {
+      y: parts.year, m: parts.month, d: parts.day,
+      hh: parts.hour, mm: parts.minute,
+      isoDate: `${parts.year}-${parts.month}-${parts.day}`
+    };
+  }
+
+
+
+  function isHoliday(date = new Date()) {
+    const { isoDate } = zonedDate(date, IANA_TZ);
+    return BUSINESS_HOURS.holidays.includes(isoDate);
+  }
+
+
+
+  function isWithinHours(date = new Date()) {
+    if (isHoliday(date)) return false;
+
+
+
+    // Day-of-week in target timezone
+    const dow = new Date(date.toLocaleString('en-AU', { timeZone: IANA_TZ })).getDay(); // Sun=0..Sat=6
+    const range = BUSINESS_HOURS.schedule[dow];
+    if (!range) return false;
+
+
+
+    const { hh, mm } = zonedDate(date, IANA_TZ);
+    const nowMins = parseInt(hh, 10) * 60 + parseInt(mm, 10);
+    const toMinutes = t => { const [h, m] = t.split(':').map(Number); return h * 60 + m; };
+    return nowMins >= toMinutes(range[0]) && nowMins <= toMinutes(range[1]);
+  }
+
+
+
+  function renderStatus() {
+    const btn = document.getElementById('customChatBtn');
+    if (!btn) return;
+
+
+
+    if (isWithinHours()) {
+      btn.classList.remove('offline'); btn.classList.add('online');
+      btn.setAttribute('aria-disabled', 'false');
+      btn.querySelector('.label').textContent = 'Chat Online';
+    } else {
+      btn.classList.remove('online'); btn.classList.add('offline');
+      btn.setAttribute('aria-disabled', 'true');
+      btn.querySelector('.label').textContent = 'Chat Offline';
+    }
+    btn.hidden = false;
+  }
+
+
+
+  function wireClick() {
+    const btn = document.getElementById('customChatBtn');
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+      const isDisabled = btn.getAttribute('aria-disabled') === 'true';
+      if (!isDisabled) {
+        embeddedservice_bootstrap.utilAPI.launchChat()
+          .catch(() => alert('Unable to launch chat. Please try again in a moment.'));
+      } else {
+        alert('We’re currently offline (Mon–Fri, 9am–5pm AEST/AEDT). Please leave your details and we’ll get back to you.');
+      }
+    });
+  }
+
+
+
+  /** === Salesforce Enhanced Web Chat init === */
+  function initEmbeddedMessaging() {
+    try {
+      // Hide Salesforce’s default bubble on load; we’ll show our custom status button.
+      embeddedservice_bootstrap.settings.hideChatButtonOnLoad = true;
+
+
+
+      // (Optional but recommended) Set UI language
+      embeddedservice_bootstrap.settings.language = 'en_US';
+
+
+
+      // Initialize with your deployment details
+      embeddedservice_bootstrap.init(
+        '00D9p000004laCA',
+        'Bot',
+        'https://teamglobalexpressptyltd--rappdev01.sandbox.my.site.com/ESWBot1764659341569',
+        { scrt2URL: 'https://teamglobalexpressptyltd--rappdev01.sandbox.my.salesforce-scrt.com' }
+      );
+    } catch (err) {
+      console.error('Error loading Embedded Messaging: ', err);
+    }
+  }
+
+
+
+  // Wait for the Messaging APIs to be ready before calling utilAPI methods.
+  window.addEventListener('onEmbeddedMessagingReady', () => {
+    renderStatus();
+    wireClick();
+    setInterval(renderStatus, 60_000); // refresh status every minute
+
+
+
+    // Keep Salesforce’s default bubble (if ever shown) aligned with our status.
+    function syncDefaultBubble() {
+      if (isWithinHours()) {
+        embeddedservice_bootstrap.utilAPI.showChatButton();
+      } else {
+        embeddedservice_bootstrap.utilAPI.hideChatButton();
+      }
+    }
+    syncDefaultBubble();
+    setInterval(syncDefaultBubble, 60_000);
+  });
+
+
+
+  // Optional: enforce visibility immediately after the default button is created.
+  window.addEventListener('onEmbeddedMessagingButtonCreated', () => {
+    try {
+      if (isWithinHours()) {
+        embeddedservice_bootstrap.utilAPI.showChatButton();
+      } else {
+        embeddedservice_bootstrap.utilAPI.hideChatButton();
+      }
+    } catch (e) { /* noop */ }
+  });
+</script>
+ 
+	</body>
 </html>
 
 <!--
