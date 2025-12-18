@@ -1,4 +1,4 @@
-<html>
+<!--<html>
   <head>
     <title>External Site fot Embedded Chat</title>
   </head>
@@ -28,6 +28,52 @@
 </script>
 <script type='text/javascript' src='https://teamglobalexp--tgedev.sandbox.my.site.com/ESWCustomerServiceBot1764747826568/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
   </body>
+</html> -->
+<html>
+	<body>
+<!-- 1) Your init function stays the same -->
+<script type="text/javascript">
+  function initEmbeddedMessaging() {
+    try {
+      embeddedservice_bootstrap.settings.language = 'en_US'; // e.g., 'en' or 'en-US'
+ 
+      embeddedservice_bootstrap.init(
+        '00DAD000008PLr4',
+        'Messaging_Routing_Channel',
+        'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770',
+        {
+          scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com'
+        }
+      );
+    } catch (err) {
+      console.error('Error loading Embedded Messaging: ', err);
+    }
+  }
+</script>
+ 
+<!-- 2) Load the bootstrap JS WITHOUT auto-init -->
+https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770/assets/js/bootstrap.min.js
+</script>
+ 
+<!-- 3) Add a button (or link) to trigger init -->
+<button id="startChat">Start Chat</button>
+ 
+<script type="text/javascript">
+  // Attach click handler after DOM is ready
+  document.addEventListener('DOMContentLoaded', function () {
+    const btn = document.getElementById('startChat');
+    btn.addEventListener('click', function () {
+      // Optional: guard to ensure bootstrap is present
+      if (window.embeddedservice_bootstrap) {
+        initEmbeddedMessaging();
+      } else {
+        console.error('Bootstrap not loaded yet.');
+        alert('Chat module is still loading. Please try again in a moment.');
+      }
+    });
+  });
+</script>
+	</body>
 </html>
 
 	<!--
