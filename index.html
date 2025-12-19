@@ -384,81 +384,93 @@
   <h1>Load Salesforce Embedded Messaging</h1>
   <p>Click the button to load the Embedded Messaging script and initialize the bot.</p>
 
-  <button id="loadBotBtn">Launch Customer Service Bot</button>
-  <div id="status" role="status" aria-live="polite"></div>
+  
+<!-- Your Button -->
+<button id="launchMessagingBtn" type="button">Launch Support Chat</button>
 
-  <script>
-    // Your init function (unchanged)
-    function initEmbeddedMessaging() {
+<script type="text/javascript">
+  // Your init function (unchanged from your snippet)
+  function initEmbeddedMessaging() {
+    try {
+      embeddedservice_bootstrap.settings.language = 'en_US'; // For example, enter 'en' or 'en-US'
+
+      embeddedservice_bootstrap.init(
+        '00DAD000008PLr4',
+        'Messaging_Routing_Channel',
+        'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770',
+        {
+          scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com'
+        }
+      );
+    } catch (err) {
+      console.error('Error loading Embedded Messaging: ', err);
+    }
+  }
+
+  // Guard to avoid loading the script multiple times
+  let messagingScriptLoaded = false;
+  let messagingScriptLoading = false;
+
+  // Function to load the bootstrap script on demand
+  function loadMessagingScriptAndInit() {
+    // If already loaded, just initialize
+    if (messagingScriptLoaded) {
+      initEmbeddedMessaging();
+      return;
+    }
+
+    // Prevent duplicate loads
+    if (messagingScriptLoading) {
+      console.log('Messaging script is already loading...');
+      return;
+    }
+
+    messagingScriptLoading = true;
+
+    // Optionally disable the button while loading
+    const btn = document.getElementById('launchMessagingBtn');
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = 'Loading...';
+    }
+
+    // Create the script element dynamically
+    const script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = 'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770/assets/js/bootstrap.min.js';
+
+    // When the script loads, mark as loaded and initialize
+    script.onload = function () {
+      messagingScriptLoaded = true;
+      messagingScriptLoading = false;
       try {
-        // Configure language, etc.
-        embeddedservice_bootstrap.settings.language = 'en_US'; // e.g., 'en' or 'en-US'
-
-        embeddedservice_bootstrap.init(
-          '00DAD000008PLr4', // Salesforce Org ID
-          'Messaging_Routing_Channel', // Snippet/Deployment Name
-          'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770', // Site endpoint
-          {
-            scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com'
-          }
-        );
-        setStatus('Embedded Messaging initialized.');
-      } catch (err) {
-        console.error('Error loading Embedded Messaging:', err);
-        setStatus('Error initializing Embedded Messaging. See console.');
-      }
-    }
-
-    // Utility for showing status
-    function setStatus(msg) {
-      document.getElementById('status').textContent = msg;
-    }
-
-    // Load the bootstrap script only once (on demand)
-    let eswScriptLoaded = false;
-    let eswScriptLoading = false;
-
-    function loadEmbeddedMessagingScript() {
-      if (eswScriptLoaded) {
-        setStatus('Script already loaded. Initializing again...');
-        // If script is loaded, you can safely re-call init (idempotent in most cases)
         initEmbeddedMessaging();
-        return;
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = 'Launch Support Chat';
+        }
       }
+    };
 
-      if (eswScriptLoading) {
-        setStatus('Script is loading… please wait.');
-        return;
+    // Handle load errors
+    script.onerror = function (err) {
+      messagingScriptLoading = false;
+      console.error('Failed to load Embedded Messaging bootstrap script:', err);
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = 'Launch Support Chat';
       }
+      alert('Sorry, the chat could not be loaded. Please try again later.');
+    };
 
-      eswScriptLoading = true;
-      setStatus('Loading Embedded Messaging script…');
+    // Append to the document to start loading
+    document.head.appendChild(script);
+  }
 
-      const script = document.createElement('script');
-      script.type = 'text/javascript';
-	script.src = 'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770/assets/js/bootstrap.min.js';
-
-      // On successful load, run init
-      script.onload = function () {
-        eswScriptLoaded = true;
-        eswScriptLoading = false;
-        setStatus('Script loaded. Initializing…');
-        initEmbeddedMessaging();
-      };
-
-      // Handle load errors gracefully
-      script.onerror = function () {
-        eswScriptLoading = false;
-        console.error('Failed to load Embedded Messaging bootstrap script.');
-        setStatus('Failed to load script. Check network/CSP and try again.');
-      };
-
-      // Append to head
-      document.head.appendChild(script);
-    }
-
-    // Wire the button click
-    document.getElementById('loadBotBtn').addEventListener('click', loadEmbeddedMessagingScript);
-  </script>
+  // Wire up the button click
+  document.getElementById('launchMessagingBtn')
+          .addEventListener('click', loadMessagingScriptAndInit);
+</script>
 </body>
 </html>
