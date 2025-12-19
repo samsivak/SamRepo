@@ -293,50 +293,128 @@
 <!-- Hide specific items only in the overflow (three-dots) menu -->
 <html>
 	<body>
-<style>
-  /* Overflow menu container usually has role="menu" within the header dropdown */
-  /* These selectors target buttons/menu items by their accessible name or data-id. */
 
-  /* Try matching by aria-label (most common) */
-  [role="menu"] [aria-label="Tracking"],
-  [role="menu"] [aria-label="Pickup"],
-  [role="menu"] [aria-label="Card Left"] {
-    display: none !important;
+<script type="text/javascript">
+  /**
+   * Embedded Messaging init + overflow menu fallback hiding
+   * Target labels: "Tracking", "Pickup", "Card Left"
+   *
+   * NOTE: Works only if you can access the widget DOM (same-origin iFrame or inline component).
+   */
+
+  // ---- CONFIG: edit these to your values ----
+  const ORG_ID = '00DAD000008PLr4';
+  const DEPLOYMENT_NAME = 'Customer_Service_Bot';
+  const DEPLOYMENT_URL = 'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWCustomerServiceBot1764747826568';
+  const SCRT2_URL = 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com';
+
+  // Labels to hide in the overflow menu
+  const MENU_LABELS_TO_HIDE = ['Tracking', 'Pickup', 'Card Left'];
+
+  /**
+   * Utility: try to find overflow "role=menu" containers in the current document
+   * and hide items that match by aria-label or data-id.
+   */
+  function hideOverflowMenuItems(labels) {
+    try {
+      // Find possible menus (three-dots dropdowns usually expose role="menu")
+      const menus = document.querySelectorAll('[role="menu"]');
+      if (!menus || menus.length === 0) {
+        return false; // signal that we haven't found a menu yet
+      }
+
+      menus.forEach((menu) => {
+        labels.forEach((label) => {
+          // Search by aria-label on buttons/links
+          const byAria = menu.querySelectorAll(`[aria-label="${label}"]`);
+          byAria.forEach((el) => (el.style.display = 'none'));
+
+          // Search by data-id (some builds derive this from the label)
+          const byDataId = menu.querySelectorAll(`[data-id="${label}"]`);
+          byDataId.forEach((el) => (el.style.display = 'none'));
+
+          // Some builds render as <li><button aria-label=...>
+          const nested = menu.querySelectorAll(`li button[aria-label="${label}"]`);
+          nested.forEach((el) => (el.style.display = 'none'));
+        });
+      });
+
+      return true;
+    } catch (e) {
+      // Swallow errors—DOM may not be reachable due to iFrame/shadow isolation
+      return false;
+    }
   }
 
-  /* Fallback: if your rendering uses data-id attributes derived from the item name */
-  [role="menu"] [data-id="Tracking"],
-  [role="menu"] [data-id="Pickup"],
-  [role="menu"] [data-id="Card Left"] {
-    display: none !important;
+  /**
+   * Polling + MutationObserver combo:
+   * - Poll until a menu appears, then hide items.
+   * - Observe future DOM changes to re-apply (menu can re-render).
+   */
+  function watchAndHideMenuItems(labels) {
+    let appliedOnce = false;
+
+    // Try periodically for a short window
+    const POLL_MS = 400;
+    const MAX_TRIES = 30;
+    let tries = 0;
+
+    const poll = setInterval(() => {
+      tries++;
+      const success = hideOverflowMenuItems(labels);
+      if (success) {
+        appliedOnce = true;
+        clearInterval(poll);
+
+        // After we find it once, watch for rerenders
+        try {
+          const observer = new MutationObserver(() => {
+            hideOverflowMenuItems(labels);
+          });
+          observer.observe(document.body, { childList: true, subtree: true });
+        } catch (e) {
+          // If observer fails (e.g., shadow boundary), ignore silently
+        }
+      } else if (tries >= MAX_TRIES) {
+        clearInterval(poll);
+      }
+    }, POLL_MS);
   }
 
-  /* Optional: if the items render as list items with inner buttons */
-  [role="menu"] li button[aria-label="Tracking"],
-  [role="menu"] li button[aria-label="Pickup"],
-  [role="menu"] li button[aria-label="Card Left"] {
-    display: none !important;
-  }
-</style>
+  /**
+   * When the widget is ready, attempt to hide overflow items.
+   * Note: The Enhanced Web Chat/Messaging APIs require waiting for this event.
+   * Docs: onEmbeddedMessagingReady, API overview. [2](https://developer.salesforce.com/docs/service/messaging-web/guide/api-overview.html)
+   */
+  window.addEventListener('onEmbeddedMessagingReady', function () {
+    // Attempt to hide the overflow menu items in the current DOM
+    // (Works only if the widget does not fully isolate via cross-origin iFrame)
+    watchAndHideMenuItems(MENU_LABELS_TO_HIDE);
+  });
 
-<script type='text/javascript'>
+  // Standard init function (from your snippet)
   function initEmbeddedMessaging() {
     try {
-      embeddedservice_bootstrap.settings.language = 'en_US'; // For example, enter 'en' or 'en-US'
+      embeddedservice_bootstrap.settings.language = 'en_US'; // e.g., 'en' or 'en-US'
+      // If you host on Experience Cloud and want to hide the chat button on load:
+      // embeddedservice_bootstrap.settings.hideChatButtonOnLoad = true; // optional
 
       embeddedservice_bootstrap.init(
-        '00DAD000008PLr4',
-        'Customer_Service_Bot',
-        'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWCustomerServiceBot1764747826568',
+        ORG_ID,
+        DEPLOYMENT_NAME,
+        DEPLOYMENT_URL,
         {
-          scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com'
+          scrt2URL: SCRT2_URL
         }
       );
     } catch (err) {
       console.error('Error loading Embedded Messaging: ', err);
     }
-  };
+  }
 </script>
+
+<!-- Keep your bootstrap loader as-is -->
 <script type='text/javascript' src='https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
 </body>
 </html>
+
