@@ -170,7 +170,7 @@
 
 
 <!-- Customer Sales -->
-<!DOCTYPE html>
+<!--<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -261,7 +261,7 @@
     document.getElementById('loadMessagingBtn').addEventListener('click', loadEmbeddedMessagingScript);
   </script>
 </body>
-</html>
+</html> -->
 
 <!--<html>
 	<head>Messaging Channal Site</head>
@@ -288,3 +288,55 @@
 
 	</body>
 </html> -->
+
+
+<!-- Hide specific items only in the overflow (three-dots) menu -->
+<html>
+	<body>
+<style>
+  /* Overflow menu container usually has role="menu" within the header dropdown */
+  /* These selectors target buttons/menu items by their accessible name or data-id. */
+
+  /* Try matching by aria-label (most common) */
+  [role="menu"] [aria-label="Tracking"],
+  [role="menu"] [aria-label="Pickup"],
+  [role="menu"] [aria-label="Card Left"] {
+    display: none !important;
+  }
+
+  /* Fallback: if your rendering uses data-id attributes derived from the item name */
+  [role="menu"] [data-id="Tracking"],
+  [role="menu"] [data-id="Pickup"],
+  [role="menu"] [data-id="Card Left"] {
+    display: none !important;
+  }
+
+  /* Optional: if the items render as list items with inner buttons */
+  [role="menu"] li button[aria-label="Tracking"],
+  [role="menu"] li button[aria-label="Pickup"],
+  [role="menu"] li button[aria-label="Card Left"] {
+    display: none !important;
+  }
+</style>
+
+<script type='text/javascript'>
+  function initEmbeddedMessaging() {
+    try {
+      embeddedservice_bootstrap.settings.language = 'en_US'; // For example, enter 'en' or 'en-US'
+
+      embeddedservice_bootstrap.init(
+        '00DAD000008PLr4',
+        'Customer_Service_Bot',
+        'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWCustomerServiceBot1764747826568',
+        {
+          scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com'
+        }
+      );
+    } catch (err) {
+      console.error('Error loading Embedded Messaging: ', err);
+    }
+  };
+</script>
+https://teamglobalexp--tgedev.sandbox.my.site.com/ESWCustomerServiceBot1764747826568/assets/js/bootstrap.min.js</script>
+</body>
+</html>
