@@ -366,8 +366,8 @@
 </html> -->
 
 
-
-<!DOCTYPE html>
+<!-- Customer Sales -->
+<!--<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -458,4 +458,29 @@
     document.getElementById('loadMessagingBtn').addEventListener('click', loadEmbeddedMessagingScript);
   </script>
 </body>
+</html> -->
+
+<html>
+	<body>
+		<script type='text/javascript'>
+	function initEmbeddedMessaging() {
+		try {
+			embeddedservice_bootstrap.settings.language = 'en_US'; // For example, enter 'en' or 'en-US'
+
+			embeddedservice_bootstrap.init(
+				'00DAD000008PLr4',
+				'Messaging_Routing_Channel',
+				'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770',
+				{
+					scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com'
+				}
+			);
+		} catch (err) {
+			console.error('Error loading Embedded Messaging: ', err);
+		}
+	};
+</script>
+<script type='text/javascript' src='https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
+
+	</body>
 </html>
