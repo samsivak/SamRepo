@@ -39,8 +39,6 @@
     <title>External Site for Embedded Chat</title>
 
     <style>
-      /* Optional: if Salesforce exposes predictable classes/attributes,
-         this CSS can hide items immediately. The JS below is the reliable fallback. */
       .embeddedServiceHelpButtonMenuItem[title="Tracking"],
       .embeddedServiceHelpButtonMenuItem[title="Pickup"],
       .embeddedServiceHelpButtonMenuItem[title="Card Left"] {
@@ -100,11 +98,6 @@
             }
           });
         }
-
-        /**
-         * Observe DOM changes, because the menu is created dynamically
-         * when the user clicks the three-dots icon.
-         */
         const observer = new MutationObserver((mutations) => {
           mutations.forEach((m) => {
             // Check newly added nodes
