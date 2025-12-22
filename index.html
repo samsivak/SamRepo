@@ -1,5 +1,5 @@
 <!-- Customer Service -->
-<html>
+<!--<html>
   <head>
     <title>External Site fot Embedded Chat</title>
   </head>
@@ -28,15 +28,133 @@
 	};
 </script>
 <script type='text/javascript' src='https://teamglobalexp--tgedev.sandbox.my.site.com/ESWCustomerServiceBot1764747826568/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
-
-/* Hide specific menu items by label text */
-.embeddedServiceHelpButtonMenuItem[title="Tracking"],
-.embeddedServiceHelpButtonMenuItem[title="Pickup"],
-.embeddedServiceHelpButtonMenuItem[title="Card Left"] {
-    display: none !important;
-}
   </body>
-</html>
+</html> -->
+
+	
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>External Site for Embedded Chat</title>
+
+    <style>
+      /* Optional: if Salesforce exposes predictable classes/attributes,
+         this CSS can hide items immediately. The JS below is the reliable fallback. */
+      .embeddedServiceHelpButtonMenuItem[title="Tracking"],
+      .embeddedServiceHelpButtonMenuItem[title="Pickup"],
+      .embeddedServiceHelpButtonMenuItem[title="Card Left"] {
+        display: none !important;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <h1>External Website to test the Customer Service Chat</h1>
+    </div>
+
+    <script type="text/javascript">
+      /* --- CONFIGURE & INIT EMBEDDED MESSAGING --- */
+      function initEmbeddedMessaging() {
+        try {
+          embeddedservice_bootstrap.settings.language = "en_US"; // e.g., 'en' or 'en-US'
+
+          embeddedservice_bootstrap.init(
+            "00DAD000008PLr4", // ORG ID
+            "Customer_Service_Bot", // Embedded Service Deployment
+            "https://teamglobalexp--tgedev.sandbox.my.site.com/ESWCustomerServiceBot1764747826568",
+            {
+              scrt2URL:
+                "https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com",
+            }
+          );
+        } catch (err) {
+          console.error("Error loading Embedded Messaging: ", err);
+        }
+      }
+
+      /* --- HIDE SPECIFIC MENU ITEMS FROM THE THREE-DOTS MENU --- */
+      (function hideOverflowMenuItems() {
+        // Labels we want to remove from the menu
+        const BLOCKED_LABELS = new Set(["Tracking", "Pickup", "Card Left"]);
+
+        /**
+         * Try to remove blocked items inside a given root (document or shadowRoot).
+         */
+        function removeBlockedItems(root) {
+          if (!root) return;
+
+          // Salesforce often uses this class for menu items; also check role semantics
+          const items = root.querySelectorAll(
+            ".embeddedServiceHelpButtonMenuItem, [role='menuitem']"
+          );
+
+          items.forEach((el) => {
+            const label =
+              (el.getAttribute("title") || "").trim() ||
+              (el.textContent || "").trim();
+            if (BLOCKED_LABELS.has(label)) {
+              el.style.display = "none";
+              el.setAttribute("aria-hidden", "true");
+            }
+          });
+        }
+
+        /**
+         * Observe DOM changes, because the menu is created dynamically
+         * when the user clicks the three-dots icon.
+         */
+        const observer = new MutationObserver((mutations) => {
+          mutations.forEach((m) => {
+            // Check newly added nodes
+            m.addedNodes.forEach((node) => {
+              // If the node has a shadow root, inspect that too
+              if (node instanceof HTMLElement) {
+                removeBlockedItems(node);
+                if (node.shadowRoot) {
+                  removeBlockedItems(node.shadowRoot);
+
+                  // Also observe inside the shadowRoot for subsequent updates
+                  const shadowObserver = new MutationObserver((shadowMutations) =>
+                    shadowMutations.forEach((sm) => {
+                      sm.addedNodes.forEach((sn) => {
+                        if (sn instanceof HTMLElement) {
+                          removeBlockedItems(sn);
+                        }
+                      });
+                    })
+                  );
+                  shadowObserver.observe(node.shadowRoot, {
+                    childList: true,
+                    subtree: true,
+                  });
+                }
+              }
+            });
+          });
+
+          // Also run on the whole document each time as a safety net
+          removeBlockedItems(document);
+        });
+
+        // Start observing the whole document for dynamic insertions
+        observer.observe(document.documentElement || document.body, {
+          childList: true,
+          subtree: true,
+        });
+
+        // Initial pass (in case menu already exists)
+        removeBlockedItems(document);
+      })();
+    </script>
+
+    <!-- Bootstrap Loader -->
+    <script
+      type="text/javascript"
+      <script type='text/javascript' src='https://teamglobalexp--tgedev.sandbox.my.site.com/ESWCustomerServiceBot1764747826568/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
+</body>
+	</html>
 
 
 <!--<html>
