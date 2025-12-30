@@ -31,8 +31,9 @@
   </body>
 </html> -->
 
+
 	
-<!DOCTYPE html>
+<!--<!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8" />
@@ -142,12 +143,11 @@
       })();
     </script>
 
-    <!-- Bootstrap Loader -->
     <script
       type="text/javascript"
       <script type='text/javascript' src='https://teamglobalexp--tgedev.sandbox.my.site.com/ESWCustomerServiceBot1764747826568/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
 </body>
-	</html>
+	</html> -->
 
 
 <!--<html>
@@ -531,7 +531,32 @@
 </script>
 
 <!-- Keep your bootstrap loader as-is -->
-<script type='text/javascript' src='https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
+<!--<script type='text/javascript' src='https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
 </body>
 </html>
 -->
+<html>
+	<body>
+		<h1>test chat</h1>
+<script type='text/javascript'>
+	function initEmbeddedMessaging() {
+		try {
+			embeddedservice_bootstrap.settings.language = 'en_US'; // For example, enter 'en' or 'en-US'
+
+			embeddedservice_bootstrap.init(
+				'00D9p000004KUXV',
+				'Customer_Service_Bot',
+				'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWCustomerServiceBot1766569778871',
+				{
+					scrt2URL: 'https://teamglobalexp--tollperf.sandbox.my.salesforce-scrt.com'
+				}
+			);
+		} catch (err) {
+			console.error('Error loading Embedded Messaging: ', err);
+		}
+	};
+</script>
+<script type='text/javascript' src='https://teamglobalexp--tollperf.sandbox.my.site.com/ESWCustomerServiceBot1766569778871/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
+		</body>
+</html>
+
