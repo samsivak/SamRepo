@@ -802,6 +802,7 @@
 </body>
 </html> -->
 
+// UAT Customser Service Code with Spinner and Onclick load
 
 <!DOCTYPE html>
 <html lang="en">
@@ -827,14 +828,23 @@
     .spinner-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(255, 255, 255, 0.8);
+      background: rgba(255, 255, 255, 0.85);
       backdrop-filter: blur(1px);
       display: none;            /* hidden by default */
       align-items: center;
       justify-content: center;
       z-index: 2147483646;      /* just below widget */
     }
-
+    .spinner-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      padding: 20px 24px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.9);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    }
     .spinner {
       width: 64px;
       height: 64px;
@@ -843,7 +853,12 @@
       border-radius: 50%;
       animation: spin 0.9s linear infinite;
     }
-
+    .spinner-message {
+      font-size: 1rem;
+      color: #333;
+      text-align: center;
+      min-width: 240px;
+    }
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
@@ -873,19 +888,28 @@
 
   <button id="loadBotBtn">Launch Customer Service Bot</button>
 
-  <!-- Spinner overlay -->
+  <!-- Spinner overlay with status message -->
   <div id="spinnerOverlay" class="spinner-overlay" role="status" aria-live="polite" aria-label="Loading chat widget">
-    <div class="spinner" aria-hidden="true"></div>
+    <div class="spinner-box">
+      <div class="spinner" aria-hidden="true"></div>
+      <div id="spinnerMsg" class="spinner-message">Initiating the chat...</div>
+    </div>
   </div>
 
   <!-- Optional toast for non-blocking errors -->
   <div id="toast" class="toast" role="alert" aria-live="assertive"></div>
 
   <script>
-    // -------- Utilities: spinner & toast --------
-    function showSpinner() {
+    // -------- Utilities: spinner, message & toast --------
+    function showSpinner(message = 'Loading the chat…') {
       const ov = document.getElementById('spinnerOverlay');
+      const msg = document.getElementById('spinnerMsg');
+      if (msg) msg.textContent = message;
       if (ov) ov.style.display = 'flex';
+    }
+    function updateSpinnerMessage(message) {
+      const msg = document.getElementById('spinnerMsg');
+      if (msg) msg.textContent = message;
     }
     function hideSpinner() {
       const ov = document.getElementById('spinnerOverlay');
@@ -907,8 +931,7 @@
     // -------- Init (UAT) --------
     function initEmbeddedMessaging() {
       if (eswInitialized) {
-        // Spinner can be hidden already by visibility check,
-        // but keep it showing until widget is confirmed present.
+        // Spinner will be managed by visibility checker
         return;
       }
 
@@ -923,6 +946,7 @@
         embeddedservice_bootstrap.settings.language = 'en_US';
 
         // Small delay to reduce race conditions
+        updateSpinnerMessage('Initializing the chat…');
         setTimeout(function () {
           embeddedservice_bootstrap.init(
             '00D9p000004KUXV', // UAT Salesforce Org ID
@@ -936,6 +960,7 @@
           eswInitialized = true;
 
           // Keep spinner on until widget is detected
+          updateSpinnerMessage('Preparing the chat widget…');
           checkWidgetVisible(20, 500); // ~10s
         }, 50);
       } catch (err) {
@@ -969,27 +994,34 @@
           console.warn('[ESW] Chat widget not found after init.');
           showToast('Chat widget did not appear. Check console/network and org configuration.');
           clearInterval(timer);
+        } else {
+          // Optional: show progressive messaging while waiting
+          if (tries === 1) updateSpinnerMessage('Loading chat resources…');
+          if (tries === Math.ceil(attempts / 2)) updateSpinnerMessage('Almost there…');
         }
       }, intervalMs);
     }
 
     // -------- Dynamic Loader --------
     function loadEmbeddedMessagingScript() {
-      // Show spinner immediately on click
-      showSpinner();
+      // Show spinner immediately on click with initial message
+      showSpinner('Loading the chat…');
 
       if (eswInitialized) {
         // Spinner will be hidden when widget is found
+        updateSpinnerMessage('Finalizing…');
         return;
       }
 
       if (eswScriptLoaded) {
+        updateSpinnerMessage('Initializing the chat…');
         initEmbeddedMessaging();
         return;
       }
 
       if (eswScriptLoading) {
         // Spinner is already visible; just wait
+        updateSpinnerMessage('Fetching chat resources…');
         return;
       }
 
@@ -1005,7 +1037,8 @@
 
         if (!window.embeddedservice_bootstrap) {
           console.warn('[ESW] Script loaded but bootstrap missing.');
-          // Keep spinner for a short grace period, then fail gracefully
+          updateSpinnerMessage('Preparing the chat…');
+          // Grace period then fail gracefully
           setTimeout(() => {
             hideSpinner();
             showToast('Chat resources loaded but bootstrap missing. Check CSP.');
@@ -1013,6 +1046,7 @@
           return;
         }
 
+        updateSpinnerMessage('Initializing the chat…');
         initEmbeddedMessaging();
       };
 
@@ -1031,6 +1065,3 @@
   </script>
 </body>
 </html>
-
-
-
