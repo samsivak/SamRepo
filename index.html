@@ -635,7 +635,7 @@
 
 
 
-<!--<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -646,8 +646,7 @@
     button { padding: 0.75rem 1.25rem; font-size: 1rem; cursor: pointer; }
     #status { margin-top: 1rem; color: #333; }
 
-    /* 👇 Raise the chat button/widget above any fixed footer or overlays */
-    /* Note: class names can vary; this helps in common cases */
+    /* Raise the chat button/widget above any fixed footer or overlays */
     .embedded-messaging[style], 
     .embeddedMessagingFrame, 
     .embeddedservice-help-button, 
@@ -715,7 +714,7 @@
           eswInitialized = true;
           setStatus('Embedded Messaging initialized. Checking widget visibility…');
 
-          // 👇 Poll a few times to see if widget iframe/button appeared
+          // Poll a few times to see if widget iframe/button appeared
           checkWidgetVisible(12, 500); // try for ~6s
         }, 50);
       } catch (err) {
@@ -774,7 +773,6 @@
 
       const script = document.createElement('script');
       script.type = 'text/javascript';
-      // ✅ UAT bootstrap URL
       script.src = 'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWCustomerServiceBot1766569778871/assets/js/bootstrap.min.js';
 
       script.onload = function () {
@@ -801,170 +799,6 @@
     // Wire the button click
     document.getElementById('loadBotBtn').addEventListener('click', loadEmbeddedMessagingScript);
   </script>
-</body>
-</html> -->
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<title>Salesforce Embedded Messaging - Load on Click (UAT)</title>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<style>
-    body { font-family: system-ui, Arial, sans-serif; margin: 2rem; }
-    button { padding: 0.75rem 1.25rem; font-size: 1rem; cursor: pointer; }
-    #status { margin-top: 1rem; color: #333; }
- 
-    /* Raise the chat button/widget above any fixed footer or overlays */
-    .embedded-messaging[style], 
-    .embeddedMessagingFrame, 
-    .embeddedservice-help-button, 
-    .esw-button,
-    iframe[id*="embedded-messaging"],
-    iframe[src*="embeddedservice"] {
-      z-index: 2147483647 !important; 
-    }
-</style>
-</head>
-<body>
- 
-  <h1>Load Salesforce Embedded Messaging (UAT)</h1>
-<p>Click the button to load the Embedded Messaging script and initialize the bot.</p>
- 
-  <button id="loadBotBtn">Launch Customer Service Bot</button>
-<div id="status" role="status" aria-live="polite"></div>
- 
-  <script>
-    function setStatus(msg) {
-      const el = document.getElementById('status');
-      if (el) el.textContent = msg;
-      console.log('[ESW] ' + msg);
-    }
- 
-    function warn(msg) {
-      console.warn('[ESW] ' + msg);
-      setStatus(msg);
-    }
- 
-    // -------- State --------
-    let eswInitialized = false;
-    let eswScriptLoaded = false;
-    let eswScriptLoading = false;
- 
-    // -------- Init (UAT) --------
-    function initEmbeddedMessaging() {
-      if (eswInitialized) {
-        setStatus('Embedded Messaging already initialized.');
-        return;
-      }
- 
-      try {
-        if (!window.embeddedservice_bootstrap) {
-          warn('Bootstrap not available yet. Please try again in a moment.');
-          return;
-        }
- 
-        // Configure language
-        embeddedservice_bootstrap.settings.language = 'en_US';
- 
-        // Optional: reduce race conditions with a small delay before init
-        setStatus('Initializing Embedded Messaging…');
-        setTimeout(function () {
-          embeddedservice_bootstrap.init(
-            '00D9p000004KUXV', // UAT Salesforce Org ID
-            'Customer_Service_Bot', // Deployment / Snippet Name
-            'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWCustomerServiceBot1766569778871', // UAT Site endpoint
-            {
-              scrt2URL: 'https://teamglobalexp--tollperf.sandbox.my.salesforce-scrt.com' // UAT SCRT URL
-            }
-          );
- 
-          eswInitialized = true;
-          setStatus('Embedded Messaging initialized. Checking widget visibility…');
-
-          checkWidgetVisible(12, 500); // try for ~6s
-        }, 50);
-      } catch (err) {
-        console.error('Error initializing Embedded Messaging:', err);
-        setStatus('Error initializing Embedded Messaging. See console.');
-      }
-    }
-
-    function checkWidgetVisible(attempts, intervalMs) {
-      let tries = 0;
-      const timer = setInterval(function () {
-        tries++;
- 
-        // Common selectors that may exist when the widget is rendered
-        const possibleEls = [
-          document.querySelector('iframe[src*="embeddedservice"]'),
-          document.querySelector('iframe[id*="embedded-messaging"]'),
-          document.querySelector('.embeddedservice-help-button'),
-          document.querySelector('.esw-button'),
-          document.querySelector('.embedded-messaging')
-        ].filter(Boolean);
- 
-        if (possibleEls.length > 0) {
-          setStatus('Chat widget is present on the page.');
-          clearInterval(timer);
-        } else if (tries >= attempts) {
-          warn('Chat widget not found after initialization. Check console/network and org configuration.');
-          clearInterval(timer);
-        } else {
-          setStatus('Waiting for chat widget to render… (' + tries + '/' + attempts + ')');
-        }
-      }, intervalMs);
-    }
- 
-    // -------- Dynamic Loader --------
-    function loadEmbeddedMessagingScript() {
-      if (eswInitialized) {
-        setStatus('Chat already initialized.');
-        return;
-      }
- 
-      if (eswScriptLoaded) {
-        setStatus('Script already loaded. Initializing…');
-        initEmbeddedMessaging();
-        return;
-      }
- 
-      if (eswScriptLoading) {
-        setStatus('Script is loading… please wait.');
-        return;
-      }
- 
-      eswScriptLoading = true;
-      setStatus('Loading Embedded Messaging bootstrap script…');
- 
-      const script = document.createElement('script');
-      script.type = 'text/javascript';
-      script.src = 'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWCustomerServiceBot1766569778871/assets/js/bootstrap.min.js%27;
- 
-      script.onload = function () {
-        eswScriptLoaded = true;
-        eswScriptLoading = false;
-        setStatus('Bootstrap script loaded.');
-        // Sanity check
-        if (!window.embeddedservice_bootstrap) {
-          warn('Bootstrap script loaded but embeddedservice_bootstrap is not defined.');
-        }
-        setStatus('Initializing…');
-        initEmbeddedMessaging();
-      };
- 
-      script.onerror = function () {
-        eswScriptLoading = false;
-        console.error('Failed to load Embedded Messaging bootstrap script:', script.src);
-        setStatus('Failed to load script. Check network/CSP, URL, and try again.');
-      };
- 
-      document.head.appendChild(script);
-    }
-
-    document.getElementById('loadBotBtn').addEventListener('click', loadEmbeddedMessagingScript);
-</script>
 </body>
 </html>
 
