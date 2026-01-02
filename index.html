@@ -561,7 +561,7 @@
 </html> -->
 
 
-<!DOCTYPE html>
+<!--<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -628,8 +628,129 @@
   <h1>Support Chat</h1>
   <p>Click the button to load the chat and connect.</p>
 
-  <!-- Button that triggers dynamic load + init -->
   <button type="button" onclick="loadAndStartChat()">Launch Chat</button>
 </body>
+</html> -->
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Salesforce Embedded Messaging - Load on Click</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; margin: 2rem; }
+    button { padding: 0.75rem 1.25rem; font-size: 1rem; cursor: pointer; }
+    #status { margin-top: 1rem; color: #333; }
+  </style>
+</head>
+<body>
+
+  <h1>Load Salesforce Embedded Messaging</h1>
+  <p>Click the button to load the Embedded Messaging script and initialize the bot.</p>
+
+  <button id="loadBotBtn">Launch Customer Service Bot</button>
+  <div id="status" role="status" aria-live="polite"></div>
+
+  <script>
+    // -------- Utilities --------
+    function setStatus(msg) {
+      const el = document.getElementById('status');
+      if (el) el.textContent = msg;
+    }
+
+    // -------- Salesforce Embedded Messaging Init (UAT) --------
+    let eswInitialized = false;
+
+    function initEmbeddedMessaging() {
+      if (eswInitialized) {
+        setStatus('Embedded Messaging already initialized.');
+        return;
+      }
+
+      try {
+        if (!window.embeddedservice_bootstrap) {
+          setStatus('Bootstrap not available yet. Please try again in a moment.');
+          console.warn('embeddedservice_bootstrap is not defined.');
+          return;
+        }
+
+        // Configure language (adjust if needed)
+        embeddedservice_bootstrap.settings.language = 'en_US'; // e.g., 'en' or 'en-US'
+
+        // Initialize Embedded Messaging (UAT)
+        embeddedservice_bootstrap.init(
+          '00D9p000004KUXV', // UAT Salesforce Org ID
+          'Customer_Service_Bot', // Deployment / Snippet Name
+          'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWCustomerServiceBot1766569778871', // UAT Site endpoint
+          {
+            scrt2URL: 'https://teamglobalexp--tollperf.sandbox.my.salesforce-scrt.com' // UAT SCRT URL
+          }
+        );
+
+        eswInitialized = true;
+        setStatus('Embedded Messaging initialized.');
+      } catch (err) {
+        console.error('Error loading Embedded Messaging:', err);
+        setStatus('Error initializing Embedded Messaging. See console.');
+      }
+    }
+
+    // -------- Dynamic Loader (loads script on demand) --------
+    let eswScriptLoaded = false;
+    let eswScriptLoading = false;
+
+    function loadEmbeddedMessagingScript() {
+      // If already initialized, do nothing more
+      if (eswInitialized) {
+        setStatus('Chat already initialized.');
+        return;
+      }
+
+      // If script is already loaded, just init
+      if (eswScriptLoaded) {
+        setStatus('Script already loaded. Initializing…');
+        initEmbeddedMessaging();
+        return;
+      }
+
+      // Prevent parallel loads
+      if (eswScriptLoading) {
+        setStatus('Script is loading… please wait.');
+        return;
+      }
+
+      eswScriptLoading = true;
+      setStatus('Loading Embedded Messaging script…');
+
+      const script = document.createElement('script');
+      script.type = 'text/javascript';
+      // ✅ UAT bootstrap URL (fixed)
+      script.src = 'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWCustomerServiceBot1766569778871/assets/js/bootstrap.min.js';
+
+      script.onload = function () {
+        eswScriptLoaded = true;
+        eswScriptLoading = false;
+        setStatus('Script loaded. Initializing…');
+        initEmbeddedMessaging();
+      };
+
+      script.onerror = function () {
+        eswScriptLoading = false;
+        console.error('Failed to load Embedded Messaging bootstrap script.');
+        setStatus('Failed to load script. Check network/CSP and try again.');
+      };
+
+      document.head.appendChild(script);
+    }
+
+    // Wire the button click
+    document.getElementById('loadBotBtn').addEventListener('click', loadEmbeddedMessagingScript);
+  </script>
+</body>
 </html>
+
+
 
