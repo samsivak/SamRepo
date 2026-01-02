@@ -1,4 +1,4 @@
-<!-- Customer Service -->
+<!-- Dev Org Customer Service -->
 <!--<html>
   <head>
     <title>External Site fot Embedded Chat</title>
@@ -32,7 +32,7 @@
 </html> -->
 
 
-	
+<!-- Dev Org Customer Service code with onclick load -->	
 <!--<!DOCTYPE html>
 <html>
   <head>
@@ -634,8 +634,8 @@
 
 
 
-
-<!DOCTYPE html>
+// UAT Customer Service Code with onclick load.
+<!--<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -791,6 +791,236 @@
         eswScriptLoading = false;
         console.error('Failed to load Embedded Messaging bootstrap script:', script.src);
         setStatus('Failed to load script. Check network/CSP, URL, and try again.');
+      };
+
+      document.head.appendChild(script);
+    }
+
+    // Wire the button click
+    document.getElementById('loadBotBtn').addEventListener('click', loadEmbeddedMessagingScript);
+  </script>
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Salesforce Embedded Messaging - Load on Click (UAT)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; margin: 2rem; }
+    button { padding: 0.75rem 1.25rem; font-size: 1rem; cursor: pointer; }
+
+    /* Raise the chat button/widget above overlays/footers */
+    .embedded-messaging[style],
+    .embeddedMessagingFrame,
+    .embeddedservice-help-button,
+    .esw-button,
+    iframe[id*="embedded-messaging"],
+    iframe[src*="embeddedservice"] {
+      z-index: 2147483647 !important;
+    }
+
+    /* --- Spinner Overlay Styles --- */
+    .spinner-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(1px);
+      display: none;            /* hidden by default */
+      align-items: center;
+      justify-content: center;
+      z-index: 2147483646;      /* just below widget */
+    }
+
+    .spinner {
+      width: 64px;
+      height: 64px;
+      border: 6px solid #e0e0e0;
+      border-top-color: #1976d2; /* primary color */
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Optional small toast for errors (non-blocking) */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #323232;
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+      max-width: 90vw;
+      display: none;
+      z-index: 2147483647;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Load Salesforce Embedded Messaging (UAT)</h1>
+  <p>Click the button to load the Embedded Messaging script and initialize the bot.</p>
+
+  <button id="loadBotBtn">Launch Customer Service Bot</button>
+
+  <!-- Spinner overlay -->
+  <div id="spinnerOverlay" class="spinner-overlay" role="status" aria-live="polite" aria-label="Loading chat widget">
+    <div class="spinner" aria-hidden="true"></div>
+  </div>
+
+  <!-- Optional toast for non-blocking errors -->
+  <div id="toast" class="toast" role="alert" aria-live="assertive"></div>
+
+  <script>
+    // -------- Utilities: spinner & toast --------
+    function showSpinner() {
+      const ov = document.getElementById('spinnerOverlay');
+      if (ov) ov.style.display = 'flex';
+    }
+    function hideSpinner() {
+      const ov = document.getElementById('spinnerOverlay');
+      if (ov) ov.style.display = 'none';
+    }
+    function showToast(message, ms = 3000) {
+      const t = document.getElementById('toast');
+      if (!t) return;
+      t.textContent = message;
+      t.style.display = 'block';
+      setTimeout(() => { t.style.display = 'none'; }, ms);
+    }
+
+    // -------- State --------
+    let eswInitialized = false;
+    let eswScriptLoaded = false;
+    let eswScriptLoading = false;
+
+    // -------- Init (UAT) --------
+    function initEmbeddedMessaging() {
+      if (eswInitialized) {
+        // Spinner can be hidden already by visibility check,
+        // but keep it showing until widget is confirmed present.
+        return;
+      }
+
+      try {
+        if (!window.embeddedservice_bootstrap) {
+          // Keep spinner visible; likely loading bootstrap or blocked by CSP.
+          console.warn('[ESW] bootstrap not available yet.');
+          return;
+        }
+
+        // Configure language
+        embeddedservice_bootstrap.settings.language = 'en_US';
+
+        // Small delay to reduce race conditions
+        setTimeout(function () {
+          embeddedservice_bootstrap.init(
+            '00D9p000004KUXV', // UAT Salesforce Org ID
+            'Customer_Service_Bot', // Deployment / Snippet Name
+            'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWCustomerServiceBot1766569778871', // UAT Site endpoint
+            {
+              scrt2URL: 'https://teamglobalexp--tollperf.sandbox.my.salesforce-scrt.com' // UAT SCRT URL
+            }
+          );
+
+          eswInitialized = true;
+
+          // Keep spinner on until widget is detected
+          checkWidgetVisible(20, 500); // ~10s
+        }, 50);
+      } catch (err) {
+        console.error('Error initializing Embedded Messaging:', err);
+        hideSpinner();
+        showToast('Error initializing chat. See console for details.');
+      }
+    }
+
+    // -------- Visibility Check --------
+    function checkWidgetVisible(attempts, intervalMs) {
+      let tries = 0;
+      const timer = setInterval(function () {
+        tries++;
+
+        const possibleEls = [
+          document.querySelector('iframe[src*="embeddedservice"]'),
+          document.querySelector('iframe[id*="embedded-messaging"]'),
+          document.querySelector('.embeddedservice-help-button'),
+          document.querySelector('.esw-button'),
+          document.querySelector('.embedded-messaging')
+        ].filter(Boolean);
+
+        if (possibleEls.length > 0) {
+          // Chat widget is present, hide spinner
+          hideSpinner();
+          clearInterval(timer);
+        } else if (tries >= attempts) {
+          // Stop spinner (don’t block the page) & show a non-blocking message
+          hideSpinner();
+          console.warn('[ESW] Chat widget not found after init.');
+          showToast('Chat widget did not appear. Check console/network and org configuration.');
+          clearInterval(timer);
+        }
+      }, intervalMs);
+    }
+
+    // -------- Dynamic Loader --------
+    function loadEmbeddedMessagingScript() {
+      // Show spinner immediately on click
+      showSpinner();
+
+      if (eswInitialized) {
+        // Spinner will be hidden when widget is found
+        return;
+      }
+
+      if (eswScriptLoaded) {
+        initEmbeddedMessaging();
+        return;
+      }
+
+      if (eswScriptLoading) {
+        // Spinner is already visible; just wait
+        return;
+      }
+
+      eswScriptLoading = true;
+
+      const script = document.createElement('script');
+      script.type = 'text/javascript';
+      script.src = 'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWCustomerServiceBot1766569778871/assets/js/bootstrap.min.js';
+
+      script.onload = function () {
+        eswScriptLoaded = true;
+        eswScriptLoading = false;
+
+        if (!window.embeddedservice_bootstrap) {
+          console.warn('[ESW] Script loaded but bootstrap missing.');
+          // Keep spinner for a short grace period, then fail gracefully
+          setTimeout(() => {
+            hideSpinner();
+            showToast('Chat resources loaded but bootstrap missing. Check CSP.');
+          }, 1000);
+          return;
+        }
+
+        initEmbeddedMessaging();
+      };
+
+      script.onerror = function () {
+        eswScriptLoading = false;
+        console.error('Failed to load bootstrap:', script.src);
+        hideSpinner();
+        showToast('Failed to load chat resources. Check network/CSP.');
       };
 
       document.head.appendChild(script);
