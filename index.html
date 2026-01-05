@@ -287,8 +287,8 @@
 </html> -->
 
 
-// UAT Customer Sales - Load on Button CLick
-<!DOCTYPE html>
+// Dev Customer Sales - Load on Button CLick
+<!--<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -355,6 +355,101 @@
       const script = document.createElement('script');
       script.type = 'text/javascript';
       script.src = 'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770/assets/js/bootstrap.min.js';
+
+      script.onload = function () {
+        eswScriptLoaded = true;
+        eswScriptLoading = false;
+        setStatus('Script loaded. Initializing…');
+        try { initEmbeddedMessaging(); }
+        finally {
+          if (btn) { btn.disabled = false; btn.textContent = 'Launch Messaging'; }
+        }
+      };
+
+      script.onerror = function (err) {
+        eswScriptLoading = false;
+        console.error('Failed to load Embedded Messaging bootstrap script:', err);
+        setStatus('Failed to load script. Check network/CSP and try again.');
+        if (btn) { btn.disabled = false; btn.textContent = 'Launch Messaging'; }
+      };
+
+      document.head.appendChild(script);
+    }
+
+    document.getElementById('loadMessagingBtn').addEventListener('click', loadEmbeddedMessagingScript);
+  </script>
+</body>
+</html> -->
+
+// UAT Customer Sales - Load on Button CLick
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Salesforce Embedded Messaging - Load on Click</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; margin: 2rem; }
+    button { padding: 0.75rem 1.25rem; font-size: 1rem; cursor: pointer; }
+    #status { margin-top: 1rem; color: #333; }
+  </style>
+</head>
+<body>
+
+  <h1>Load Salesforce Embedded Messaging</h1>
+  <p>Click the button to load the Embedded Messaging script and initialize the channel.</p>
+
+  <button id="loadMessagingBtn" type="button">Launch Messaging</button>
+  <div id="status" role="status" aria-live="polite"></div>
+
+  <script>
+    function setStatus(msg) {
+      const el = document.getElementById('status');
+      if (el) el.textContent = msg;
+    }
+
+    function initEmbeddedMessaging() {
+      try {
+        embeddedservice_bootstrap.settings.language = 'en_US';
+
+        embeddedservice_bootstrap.init(
+          '00D9p000004KUXV',
+          'Messaging_Routing_Channel',
+          ''https://teamglobalexp--tollperf.sandbox.my.site.com/ESWMessagingRoutingChan1763462090439',
+          { scrt2URL: 'https://teamglobalexp--tollperf.sandbox.my.salesforce-scrt.com' }
+        );
+
+        setStatus('Embedded Messaging initialized.');
+      } catch (err) {
+        console.error('Error loading Embedded Messaging:', err);
+        setStatus('Error initializing Embedded Messaging. See console.');
+      }
+    }
+
+    let eswScriptLoaded = false;
+    let eswScriptLoading = false;
+
+    function loadEmbeddedMessagingScript() {
+      if (eswScriptLoaded) {
+        setStatus('Script already loaded. Initializing again…');
+        initEmbeddedMessaging();
+        return;
+      }
+      if (eswScriptLoading) {
+        setStatus('Script is loading… please wait.');
+        return;
+      }
+
+      eswScriptLoading = true;
+      setStatus('Loading Embedded Messaging script…');
+
+      const btn = document.getElementById('loadMessagingBtn');
+      if (btn) { btn.disabled = true; btn.textContent = 'Loading…'; }
+
+      const script = document.createElement('script');
+      script.type = 'text/javascript';
+      script.src = 'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWMessagingRoutingChan1763462090439/assets/js/bootstrap.min.js';
 
       script.onload = function () {
         eswScriptLoaded = true;
