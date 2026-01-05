@@ -381,30 +381,91 @@
 </body>
 </html> -->
 
-<html>
-	<head>UAT Customer Sales Code</head>
-	<body>
-		<script type='text/javascript'>
-	function initEmbeddedMessaging() {
-		try {
-			embeddedservice_bootstrap.settings.language = 'en_US'; // For example, enter 'en' or 'en-US'
 
-			embeddedservice_bootstrap.init(
-				'00D9p000004KUXV',
-				'Messaging_Routing_Channel',
-				'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWMessagingRoutingChan1763462090439',
-				{
-					scrt2URL: 'https://teamglobalexp--tollperf.sandbox.my.salesforce-scrt.com'
-				}
-			);
-		} catch (err) {
-			console.error('Error loading Embedded Messaging: ', err);
-		}
-	};
-</script>
-<script type='text/javascript' src='https://teamglobalexp--tollperf.sandbox.my.site.com/ESWMessagingRoutingChan1763462090439/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>UAT Embedded Messaging Launcher</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-	</body>
+    <style>
+      /* Simple button styling */
+      #miaw-start {
+        padding: 10px 16px;
+        font-size: 14px;
+        cursor: pointer;
+        background: #0070d2;   /* Salesforce blue */
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+      }
+      #miaw-start:hover {
+        background: #005fb2;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- ONE BUTTON that starts Messaging on click -->
+    <button id="miaw-start" type="button" onclick="startMessaging()">
+      Chat with Us
+    </button>
+
+    <!-- Your Messaging init function (unchanged in substance) -->
+    <script type="text/javascript">
+      function initEmbeddedMessaging() {
+        try {
+          // Language can be 'en' or 'en-US'
+          embeddedservice_bootstrap.settings.language = 'en_US';
+
+          // Optional: listen for readiness (useful if you want to call APIs like launchChat/prechat afterwards)
+          window.addEventListener('onEmbeddedMessagingReady', () => {
+            console.log('[MIAW] Messaging client is ready');
+            // Example: open the chat when ready (uncomment if desired)
+            // embeddedservice_bootstrap.utilAPI.launchChat();
+          });
+
+          // Initialize Messaging (MIAW)
+          embeddedservice_bootstrap.init(
+            '00D9p000004KUXV', // Org ID
+            'Messaging_Routing_Channel', // Deployment (Channel) Name
+            'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWMessagingRoutingChan1763462090439', // Site endpoint
+            {
+              scrt2URL: 'https://teamglobalexp--tollperf.sandbox.my.salesforce-scrt.com'
+            }
+          );
+        } catch (err) {
+          console.error('Error loading Embedded Messaging: ', err);
+        }
+      }
+
+      // Button handler: ensures the bootstrap script is present, then runs initEmbeddedMessaging()
+      function startMessaging() {
+        // If the global already exists, init immediately
+        if (window.embeddedservice_bootstrap) {
+          initEmbeddedMessaging();
+          return;
+        }
+
+        // Otherwise, load bootstrap.min.js and init once it’s loaded
+        var src = 'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWMessagingRoutingChan1763462090439/assets/js/bootstrap.min.js';
+        var script = document.createElement('script');
+        script.src = src;
+        script.type = 'text/javascript';
+
+        script.onload = function () {
+          console.log('[MIAW] bootstrap.min.js loaded');
+          initEmbeddedMessaging();
+        };
+        script.onerror = function (e) {
+          console.error('[MIAW] Failed to load bootstrap.min.js from:', src, e);
+        };
+
+        document.head.appendChild(script);
+      }
+    </script>
+  </body>
 </html>
 
 // UAT Customser Service Code with Spinner and Onclick load
