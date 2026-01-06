@@ -1134,11 +1134,15 @@ WebToCase Form:
     :root{
       --text:#111; --muted:#555; --border:#b7b7b7; --error:#b00020;
       --input-bg:#fff; --input-height:30px; --form-width:320px;
-      --submit-bg:#1f7a2d;         /* dark green like screenshot */
-      --submit-bg-hover:#176022;   /* darker on hover */
-      --submit-text:#fff;
-      --pill:#0f5c2e;              /* live chat green pill */
-      --pillText:#ffffff;
+
+      /* Submit button (left) */
+      --submit-bg:#1f7a2 tuned to match screenshot */      --submit-bg:#1f7a2d;         /* dark green like screenshot */
+      --pill-bg:#0c140c;           /* very dark green / near black */
+      --pill-outline:#cfd8dc;      /* subtle light outline */
+      --pill-text:#ffffff;
+      --pill-shadow:0 12px 28px rgba(0,0,0,.22);
+
+      /* Spinner colors */
       --spinner:#111;
       --lime:#c0ff4a;              /* round spinner bg when loading */
     }
@@ -1146,79 +1150,44 @@ WebToCase Form:
     /* --- Base --- */
     html, body{ background:#fff; }
     body{
-      font-family: "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial;
+      font-family:"Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial;
       color:var(--text);
       margin:0;
       padding:12px 16px;
       line-height:1.35;
     }
-    h1{
-      font-size:1.6rem; font-weight:800; margin:0 0 10px;
-    }
-    .container{
-      max-width:1100px; margin:0 auto;
-    }
+    h1{ font-size:1.6rem; font-weight:800; margin:0 0 10px; }
+    .container{ max-width:1100px; margin:0 auto; }
 
     /* --- Compact stacked form (left column, narrow controls) --- */
-    form{
-      width:var(--form-width);
-      background:#fff;
-    }
-    .field{
-      margin:10px 0;
-    }
-    label{
-      display:block;
-      font-weight:600;
-      margin-bottom:4px;
-      color:#222;
-    }
-    .required::after{
-      content:"*"; color:var(--error); margin-left:4px;
-    }
+    form{ width:var(--form-width); background:#fff; }
+    .field{ margin:10px 0; }
+    label{ display:block; font-weight:600; margin-bottom:4px; color:#222; }
+    .required::after{ content:"*"; color:var(--error); margin-left:4px; }
     .help{ font-size:.9rem; color:var(--muted); }
     .inline{ display:block; } /* force stacked even for paired fields */
 
     input[type="text"], input[type="email"], input[type="tel"], select, textarea{
-      width:var(--form-width);
-      max-width:100%;
+      width:var(--form-width); max-width:100%;
       height:var(--input-height);
-      border:1px solid var(--border);
-      border-radius:3px;
-      padding:6px 8px;
-      font-size:.95rem;
-      background:var(--input-bg);
+      border:1px solid var(--border); border-radius:3px;
+      padding:6px 8px; font-size:.95rem; background:var(--input-bg);
       box-sizing:border-box;
     }
-    select[multiple]{
-      height:100px;
-      padding:6px 8px;
-    }
-    textarea{
-      height:80px;
-      resize:vertical;
-    }
-    .error-text{
-      color:var(--error);
-      font-size:.9rem;
-      display:none;
-      margin-top:4px;
-    }
+    select[multiple]{ height:100px; padding:6px 8px; }
+    textarea{ height:80px; resize:vertical; }
+    .error-text{ color:var(--error); font-size:.9rem; display:none; margin-top:4px; }
+
+    /* >>> Ensure the first radio field label is in ONE LINE */
+    .nowrap{ white-space:nowrap; }
 
     /* --- Submit row / button (screenshot style) --- */
-    .submit-row{
-      display:flex; align-items:center; gap:10px; margin-top:12px;
-    }
+    .submit-row{ display:flex; align-items:center; gap:10px; margin-top:12px; }
     #submitBtn{
-      background:var(--submit-bg);
-      color:var(--submit-text);
-      border:none;
-      border-radius:18px;
-      padding:8px 16px;
-      font-weight:700;
-      font-size:.95rem;
-      cursor:pointer;
-      box-shadow: 0 3px 12px rgba(0,0,0,.12);
+      background:var(--submit-bg); color:var(--submit-text);
+      border:none; border-radius:18px; padding:8px 16px;
+      font-weight:700; font-size:.95rem; cursor:pointer;
+      box-shadow:0 3px 12px rgba(0,0,0,.12);
     }
     #submitBtn:hover{ background:var(--submit-bg-hover); }
     #submitBtn:disabled{ opacity:.7; cursor:not-allowed; }
@@ -1229,43 +1198,57 @@ WebToCase Form:
     .submit-row.loading .submit-spinner{ display:inline-block; }
     @keyframes spin{ to{ transform:rotate(360deg); } }
 
-    /* --- Live Chat pill (bottom-right) --- */
+    /* --- Bottom-right Live Chat pill (two-line, shaped like screenshot) --- */
     .chat-cta{
       position:fixed; right:24px; bottom:24px; z-index:2000;
-      display:flex; align-items:center; gap:10px;
-      background-color:var(--pill) !important;
-      color:var(--pillText) !important;
-      border:none !important;
-      border-radius:999px;
-      padding:10px 16px;
-      box-shadow:0 12px 28px rgba(0,0,0,.22);
-      cursor:pointer;
-      text-decoration:none !important;
+      display:flex; align-items:center; gap:12px;
+      background:var(--pill-bg) !important; color:var(--pill-text) !important;
+      border:2px solid var(--pill-outline);            /* subtle outline like screenshot */
+      /* asymmetric rounding: slightly tighter on left, larger on right */
+      border-radius:18px 28px 28px 18px;
+      padding:10px 14px;
+      box-shadow:var(--pill-shadow);
+      cursor:pointer; text-decoration:none !important;
     }
-    .chat-cta:hover{ filter:brightness(1.06); }
+    .chat-cta:hover{ filter:brightness(1.03); }
     .chat-cta:active{ transform:translateY(1px); }
     .chat-cta.hidden{ display:none !important; }
-    .chat-cta .icon{
-      width:22px; height:22px; stroke:var(--pillText) !important; fill:none !important;
-      flex:0 0 22px;
-    }
-    .chat-cta .label{
-      color:var(--pillText) !important; font-weight:800; white-space:nowrap;
-      letter-spacing:.2px;
-    }
-    .chat-cta .spinner{
-      width:18px; height:18px; border-radius:50%; border:3px solid transparent; border-top-color:var(--pillText);
-      animation:spin .8s linear infinite; display:none;
-      flex:0 0 18px;
-    }
-    .chat-cta.loading .spinner{ display:inline-block; }
-    .chat-cta.loading .icon{ opacity:.35; }
 
-    /* --- Round spinner (visible while chat boots, then hides) --- */
+    /* Icon */
+    .chat-cta .icon{
+      width:24px; height:24px;
+      stroke:var(--pill-text) !important; fill:none !important;
+      flex:0 0 24px;
+    }
+    /* Two-line text block */
+    .chat-cta .text{
+      display:flex; flex-direction:column; line-height:1.1;
+    }
+    .chat-cta .line1{
+      font-weight:800; font-size:.98rem; color:var(--pill-text);
+    }
+    .chat-cta .line2{
+      display:flex; align-items:center; gap:6px;
+      font-weight:600; font-size:.86rem; color:#d7f7d7; /* softer green */
+    }
+    .chat-cta .dot{
+      width:8px; height:8px; border-radius:50%; background:#2bd24f; /* status green */
+      box-shadow:0 0 0 2px rgba(43,210,79,.25);
+    }
+
+    /* Spinner in CTA (icon place) – shows only while loading */
+    .chat-cta .spinner{
+      width:18px; height:18px; border-radius:50%; border:3px solid transparent; border-top-color:#fff;
+      animation:spin .8s linear infinite; display:none; flex:0 0 18px;
+    }
+    .chat-cta.loading .icon{ opacity:.35; }
+    .chat-cta.loading .spinner{ display:inline-block; }
+
+    /* --- Round spinner that replaces CTA while chat boots (kept) --- */
     .chat-loading{
       position:fixed; right:24px; bottom:24px; z-index:1999;
       width:56px; height:56px; border-radius:50%;
-      background:var(--lime); box-shadow:0 12px 28px rgba(0,0,0,.22);
+      background:var(--lime); box-shadow:var(--pill-shadow);
       display:none; place-items:center;
     }
     .chat-loading.visible{ display:grid; }
@@ -1275,7 +1258,7 @@ WebToCase Form:
       animation:spin .8s linear infinite;
     }
 
-    /* Links inside consent text (match screenshot vibe) */
+    /* Links inside consent text */
     a{ color:#034c2b; text-decoration:underline; }
   </style>
 </head>
@@ -1285,16 +1268,17 @@ WebToCase Form:
   <h1 style="margin-bottom:8px;">Web-to-Case</h1>
 
   <!-- ===== Web-to-Case form (stacked, compact) ===== -->
-  <form id="w2cForm" method="POST" action="https://webto.salesforce.com/servlet/servletED hidden fields -->
+  https://webto.salesforce.com/servlet/servlet.WebToCase?encoding=UTF-8
+    <!-- REQUIRED hidden fields -->
     <input type="hidden" name="orgid" value="YOUR_SF_ORG_OID_HERE">
     <input type="hidden" name="retURL" value="https://samsivak.github.io/SamRepo/thank-you.html">
     <!-- Common Case fields -->
     <input type="hidden" name="origin" value="Web">
     <input type="hidden" name="subject" value="New logistics enquiry via website">
 
-    <!-- Existing customer? -->
+    <!-- Existing customer? (label forced to one line) -->
     <div class="field">
-      <label>Are you an existing Team Global Express customer?</label>
+      <label class="nowrap">Are you an existing Team Global Express customer?</label>
       <label style="font-weight:400"><input type="radio" name="00N_existing_cust__c" value="Yes"> Yes</label>
       <label style="font-weight:400"><input type="radio" name="00N_existing_cust__c" value="No"> No</label>
     </div>
@@ -1446,15 +1430,23 @@ WebToCase Form:
   </form>
 </div>
 
-<!-- ===== Live Chat pill (keep click logic as-is) ===== -->
+<!-- ===== Live Chat pill (visuals changed; click logic preserved) ===== -->
 <button class="chat-cta" id="liveChatBtn" type="button" aria-label="Live Chat">
-  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <rect x="3" y="8" width="18" height="10" rx="4" ry="4"></rect>
-    <circle cx="8.5" cy="13" r="1.6"></circle>
-    <circle cx="15.5" cy="13" r="1.6"></circle>
-    <path d="M12 4v3"></path>
+  <!-- Chat bubble icon (matches screenshot feel) -->
+  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M4 16V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-5 4v-4z"/>
+    <circle cx="9" cy="10" r="1.2"/>
+    <circle cx="13" cy="10" r="1.2"/>
+    <circle cx="17" cy="10" r="1.2"/>
   </svg>
-  <span class="label">Live Chat • Available</span>
+
+  <!-- two-line label -->
+  <span class="text">
+    <span class="line1">Live Chat</span>
+    <span class="line2"><span class="dot"></span>Available</span>
+  </span>
+
+  <!-- spinner (only visible while loading) -->
   <span class="spinner" aria-hidden="true"></span>
 </button>
 
@@ -1464,7 +1456,9 @@ WebToCase Form:
 </div>
 
 <script>
-  /* Embedded Messaging (tgedev) — same logic */
+  /* ================= EXISTING LOGIC – UNCHANGED ================= */
+
+  // Embedded Messaging (tgedev)
   function initEmbeddedMessaging() {
     try {
       embeddedservice_bootstrap.settings.language = 'en_US';
@@ -1511,6 +1505,7 @@ WebToCase Form:
       document.querySelector('[class*="embeddedservice"][class*="launcher"]')
     );
   }
+
   function waitForLauncherThenHideSpinner() {
     const spinner = document.getElementById('chatLoading');
     if (isLauncherPresent()) {
@@ -1528,11 +1523,15 @@ WebToCase Form:
   const liveChatBtn = document.getElementById('liveChatBtn');
   const chatLoading = document.getElementById('chatLoading');
 
+  // CLICK LOGIC PRESERVED
   liveChatBtn.addEventListener('click', async (e) => {
     e.preventDefault(); e.stopPropagation();
     liveChatBtn.setAttribute('role', 'button');
 
-    // Hide CTA and show spinner immediately
+    // show CTA inline spinner while bootstrap injects
+    liveChatBtn.classList.add('loading');
+
+    // Hide CTA and show round spinner immediately (as before)
     liveChatBtn.classList.add('hidden');
     chatLoading.classList.add('visible');
     chatLoading.setAttribute('aria-hidden', 'false');
@@ -1546,11 +1545,12 @@ WebToCase Form:
       chatLoading.classList.remove('visible');
       chatLoading.setAttribute('aria-hidden', 'true');
       liveChatBtn.classList.remove('hidden');
+      liveChatBtn.classList.remove('loading');
       alert('Sorry, we could not start the chat. Please try again.');
     }
   });
 
-  /* Web-to-Case: keep same validation + spinner */
+  /* Web-to-Case validation/spinner – unchanged */
   const form = document.getElementById('w2cForm');
   const submitRow = document.getElementById('submitRow');
   const submitBtn = document.getElementById('submitBtn');
@@ -1587,3 +1587,4 @@ WebToCase Form:
 </script>
 </body>
 </html>
+
