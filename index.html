@@ -1124,7 +1124,6 @@
 
 WebToCase Form:
 
-
 <!doctype html>
 <html lang="en">
 <head>
@@ -1134,8 +1133,8 @@ WebToCase Form:
   <style>
     :root{
       --text:#111; --muted:#555; --border:#d3d3d3; --error:#c62828;
-      --btn-bg:#f6f6f6; --btn-bg-hover:#efefef;
-      --accent:#0f5c2e;            /* green pill */
+           --spinner:#111;      --btn-bg:#f6f6f6; --btn-bg-hover:#efefef;
+      --lime:#c0ff4a;            /* spinner background */
     }
     body{ font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; color:var(--text); margin:0; padding:24px; }
     h1{ font-size:clamp(1.8rem,3.2vw,2.6rem); margin:0 0 16px; font-weight:800; }
@@ -1167,7 +1166,7 @@ WebToCase Form:
     button:hover{ background:var(--btn-bg-hover); }
     button:disabled{ opacity:.7; cursor:not-allowed; }
     .submit-spinner{
-      width:18px; height:18px; border-radius:50%; border:2px solid transparent; border-top-color:#111;
+      width:18px; height:18px; border-radius:50%; border:2px solid transparent; border-top-color:var(--spinner);
       animation:spin .8s linear infinite; display:none;
     }
     .submit-row.loading .submit-spinner{ display:inline-block; }
@@ -1183,18 +1182,25 @@ WebToCase Form:
     }
     .chat-cta:hover{ filter:brightness(1.05); }
     .chat-cta:active{ transform:translateY(1px); }
+    .chat-cta.hidden{ display:none; } /* we hide it immediately after click */
+
     .chat-cta .icon{
       width:22px; height:22px; color:#fff;
-      transition:opacity .12s ease;
     }
-    .chat-cta .spinner{
-      width:20px; height:20px; border-radius:50%; border:3px solid transparent; border-top-color:#fff;
-      animation:spin .8s linear infinite; display:none;
+
+    /* --- Loading spinner that replaces the CTA while chat bootstraps --- */
+    .chat-loading{
+      position:fixed; right:24px; bottom:24px; z-index:1000;
+      width:64px; height:64px; border-radius:50%;
+      background:var(--lime); box-shadow:0 8px 20px rgba(0,0,0,.18);
+      display:none; place-items:center;
     }
-    /* On load: hide icon, show spinner */
-    .chat-cta.loading .icon{ opacity:.2; }
-    .chat-cta.loading .spinner{ display:inline-block; }
-    .chat-cta.hidden{ display:none; } /* when embedded launcher appears, hide the pill */
+    .chat-loading.visible{ display:grid; }
+    .chat-loading .spinner{
+      width:26px; height:26px; border-radius:50%;
+      border:3px solid transparent; border-top-color:var(--spinner);
+      animation:spin .8s linear infinite;
+    }
   </style>
 </head>
 
@@ -1203,7 +1209,7 @@ WebToCase Form:
   <h1>Web-to-Case</h1>
 
   <!-- ===== Web-to-Case form ===== -->
-  <form://webto.salesforce.com/servlet/servlet.WebToCase?encoding=UTF-8
+  https://webto.salesforce.com/servlet/servlet.WebToCase?encoding=UTF-8
     <!-- REQUIRED hidden fields -->
     <input type="hidden" name="orgid" value="YOUR_SF_ORG_OID_HERE">
     <input type="hidden" name="retURL" value="https://samsivak.github.io/SamRepo/thank-you.html">
@@ -1348,7 +1354,9 @@ WebToCase Form:
       <p class="help">
         I consent to my personal information being collected, used, stored, and disclosed as set out in the
         #Privacy Collection Notice</a> and the
-        <a href="#" target="_blank" rel="   </div>
+        #Privacy Policy</a>.
+      </p>
+    </div>
 
     <!-- Optional: reCAPTCHA widget (if your org requires it) -->
     <div class="field" id="captchaBlock">
@@ -1369,25 +1377,28 @@ WebToCase Form:
   </form>
 </div>
 
-<!-- ===== Single bottom-right Live Chat pill button ===== -->
-<button class="chat-cta" id="liveChatBtn" aria-label="Live Chat">
-  <!-- icon that turns into spinner on click -->
+<!-- ===== Live Chat pill button (will disappear on click) ===== -->
+<button class="chat-cta" id="liveChatBtn" type="button" aria-label="Live Chat">
   <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <rect x="3" y="8" width="18" height="10" rx="4" ry="4"></rect>
     <circle cx="8.5" cy="13" r="1.6"></circle>
     <circle cx="15.5" cy="13" r="1.6"></circle>
     <path d="M12 4v3"></path>
   </svg>
-  <span class="label">Live Chat</span>
-  <span class="spinner" aria-hidden="true"></span>
+  <span class="label">Live Chat • Available</span>
 </button>
+
+<!-- Spinner that shows after CTA hides, until embedded launcher appears -->
+<div class="chat-loading" id="chatLoading" aria-hidden="true">
+  <span class="spinner" aria-hidden="true"></span>
+</div>
 
 <script>
   /* ---------------------------
      Embedded Messaging (tgedev)
      Load bootstrap ONLY when Live Chat is clicked,
-     show spinner in place of the icon, then hide the button
-     once the Salesforce launcher appears.
+     hide CTA immediately, show spinner, and remove spinner
+     once the Salesforce embedded launcher is present.
      --------------------------- */
 
   function initEmbeddedMessaging() {
@@ -1415,7 +1426,7 @@ WebToCase Form:
       if (existing) {
         existing.addEventListener('load', () => resolve());
         existing.addEventListener('error', (e) => reject(e));
-        if (existing.dataset.loaded === 'true') resolve();
+        if (existing.dataset?.loaded === 'true') resolve();
         return;
       }
       const s = document.createElement('script');
@@ -1430,54 +1441,66 @@ WebToCase Form:
     return bootstrapLoadPromise;
   }
 
-  // Detect when the embedded launcher appears and hide our pill button
-  function hideChatCTAWhenLauncherPresent() {
-    const liveChatBtn = document.getElementById('liveChatBtn');
+  // Robust detection of the embedded launcher (covers common variants)
+  function isLauncherPresent() {
+    return !!(
+      document.querySelector('.embeddedserviceHelpButton') ||              // classic Snap-ins help button
+      document.querySelector('.embeddedservice_launcher') ||               // variant
+      document.querySelector('#embedded-service') ||                       // container id (common)
+      document.querySelector('[class*="embeddedservice"][class*="launcher"]') // hybrid class names
+    );
+  }
 
-    // Quick check first
+  function waitForLauncherThenHideSpinner() {
+    const spinner = document.getElementById('chatLoading');
+
+    // Quick check
     if (isLauncherPresent()) {
-      liveChatBtn.classList.add('hidden');
+      spinner.classList.remove('visible');
+      spinner.setAttribute('aria-hidden', 'true');
       return;
     }
 
-    // Observe DOM mutations – stop observing after we find the launcher
+    // Observe DOM changes and stop after we find the launcher
     const observer = new MutationObserver(() => {
       if (isLauncherPresent()) {
-        liveChatBtn.classList.add('hidden');
+        spinner.classList.remove('visible');
+        spinner.setAttribute('aria-hidden', 'true');
         observer.disconnect();
       }
     });
     observer.observe(document.body, { childList: true, subtree: true });
-  }
 
-  // Heuristics for common Embedded Messaging launcher elements/classes
-  function isLauncherPresent() {
-    return !!(
-      document.querySelector('.embeddedserviceHelpButton') ||              // legacy/ESW
-      document.querySelector('.embeddedservice_launcher') ||               // variant
-      document.querySelector('#embedded-service') ||                       // container id
-      document.querySelector('[class*="embeddedservice"][class*="launcher"]') // any combo
-    );
+    // Fallback timeout: stop spinner after 20s even if launcher is not detected
+    setTimeout(() => {
+      spinner.classList.remove('visible');
+      spinner.setAttribute('aria-hidden', 'true');
+      observer.disconnect();
+    }, 20000);
   }
 
   const liveChatBtn = document.getElementById('liveChatBtn');
-  liveChatBtn.addEventListener('click', async () => {
-    // Show spinner (replace icon) while loading
-    liveChatBtn.classList.add('loading');
-    liveChatBtn.setAttribute('aria-busy', 'true');
+  const chatLoading = document.getElementById('chatLoading');
+
+  liveChatBtn.addEventListener('click', async (e) => {
+    e.preventDefault(); // ensure no form submit or navigation
+    e.stopPropagation();
+
+    // Immediately hide the CTA and show the spinner
+    liveChatBtn.classList.add('hidden');
+    chatLoading.classList.add('visible');
+    chatLoading.setAttribute('aria-hidden', 'false');
 
     try {
       await loadEmbeddedBootstrapOnce();
-      // Start watching for the launcher; when it appears, hide this button
-      hideChatCTAWhenLauncherPresent();
-    } catch (e) {
-      console.error(e);
+      waitForLauncherThenHideSpinner();
+    } catch (err) {
+      console.error(err);
+      // If load fails, bring back the CTA and hide spinner
+      chatLoading.classList.remove('visible');
+      chatLoading.setAttribute('aria-hidden', 'true');
+      liveChatBtn.classList.remove('hidden');
       alert('Sorry, we could not start the chat. Please try again.');
-    } finally {
-      // If the launcher appears instantly, the observer will hide the button.
-      // Otherwise, keep showing the label but stop the spinner.
-      liveChatBtn.classList.remove('loading');
-      liveChatBtn.setAttribute('aria-busy', 'false');
     }
   });
 
