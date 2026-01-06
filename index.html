@@ -390,12 +390,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <style>
-      /* Simple button styling */
       #miaw-start {
         padding: 10px 16px;
         font-size: 14px;
         cursor: pointer;
-        background: #0070d2;   /* Salesforce blue */
+        background: #0070d2;
         color: #fff;
         border: none;
         border-radius: 4px;
@@ -407,30 +406,21 @@
   </head>
 
   <body>
-    <!-- ONE BUTTON that starts Messaging on click -->
-    <button id="miaw-start" type="button" onclick="startMessaging()">
-      Chat with Us
-    </button>
+    <button id="miaw-start" type="button" onclick="startMessaging()"> Click to Start Chat </button>
 
-    <!-- Your Messaging init function (unchanged in substance) -->
     <script type="text/javascript">
       function initEmbeddedMessaging() {
         try {
-          // Language can be 'en' or 'en-US'
           embeddedservice_bootstrap.settings.language = 'en_US';
 
-          // Optional: listen for readiness (useful if you want to call APIs like launchChat/prechat afterwards)
           window.addEventListener('onEmbeddedMessagingReady', () => {
             console.log('[MIAW] Messaging client is ready');
-            // Example: open the chat when ready (uncomment if desired)
-            // embeddedservice_bootstrap.utilAPI.launchChat();
           });
 
-          // Initialize Messaging (MIAW)
           embeddedservice_bootstrap.init(
-            '00D9p000004KUXV', // Org ID
-            'Messaging_Routing_Channel', // Deployment (Channel) Name
-            'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWMessagingRoutingChan1763462090439', // Site endpoint
+            '00D9p000004KUXV',
+            'Messaging_Routing_Channel',
+            'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWMessagingRoutingChan1763462090439',
             {
               scrt2URL: 'https://teamglobalexp--tollperf.sandbox.my.salesforce-scrt.com'
             }
@@ -440,15 +430,12 @@
         }
       }
 
-      // Button handler: ensures the bootstrap script is present, then runs initEmbeddedMessaging()
       function startMessaging() {
-        // If the global already exists, init immediately
         if (window.embeddedservice_bootstrap) {
           initEmbeddedMessaging();
           return;
         }
 
-        // Otherwise, load bootstrap.min.js and init once it’s loaded
         var src = 'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWMessagingRoutingChan1763462090439/assets/js/bootstrap.min.js';
         var script = document.createElement('script');
         script.src = src;
