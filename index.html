@@ -885,6 +885,7 @@
 
 
 // UAT Code with spinner along with chat icon.
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -935,14 +936,12 @@
       cursor: not-allowed;
     }
 
-    /* icon next to text */
     .btn .icon{
       display: inline-flex;
       width: 20px;
       height: 20px;
     }
 
-    /* spinner (inline, inside button) */
     .btn .spinner{
       width: 18px; height: 18px;
       display: inline-block;
@@ -950,7 +949,6 @@
       border: 2px solid transparent;
       border-top-color: var(--spinner);
       animation: spin .8s linear infinite;
-      /* Hide by default; shown while loading */
       opacity: 0; transform: scale(.8);
       transition: opacity .12s ease, transform .12s ease;
     }
@@ -961,13 +959,9 @@
       to{ transform: rotate(360deg); }
     }
 
-    /* --- Status text --- */
-    .status{
-      margin-top: 16px;
-      color: #555;
-    }
+    .status{ margin-top: 16px; color: #555; }
 
-    /* --- Floating bottom-right indicator (green circle with spinner) --- */
+    /* --- Floating bottom-right indicator --- */
     .fab{
       position: fixed;
       right: 24px;
@@ -976,37 +970,36 @@
       border-radius: 50%;
       background: var(--accent);
       box-shadow: 0 6px 16px rgba(0,0,0,.15);
-      display: grid;
+      display: none;                /* HIDDEN INITIALLY */
       place-items: center;
       cursor: pointer;
       transition: transform .12s ease, background .2s ease;
       border: none;
     }
+    .fab.visible{ display: grid; }  /* shown only after first click */
     .fab:hover{ background: var(--accent-dark); }
     .fab:active{ transform: translateY(1px); }
 
-    /* spinner inside fab */
     .fab .spinner{
       width: 26px; height: 26px;
       border-radius: 50%;
       border: 3px solid transparent;
       border-top-color: #111;
       animation: spin .8s linear infinite;
-      opacity: 0;                /* hidden when idle */
+      opacity: 0;
       transition: opacity .12s ease;
     }
     .fab.loading .spinner{ opacity: 1; }
 
-    /* bot icon (idle state) */
     .fab .bot-icon{
       width: 28px; height: 28px;
       color: #111;
-      opacity: .9;
+      opacity: .0;                  /* hidden until we decide to show it */
       transition: opacity .12s ease;
     }
-    .fab.loading .bot-icon{ opacity: .2; } /* fade while spinner shows */
+    .fab.idle .bot-icon{ opacity: .9; }       /* show idle icon after init */
+    .fab.loading .bot-icon{ opacity: .2; }    /* faint while loading */
 
-    /* Focus ring */
     .btn:focus-visible, .fab:focus-visible{
       outline: 3px solid #5fa8ff;
       outline-offset: 2px;
@@ -1020,39 +1013,35 @@
 
   <!-- Primary CTA button -->
   <button id="launchBtn" class="btn" aria-live="polite" aria-busy="false">
-    <!-- Bot icon SVG (replace if you prefer an image) -->
     <span class="icon" aria-hidden="true">
-      <!-- Simple headset/chat icon -->
+      <!-- headset/chat icon -->
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <path d="M12 3a9 9 0 0 0-9 9v3a2 2 0 0 0 2 2h1v-5a6 6 0 0 1 6-6h0a6 6 0 0 1 6 6v5h1a2 2 0 0 0 2-2v-3a9 9 0 0 0-9-9z"/>
         <path d="M8 17v2a3 3 0 0 0 3 3h3"/>
       </svg>
     </span>
     <span class="label">Launch Customer Service Bot</span>
-    <!-- inline spinner -->
     <span class="spinner" aria-hidden="true"></span>
   </button>
 
   <div id="status" class="status">Chat widget is present on the page.</div>
 
-  <!-- Floating bottom-right green indicator -->
+  <!-- Bottom-right green indicator (hidden until first click) -->
   <button id="fab" class="fab" aria-label="Customer Service Bot" aria-live="polite" aria-busy="false">
-    <!-- idle bot icon -->
     <svg class="bot-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <rect x="3" y="8" width="18" height="10" rx="4" ry="4"></rect>
       <circle cx="8.5" cy="13" r="1.6"></circle>
       <circle cx="15.5" cy="13" r="1.6"></circle>
       <path d="M12 4v3"></path>
     </svg>
-    <!-- spinner shown while loading -->
     <span class="spinner" aria-hidden="true"></span>
   </button>
 
   <script>
-    // --- Your exact init, called after the bootstrap script is loaded ---
+    // --- Your exact Salesforce init ---
     function initEmbeddedMessaging() {
       try {
-        embeddedservice_bootstrap.settings.language = 'en_US'; // e.g., 'en' or 'en-US'
+        embeddedservice_bootstrap.settings.language = 'en_US';
         embeddedservice_bootstrap.init(
           '00D9p000004KUXV',
           'Messaging_Routing_Channel',
@@ -1064,20 +1053,18 @@
       }
     }
 
-    // --- Loader that injects the bootstrap file once and returns a Promise ---
+    // --- Load bootstrap once ---
     const BOOTSTRAP_SRC = 'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWMessagingRoutingChan1763462090439/assets/js/bootstrap.min.js';
     let bootstrapLoadPromise = null;
+
     function loadEmbeddedBootstrapOnce() {
-      if (bootstrapLoadPromise) return bootstrapLoadPromise; // already loading/loaded
+      if (bootstrapLoadPromise) return bootstrapLoadPromise;
 
       bootstrapLoadPromise = new Promise((resolve, reject) => {
-        // Avoid double-inject if the script tag already exists
         const existing = document.querySelector(`script[src="${BOOTSTRAP_SRC}"]`);
         if (existing) {
-          // If already present, assume it’s loaded or will load soon
           existing.addEventListener('load', () => resolve());
           existing.addEventListener('error', (e) => reject(e));
-          // If it’s already complete, resolve immediately
           if (existing.dataset.loaded === 'true') resolve();
           return;
         }
@@ -1086,16 +1073,10 @@
         s.type = 'text/javascript';
         s.src = BOOTSTRAP_SRC;
         s.async = true;
-        s.onload = () => {
-          s.dataset.loaded = 'true';
-          resolve();
-        };
+        s.onload = () => { s.dataset.loaded = 'true'; resolve(); };
         s.onerror = (e) => reject(e);
         document.head.appendChild(s);
-      });
-
-      // After the bootstrap script loads, run your init
-      bootstrapLoadPromise = bootstrapLoadPromise.then(() => {
+      }).then(() => {
         initEmbeddedMessaging();
       });
 
@@ -1107,33 +1088,37 @@
     const statusEl = document.getElementById('status');
 
     function setLoadingUI(isLoading) {
+      // Show bottom-right icon only after the first click
+      if (!fab.classList.contains('visible')) {
+        fab.classList.add('visible');   // becomes visible only now
+      }
+
+      // Button
       launchBtn.classList.toggle('loading', isLoading);
       launchBtn.setAttribute('aria-busy', String(isLoading));
       launchBtn.disabled = isLoading;
 
-      fab.classList.toggle('loading', isLoading);
+      // Bottom-right indicator
+      fab.classList.toggle('loading', isLoading);   // spinner visibility
+      fab.classList.toggle('idle', !isLoading);     // idle bot icon after load
       fab.setAttribute('aria-busy', String(isLoading));
 
       statusEl.textContent = isLoading ? 'Initializing bot…' : 'Bot is ready. You can start chatting now.';
     }
 
     async function startBotLoad(from = 'button') {
-      // show spinners
-      setLoadingUI(true);
+      setLoadingUI(true);   // show spinners + reveal fab
       try {
         await loadEmbeddedBootstrapOnce();
-        // If your org’s widget appears automatically after init, we’re done.
-        // If it needs additional actions (e.g., open chat), you can trigger them here.
+        // If you need to programmatically open the chat after init, call that here.
       } catch (e) {
         console.error(e);
         statusEl.textContent = 'Failed to initialize the bot. Please try again.';
       } finally {
-        // hide spinners
-        setLoadingUI(false);
+        setLoadingUI(false); // stop spinners, show idle bot icon
       }
     }
 
-    // Click handlers
     launchBtn.addEventListener('click', () => startBotLoad('button'));
     fab.addEventListener('click', () => startBotLoad('fab'));
   </script>
