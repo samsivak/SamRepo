@@ -1133,9 +1133,14 @@ WebToCase Form:
   <style>
     :root{
       --text:#111; --muted:#555; --border:#d3d3d3; --error:#c62828;
-           --spinner:#111;      --btn-bg:#f6f6f6; --btn-bg-hover:#efefef;
-      --lime:#c0ff4a;            /* spinner background */
+      --btn-bg:#f6f6f6; --btn-bg-hover:#efefef;
+      --pill:#0f5c2e;           /* dark green pill */
+      --pillText:#ffffff;       /* white text/icon on pill */
+      --spinner:#111;           /* spinner stroke */
+      --lime:#c0ff4a;           /* round spinner bg when loading */
     }
+
+    /* --- Base --- */
     body{ font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; color:var(--text); margin:0; padding:24px; }
     h1{ font-size:clamp(1.8rem,3.2vw,2.6rem); margin:0 0 16px; font-weight:800; }
     .container{ max-width:980px; margin:0 auto; }
@@ -1172,27 +1177,49 @@ WebToCase Form:
     .submit-row.loading .submit-spinner{ display:inline-block; }
     @keyframes spin{ to{ transform:rotate(360deg); } }
 
-    /* --- Single bottom-right Live Chat pill button --- */
+    /* --- Single bottom-right Live Chat pill button (HARDENED COLORS) --- */
     .chat-cta{
-      position:fixed; right:24px; bottom:24px; z-index:1000;
+      position:fixed; right:24px; bottom:24px; z-index:2000;                 /* higher z-index so it sits on top */
       display:flex; align-items:center; gap:12px;
-      background:var(--accent); color:#fff; font-weight:700;
-      border-radius:999px; padding:12px 18px; box-shadow:0 8px 20px rgba(0,0,0,.18);
-      border:none; cursor:pointer;
+      background-color:var(--pill) !important;                                /* force green */
+      color:var(--pillText) !important;                                       /* force white text */
+      border:none !important;
+      border-radius:999px; padding:12px 18px;
+      box-shadow:0 12px 28px rgba(0,0,0,.22);
+      cursor:pointer;
+      text-decoration:none !important;                                        /* prevent link styles from a theme */
     }
     .chat-cta:hover{ filter:brightness(1.05); }
     .chat-cta:active{ transform:translateY(1px); }
-    .chat-cta.hidden{ display:none; } /* we hide it immediately after click */
+    .chat-cta.hidden{ display:none !important; }
 
+    /* SVG icon should follow white color; harden stroke fill */
     .chat-cta .icon{
-      width:22px; height:22px; color:#fff;
+      width:22px; height:22px;
+      color:var(--pillText) !important;                                       /* ensure currentColor = white */
+      stroke:var(--pillText) !important; fill:none !important;
+      transition:opacity .12s ease;
+      flex:0 0 22px;
     }
 
-    /* --- Loading spinner that replaces the CTA while chat bootstraps --- */
+    /* Spinner shows only while loading */
+    .chat-cta .spinner{
+      width:20px; height:20px; border-radius:50%; border:3px solid transparent; border-top-color:var(--pillText);
+      animation:spin .8s linear infinite; display:none;
+      flex:0 0 20px;
+    }
+    .chat-cta.loading .icon{ opacity:.35; }
+    .chat-cta.loading .spinner{ display:inline-block; }
+    .chat-cta .label{
+      color:var(--pillText) !important; font-weight:800; letter-spacing:.2px;
+      white-space:nowrap;
+    }
+
+    /* --- Round spinner that replaces CTA while chat boots --- */
     .chat-loading{
-      position:fixed; right:24px; bottom:24px; z-index:1000;
+      position:fixed; right:24px; bottom:24px; z-index:1999;
       width:64px; height:64px; border-radius:50%;
-      background:var(--lime); box-shadow:0 8px 20px rgba(0,0,0,.18);
+      background:var(--lime); box-shadow:0 12px 28px rgba(0,0,0,.22);
       display:none; place-items:center;
     }
     .chat-loading.visible{ display:grid; }
@@ -1354,9 +1381,7 @@ WebToCase Form:
       <p class="help">
         I consent to my personal information being collected, used, stored, and disclosed as set out in the
         #Privacy Collection Notice</a> and the
-        #Privacy Policy</a>.
-      </p>
-    </div>
+        <a href="#" target="_blank" rel="   </div>
 
     <!-- Optional: reCAPTCHA widget (if your org requires it) -->
     <div class="field" id="captchaBlock">
@@ -1377,7 +1402,7 @@ WebToCase Form:
   </form>
 </div>
 
-<!-- ===== Live Chat pill button (will disappear on click) ===== -->
+<!-- ===== Live Chat pill (hardened colors) ===== -->
 <button class="chat-cta" id="liveChatBtn" type="button" aria-label="Live Chat">
   <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <rect x="3" y="8" width="18" height="10" rx="4" ry="4"></rect>
@@ -1386,21 +1411,16 @@ WebToCase Form:
     <path d="M12 4v3"></path>
   </svg>
   <span class="label">Live Chat • Available</span>
+  <span class="spinner" aria-hidden="true"></span>
 </button>
 
-<!-- Spinner that shows after CTA hides, until embedded launcher appears -->
+<!-- Spinner shown after CTA hides, until embedded launcher appears -->
 <div class="chat-loading" id="chatLoading" aria-hidden="true">
   <span class="spinner" aria-hidden="true"></span>
 </div>
 
 <script>
-  /* ---------------------------
-     Embedded Messaging (tgedev)
-     Load bootstrap ONLY when Live Chat is clicked,
-     hide CTA immediately, show spinner, and remove spinner
-     once the Salesforce embedded launcher is present.
-     --------------------------- */
-
+  /* Embedded Messaging (tgedev) */
   function initEmbeddedMessaging() {
     try {
       embeddedservice_bootstrap.settings.language = 'en_US';
@@ -1419,8 +1439,7 @@ WebToCase Form:
   let bootstrapLoadPromise = null;
 
   function loadEmbeddedBootstrapOnce() {
-    if (bootstrapLoadPromise) return bootstrapLoadPromise; // prevent duplicates
-
+    if (bootstrapLoadPromise) return bootstrapLoadPromise;
     bootstrapLoadPromise = new Promise((resolve, reject) => {
       const existing = document.querySelector(`script[src="${BOOTSTRAP_SRC}"]`);
       if (existing) {
@@ -1437,56 +1456,43 @@ WebToCase Form:
       s.onerror = (e) => reject(e);
       document.head.appendChild(s);
     });
-
     return bootstrapLoadPromise;
   }
 
-  // Robust detection of the embedded launcher (covers common variants)
+  /* Detect embedded launcher and hide spinner */
   function isLauncherPresent() {
     return !!(
-      document.querySelector('.embeddedserviceHelpButton') ||              // classic Snap-ins help button
-      document.querySelector('.embeddedservice_launcher') ||               // variant
-      document.querySelector('#embedded-service') ||                       // container id (common)
-      document.querySelector('[class*="embeddedservice"][class*="launcher"]') // hybrid class names
+      document.querySelector('.embeddedserviceHelpButton') ||
+      document.querySelector('.embeddedservice_launcher') ||
+      document.querySelector('#embedded-service') ||
+      document.querySelector('[class*="embeddedservice"][class*="launcher"]')
     );
   }
-
   function waitForLauncherThenHideSpinner() {
     const spinner = document.getElementById('chatLoading');
-
-    // Quick check
     if (isLauncherPresent()) {
-      spinner.classList.remove('visible');
-      spinner.setAttribute('aria-hidden', 'true');
-      return;
+      spinner.classList.remove('visible'); spinner.setAttribute('aria-hidden', 'true'); return;
     }
-
-    // Observe DOM changes and stop after we find the launcher
     const observer = new MutationObserver(() => {
       if (isLauncherPresent()) {
-        spinner.classList.remove('visible');
-        spinner.setAttribute('aria-hidden', 'true');
-        observer.disconnect();
+        spinner.classList.remove('visible'); spinner.setAttribute('aria-hidden', 'true'); observer.disconnect();
       }
     });
     observer.observe(document.body, { childList: true, subtree: true });
-
-    // Fallback timeout: stop spinner after 20s even if launcher is not detected
-    setTimeout(() => {
-      spinner.classList.remove('visible');
-      spinner.setAttribute('aria-hidden', 'true');
-      observer.disconnect();
-    }, 20000);
+    setTimeout(() => { spinner.classList.remove('visible'); spinner.setAttribute('aria-hidden', 'true'); observer.disconnect(); }, 20000);
   }
 
+  /* CTA click: no new window, hide CTA, show spinner, load chat */
   const liveChatBtn = document.getElementById('liveChatBtn');
   const chatLoading = document.getElementById('chatLoading');
 
   liveChatBtn.addEventListener('click', async (e) => {
-    e.preventDefault(); // ensure no form submit or navigation
-    e.stopPropagation();
+    e.preventDefault(); e.stopPropagation();
 
-    // Immediately hide the CTA and show the spinner
+    // hard stop any external styling that might turn it into a link
+    liveChatBtn.setAttribute('role', 'button');
+
+    // Hide CTA and show spinner immediately
     liveChatBtn.classList.add('hidden');
     chatLoading.classList.add('visible');
     chatLoading.setAttribute('aria-hidden', 'false');
@@ -1496,7 +1502,7 @@ WebToCase Form:
       waitForLauncherThenHideSpinner();
     } catch (err) {
       console.error(err);
-      // If load fails, bring back the CTA and hide spinner
+      // Restore CTA on failure
       chatLoading.classList.remove('visible');
       chatLoading.setAttribute('aria-hidden', 'true');
       liveChatBtn.classList.remove('hidden');
@@ -1504,9 +1510,7 @@ WebToCase Form:
     }
   });
 
-  /* ---------------------------
-     Web-to-Case UX (basic validation + submit spinner)
-     --------------------------- */
+  /* Web-to-Case validations */
   const form = document.getElementById('w2cForm');
   const submitRow = document.getElementById('submitRow');
   const submitBtn = document.getElementById('submitBtn');
@@ -1535,7 +1539,6 @@ WebToCase Form:
     if(industry && !industry.value){ showError('00N_industry__c','Industry is required.'); ok = false; }
 
     if(!ok){ e.preventDefault(); return; }
-
     submitBtn.disabled = true;
     submitRow.classList.add('loading');
     setTimeout(()=>{ submitBtn.disabled = false; submitRow.classList.remove('loading'); }, 10000);
