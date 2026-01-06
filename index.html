@@ -1124,8 +1124,6 @@
 
 WebToCase Form:
 
-
-
 <!doctype html>
 <html lang="en">
 <head>
@@ -1136,11 +1134,13 @@ WebToCase Form:
     :root{
       --text:#111; --muted:#555; --border:#d3d3d3; --error:#c62828;
       --btn-bg:#f6f6f6; --btn-bg-hover:#efefef;
-      --accent:#c0ff4a; --accent-dark:#a8ea2f;
+      --accent:#0f5c2e;            /* dark green for pill */
+      --accent-pill:#c0ff4a;       /* lime background for icon if needed */
     }
     body{ font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; color:var(--text); margin:0; padding:24px; }
     h1{ font-size:clamp(1.8rem,3.2vw,2.6rem); margin:0 0 16px; font-weight:800; }
     .container{ max-width:980px; margin:0 auto; }
+
     form{
       max-width:700px; background:#fff; border:1px solid #eee; border-radius:10px;
       padding:18px; box-shadow:0 2px 10px rgba(0,0,0,.03);
@@ -1174,29 +1174,26 @@ WebToCase Form:
     .submit-row.loading .submit-spinner{ display:inline-block; }
     @keyframes spin{ to{ transform:rotate(360deg); } }
 
-    /* Bottom-right chat widget */
-    .chat-widget{
+    /* ----- Single bottom-right Live Chat pill button ----- */
+    .chat-cta{
       position:fixed; right:24px; bottom:24px; z-index:1000;
-      display:flex; align-items:center; gap:10px;
+      display:flex; align-items:center; gap:12px;
+      background:var(--accent); color:#fff; font-weight:700;
+      border-radius:999px; padding:12px 18px; box-shadow:0 8px 20px rgba(0,0,0,.18);
+      border:none; cursor:pointer;
     }
-    .chat-bubble{
-      background:#0f5c2e; color:#fff; font-weight:600; border-radius:20px;
-      padding:8px 12px; box-shadow:0 6px 16px rgba(0,0,0,.15);
-    }
-    .chat-button{
-      width:64px; height:64px; border-radius:50%; border:none; cursor:pointer;
-      background:var(--accent); box-shadow:0 6px 16px rgba(0,0,0,.15);
-      display:grid; place-items:center; transition:transform .12s ease, background .2s ease;
-    }
-    .chat-button:hover{ background:var(--accent-dark); }
-    .chat-button:active{ transform:translateY(1px); }
-    .chat-spinner{
-      width:26px; height:26px; border-radius:50%; border:3px solid transparent; border-top-color:#111;
+    .chat-cta:hover{ filter:brightness(1.05); }
+    .chat-cta:active{ transform:translateY(1px); }
+    .chat-cta .spinner{
+      width:20px; height:20px; border-radius:50%; border:3px solid transparent; border-top-color:#fff;
       animation:spin .8s linear infinite; display:none;
     }
-    .chat-button.loading .chat-spinner{ display:block; }
-    .chat-icon{ width:28px; height:28px; color:#111; }
-    .chat-button.loading .chat-icon{ opacity:.2; }
+    .chat-cta.loading .spinner{ display:inline-block; }
+    .chat-cta .label{ white-space:nowrap; }
+    .chat-cta .icon{
+      width:22px; height:22px; color:#fff;
+    }
+    .chat-cta.loading .icon{ opacity:.4; }
   </style>
 </head>
 
@@ -1204,10 +1201,8 @@ WebToCase Form:
 <div class="container">
   <h1>Web-to-Case</h1>
 
-  <!-- ===== Web-to-Case form (fields as per your screenshot) ===== -->
-  https://webto.salesforce.com/servlet/servlet.WebToCase?encoding=UTF-8
-    <!-- REQUIRED hidden fields -->
-    <input type="hidden" name="orgid" value="YOUR_SF_ORG_OID_HERE">
+  <!-- ===== Web-to-Case form ===== -->
+  <form id="w2cForm" method="POST" action="https://webto.salesforce.com/servlet/servlet.WebToCase?encoding=UTF- <input type="hidden" name="orgid" value="YOUR_SF_ORG_OID_HERE">
     <input type="hidden" name="retURL" value="https://samsivak.github.io/SamRepo/thank-you.html">
     <!-- Common Case fields -->
     <input type="hidden" name="origin" value="Web">
@@ -1356,9 +1351,7 @@ WebToCase Form:
 
     <!-- Optional: reCAPTCHA widget (add your site key if required by your org) -->
     <div class="field" id="captchaBlock">
-      <!-- Example placeholder:
-      <div class="g-recaptcha" data-sitekey="YOUR_SITE_KEY"></div>
-      -->
+      <!-- e.g. <div class="g-recaptcha" data-sitekey="YOUR_SITE_KEY"></div> -->
     </div>
 
     <!-- Additional Details (maps to Case.Description) -->
@@ -1375,39 +1368,33 @@ WebToCase Form:
   </form>
 </div>
 
-<!-- ===== Bottom-right chat widget ===== -->
-<div class="chat-widget" id="chatWidget">
-  <div class="chat-bubble">Live Chat • Available</div>
-  <button class="chat-button" id="chatButton" aria-label="Chat">
-    <!-- Bot icon -->
-    <svg class="chat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <rect x="3" y="8" width="18" height="10" rx="4" ry="4"></rect>
-      <circle cx="8.5" cy="13" r="1.6"></circle>
-      <circle cx="15.5" cy="13" r="1.6"></circle>
-      <path d="M12 4v3"></path>
-    </svg>
-    <!-- Spinner shown while loading Embedded Messaging -->
-    <span class="chat-spinner" aria-hidden="true"></span>
-  </button>
-</div>
+<!-- ===== Single bottom-right Live Chat pill button (no extra icon) ===== -->
+<button class="chat-cta" id="liveChatBtn" aria-label="Live Chat">
+  <!-- Bot icon -->
+  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <rect x="3" y="8" width="18" height="10" rx="4" ry="4"></rect>
+    <circle cx="8.5" cy="13" r="1.6"></circle>
+    <circle cx="15.5" cy="13" r="1.6"></circle>
+    <path d="M12 4v3"></path>
+  </svg>
+  <span class="label">Live Chat • Available</span>
+  <span class="spinner" aria-hidden="true"></span>
+</button>
 
 <script>
   /* ---------------------------
-     1) Embedded Messaging (tgedev)
-     Load bootstrap ON CLICK and run initEmbeddedMessaging() after load.
+     Embedded Messaging (tgedev)
+     Load bootstrap ONLY when Live Chat is clicked, then run initEmbeddedMessaging().
      --------------------------- */
 
-  // Your init function (unchanged from your snippet)
   function initEmbeddedMessaging() {
     try {
-      embeddedservice_bootstrap.settings.language = 'en_US'; // For example, enter 'en' or 'en-US'
+      embeddedservice_bootstrap.settings.language = 'en_US';
       embeddedservice_bootstrap.init(
         '00DAD000008PLr4',
         'Messaging_Routing_Channel',
         'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770',
-        {
-          scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com'
-        }
+        { scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com' }
       );
     } catch (err) {
       console.error('Error loading Embedded Messaging: ', err);
@@ -1418,10 +1405,9 @@ WebToCase Form:
   let bootstrapLoadPromise = null;
 
   function loadEmbeddedBootstrapOnce() {
-    if (bootstrapLoadPromise) return bootstrapLoadPromise; // prevent double-loads
+    if (bootstrapLoadPromise) return bootstrapLoadPromise; // prevent duplicates
 
     bootstrapLoadPromise = new Promise((resolve, reject) => {
-      // If a script tag already exists, hook into it
       const existing = document.querySelector(`script[src="${BOOTSTRAP_SRC}"]`);
       if (existing) {
         existing.addEventListener('load', () => resolve());
@@ -1429,8 +1415,6 @@ WebToCase Form:
         if (existing.dataset.loaded === 'true') resolve();
         return;
       }
-
-      // Create the script tag with onload -> initEmbeddedMessaging()
       const s = document.createElement('script');
       s.type = 'text/javascript';
       s.src = BOOTSTRAP_SRC;
@@ -1443,27 +1427,25 @@ WebToCase Form:
     return bootstrapLoadPromise;
   }
 
-  // Chat button: show spinner while we load bootstrap then init the widget
-  const chatButton = document.getElementById('chatButton');
-  chatButton.addEventListener('click', async () => {
-    chatButton.classList.add('loading');
-    chatButton.setAttribute('aria-busy', 'true');
-
+  const liveChatBtn = document.getElementById('liveChatBtn');
+  liveChatBtn.addEventListener('click', async () => {
+    // Show spinner on the only chat button
+    liveChatBtn.classList.add('loading');
+    liveChatBtn.setAttribute('aria-busy', 'true');
     try {
       await loadEmbeddedBootstrapOnce();
-      // At this point, Salesforce Embedded Messaging is initialized.
-      // If the widget doesn't auto-open, you can trigger open here (if your setup supports it).
+      // If your widget requires an explicit "open" call after init, add it here.
     } catch (e) {
       console.error(e);
       alert('Sorry, we could not start the chat. Please try again.');
     } finally {
-      chatButton.classList.remove('loading');
-      chatButton.setAttribute('aria-busy', 'false');
+      liveChatBtn.classList.remove('loading');
+      liveChatBtn.setAttribute('aria-busy', 'false');
     }
   });
 
   /* ---------------------------
-     2) Web-to-Case UX: minimal validation + submit spinner
+     Web-to-Case UX (basic validation + submit spinner)
      --------------------------- */
   const form = document.getElementById('w2cForm');
   const submitRow = document.getElementById('submitRow');
@@ -1473,9 +1455,7 @@ WebToCase Form:
     const el = form.querySelector(`[data-error-for="${name}"]`);
     if(el){ el.textContent = msg; el.style.display = 'block'; }
   }
-  function clearErrors(){
-    form.querySelectorAll('.error-text').forEach(el => el.style.display = 'none');
-  }
+  function clearErrors(){ form.querySelectorAll('.error-text').forEach(el => el.style.display = 'none'); }
 
   form.addEventListener('submit', (e) => {
     clearErrors();
@@ -1494,14 +1474,11 @@ WebToCase Form:
     const industry = form.querySelector('[name="00N_industry__c"]');
     if(industry && !industry.value){ showError('00N_industry__c','Industry is required.'); ok = false; }
 
-    if(!ok){
-      e.preventDefault();
-      return;
-    }
+    if(!ok){ e.preventDefault(); return; }
+
     submitBtn.disabled = true;
     submitRow.classList.add('loading');
-
-    // Allow native POST to Salesforce; clear spinner after a grace period if still on the page
+    // Allow native POST; clear spinner after grace period if still on page
     setTimeout(()=>{ submitBtn.disabled = false; submitRow.classList.remove('loading'); }, 10000);
   });
 </script>
