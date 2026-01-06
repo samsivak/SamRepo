@@ -1128,167 +1128,146 @@ WebToCase Form:
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Contact – Web‑to‑Case</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Web-to-Case</title>
   <style>
     :root{
-      --text:#111;
-      --accent:#2f6fef;
-      --border:#cfcfcf;
-      --error:#c62828;
-      --green:#2e7d32;
+      --text:#111; --muted:#555; --border:#d3d3d3; --error:#c62828;
+      --btn-bg:#f6f6f6; --btn-bg-hover:#efefef;
+      --accent:#c0ff4a; --accent-dark:#a8ea2f;
     }
-    body{
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      color:var(--text);
-      margin:0;
-      padding:24px;
-      line-height:1.45;
-      background:#fff;
-    }
-    h1{ font-size:clamp(1.6rem,2.8vw,2.2rem); margin:0 0 18px; font-weight:800;}
+    body{ font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; color:var(--text); margin:0; padding:24px; }
+    h1{ font-size:clamp(1.8rem,3.2vw,2.6rem); margin:0 0 16px; font-weight:800; }
+    .container{ max-width:980px; margin:0 auto; }
     form{
-      max-width:620px;
-      background:#fff;
-      border:1px solid #eee;
-      border-radius:8px;
-      padding:18px 18px 22px;
-      box-shadow: 0 2px 10px rgba(0,0,0,.03);
+      max-width:700px; background:#fff; border:1px solid #eee; border-radius:10px;
+      padding:18px; box-shadow:0 2px 10px rgba(0,0,0,.03);
     }
-    .field{
-      margin:12px 0;
-    }
-    label{
-      display:block;
-      font-weight:600;
-      margin-bottom:6px;
-    }
-    .help{ font-size:.9rem; color:#555; }
-    input[type="text"], input[type="email"], input[type="tel"], select, textarea{
-      width:100%;
-      border:1px solid var(--border);
-      border-radius:4px;
-      padding:9px 10px;
-      font-size:1rem;
-      background:#fff;
-    }
-    select[multiple]{
-      height:100px;
-    }
-    .required::after{
-      content:"*";
-      color:var(--error);
-      margin-left:4px;
-    }
-    .radio-group, .checkbox-group{ display:flex; gap:16px; align-items:center; }
-    .inline{
-      display:flex; gap:12px;
-    }
+    .field{ margin:12px 0; }
+    label{ display:block; font-weight:600; margin-bottom:6px; }
+    .required::after{ content:"*"; color:var(--error); margin-left:4px; }
+    .help{ font-size:.92rem; color:var(--muted); }
+    .inline{ display:flex; gap:12px; }
     .inline .field{ flex:1; }
-    .error-text{ color:var(--error); font-size:.92rem; margin-top:6px; display:none; }
-    .status{ margin-top:10px; color:#555; }
-    .submit-row{
-      margin-top:16px; display:flex; align-items:center; gap:12px;
+
+    input[type="text"], input[type="email"], input[type="tel"], select, textarea{
+      width:100%; border:1px solid var(--border); border-radius:6px; padding:9px 10px; font-size:1rem; background:#fff;
     }
+    select[multiple]{ height:110px; }
+    textarea{ resize:vertical; }
+
+    .error-text{ color:var(--error); font-size:.92rem; display:none; margin-top:6px; }
+
+    .submit-row{ display:flex; align-items:center; gap:12px; margin-top:12px; }
     button{
-      border:1px solid var(--border);
-      border-radius:20px;
-      padding:10px 18px;
-      font-weight:700;
-      background:#f6f6f6;
-      cursor:pointer;
+      border:1px solid var(--border); border-radius:20px; padding:10px 18px; font-weight:700;
+      background:var(--btn-bg); cursor:pointer;
     }
-    button:hover{ background:#efefef; }
+    button:hover{ background:var(--btn-bg-hover); }
     button:disabled{ opacity:.7; cursor:not-allowed; }
-    .spinner{
-      width:18px; height:18px;
-      border-radius:50%;
-      border:2px solid transparent;
-      border-top-color:#111;
-      display:none;
-      animation:spin .8s linear infinite;
+    .submit-spinner{
+      width:18px; height:18px; border-radius:50%; border:2px solid transparent; border-top-color:#111;
+      animation:spin .8s linear infinite; display:none;
     }
-    .loading .spinner{ display:inline-block; }
-    @keyframes spin{ to{ transform:rotate(360deg);} }
-    /* Simple green pill like the screenshot */
-    .note{
-      font-size:.92rem;
-      background:#eef7ee;
-      color:var(--green);
-      border:1px solid #d5ead6;
-      padding:8px 10px;
-      border-radius:8px;
-      margin-top:8px;
+    .submit-row.loading .submit-spinner{ display:inline-block; }
+    @keyframes spin{ to{ transform:rotate(360deg); } }
+
+    /* Bottom-right chat widget */
+    .chat-widget{
+      position:fixed; right:24px; bottom:24px; z-index:1000;
+      display:flex; align-items:center; gap:10px;
     }
-    /* Optional bottom-right live chat indicator space */
-    .bottom-space{ height:70px; }
+    .chat-bubble{
+      background:#0f5c2e; color:#fff; font-weight:600; border-radius:20px;
+      padding:8px 12px; box-shadow:0 6px 16px rgba(0,0,0,.15);
+    }
+    .chat-button{
+      width:64px; height:64px; border-radius:50%; border:none; cursor:pointer;
+      background:var(--accent); box-shadow:0 6px 16px rgba(0,0,0,.15);
+      display:grid; place-items:center; transition:transform .12s ease, background .2s ease;
+    }
+    .chat-button:hover{ background:var(--accent-dark); }
+    .chat-button:active{ transform:translateY(1px); }
+    .chat-spinner{
+      width:26px; height:26px; border-radius:50%; border:3px solid transparent; border-top-color:#111;
+      animation:spin .8s linear infinite; display:none;
+    }
+    .chat-button.loading .chat-spinner{ display:block; }
+    .chat-icon{ width:28px; height:28px; color:#111; }
+    .chat-button.loading .chat-icon{ opacity:.2; }
+
+    /* Optional small drawer when clicking chat */
+    .chat-drawer{
+      position:fixed; right:24px; bottom:100px; width:300px;
+      background:#fff; border:1px solid #e7e7e7; border-radius:12px;
+      box-shadow:0 10px 24px rgba(0,0,0,.12); display:none;
+    }
+    .chat-drawer.visible{ display:block; }
+    .chat-drawer header{ padding:10px 12px; border-bottom:1px solid #eee; font-weight:700; }
+    .chat-drawer .content{ padding:10px 12px; color:#333; }
   </style>
 </head>
+
 <body>
+<div class="container">
+  <h1>Web-to-Case</h1>
 
-  <h1>Web‑to‑Case</h1>
-
-  <!--
-    ACTION: Salesforce Web-to-Case endpoint
-    Replace OID and retURL before publishing.
-  -->
-  <form id="w2cForm" methodcom/servlet/servlet.WebToCase?encoding=UTF-8
+  <!-- ===== Web-to-Case form (fields as per your screenshot) ===== -->
+  https://webto.salesforce.com/servlet/servlet.WebToCase?encoding=UTF-8
     <!-- REQUIRED hidden fields -->
     <input type="hidden" name="orgid" value="YOUR_SF_ORG_OID_HERE">
-    <input type="hidden" name="retURL" value="https://yourdomain.example/thank-you.html">
-
-    <!-- Map your custom fields (API names) here as needed.
-         For demo, we use common Web-to-Case fields like subject, description, etc.
-         You can add hidden fields for recordType, origin, etc. -->
+    <input type="hidden" name="retURL" value="https://samsivak.github.io/SamRepo/thank-you.html">
+    <!-- Common Case fields -->
     <input type="hidden" name="origin" value="Web">
     <input type="hidden" name="subject" value="New logistics enquiry via website">
 
-    <!-- Are you an existing customer? -->
+    <!-- Are you an existing Team Global Express customer? -->
     <div class="field">
       <label>Are you an existing Team Global Express customer?</label>
-      <div class="radio-group">
+      <div class="inline">
         <label><input type="radio" name="00N_existing_cust__c" value="Yes"> Yes</label>
         <label><input type="radio" name="00N_existing_cust__c" value="No"> No</label>
       </div>
-      <div class="help">Select one.</div>
     </div>
 
     <!-- Account Number (optional) -->
     <div class="field">
       <label for="AccountNumber">Account Number (if applicable)</label>
-      <input id="AccountNumber" name="00N_account_number__c" type="text" />
+      <input id="AccountNumber" name="00N_account_number__c" type="text"/>
     </div>
 
-    <!-- Name, Company, Email, Phone -->
+    <!-- First & Last Name -->
     <div class="inline">
       <div class="field">
         <label for="FirstName" class="required">First Name</label>
-        <input id="FirstName" name="firstName" type="text" required />
+        <input id="FirstName" name="firstName" type="text" required/>
         <div class="error-text" data-error-for="firstName">First name is required.</div>
       </div>
       <div class="field">
         <label for="LastName" class="required">Last Name</label>
-        <input id="LastName" name="lastName" type="text" required />
+        <input id="LastName" name="lastName" type="text" required/>
         <div class="error-text" data-error-for="lastName">Last name is required.</div>
       </div>
     </div>
 
+    <!-- Company -->
     <div class="field">
       <label for="Company" class="required">Company</label>
-      <input id="Company" name="company" type="text" required />
+      <input id="Company" name="company" type="text" required/>
       <div class="error-text" data-error-for="company">Company is required.</div>
     </div>
 
+    <!-- Email & Phone -->
     <div class="inline">
       <div class="field">
         <label for="Email" class="required">Email</label>
-        <input id="Email" name="email" type="email" required />
+        <input id="Email" name="email" type="email" required/>
         <div class="error-text" data-error-for="email">Valid email is required.</div>
       </div>
       <div class="field">
         <label for="Phone" class="required">Phone</label>
-        <input id="Phone" name="phone" type="tel" required />
+        <input id="Phone" name="phone" type="tel" required/>
         <div class="error-text" data-error-for="phone">Phone is required.</div>
       </div>
     </div>
@@ -1298,9 +1277,9 @@ WebToCase Form:
       <label for="PreferredContact">Preferred Method of Contact</label>
       <select id="PreferredContact" name="00N_preferred_contact__c">
         <option value="">--None--</option>
-        <option>Email">Email</option>
-        <option>Phone">Phone</option>
-        <option>SMS">SMS</option>
+        <option>Email</option>
+        <option>Phone</option>
+        <option>SMS</option>
       </select>
     </div>
 
@@ -1359,7 +1338,7 @@ WebToCase Form:
       </select>
     </div>
 
-    <!-- Annual logistics spend -->
+    <!-- Current estimated annual logistics spend -->
     <div class="field">
       <label for="Spend">What is your current estimated annual logistics spend?</label>
       <select id="Spend" name="00N_estimated_spend__c">
@@ -1371,109 +1350,121 @@ WebToCase Form:
       </select>
     </div>
 
-    <!-- Consent + opt in -->
+    <!-- Opt in + consent -->
     <div class="field">
-      <label class="checkbox-group">
-        <input type="checkbox" name="00N_opt_in_marketing__c" value="true" />
-        <span>Opt in</span>
-      </label>
+      <label><input type="checkbox" name="00N_opt_in_marketing__c" value="true"> Opt in</label>
       <p class="help">
         I would like to receive marketing communications, news, research, business insights and relevant industry event invitations from Team Global Express.
       </p>
-      <p class="note">
+      <p class="help">
         I consent to my personal information being collected, used, stored, and disclosed as set out in the
-        #TGE Privacy Collection Notice</a> and the
-        <aGE Privacy Policy</a>.
+        #Privacy Collection Notice</a> and the
+        <arivacy Policy</a>.
       </p>
     </div>
 
-    <!-- Optional: reCAPTCHA block (replace with your widget if required) -->
-    <div class="field" id="captchaBlock" aria-hidden="true">
-      <!-- Insert your reCAPTCHA widget here if your org enforces it -->
-      <!-- e.g. <div class="g-recaptcha" data-sitekey="YOUR_SITE_KEY"></div> -->
+    <!-- Optional: reCAPTCHA widget (add your site key if required by your org) -->
+    <div class="field" id="captchaBlock">
+      <!-- Example placeholder:
+      <div class="g-recaptcha" data-sitekey="YOUR_SITE_KEY"></div>
+      -->
     </div>
 
-    <!-- Description (captures more detail to Case.Description) -->
+    <!-- Additional Details (maps to Case.Description) -->
     <div class="field">
       <label for="Description">Additional Details</label>
       <textarea id="Description" name="description" rows="4" placeholder="Add any specifics about your shipment or request"></textarea>
     </div>
 
-    <div class="submit-row">
-      <button id="submitBtn" type="submit">
-        Submit
-      </button>
-      <span class="spinner" id="submitSpinner" aria-hidden="true"></span>
-      <span id="status" class="status"></span>
+    <!-- Submit -->
+    <div class="submit-row" id="submitRow">
+      <button id="submitBtn" type="submit">Submit</button>
+      <span class="submit-spinner" aria-hidden="true"></span>
     </div>
-
-    <div class="bottom-space"></div>
   </form>
+</div>
 
-  <script>
-    // Minimal client-side validation & UX
-    const form = document.getElementById('w2cForm');
-    const submitBtn = document.getElementById('submitBtn');
-    const spinner = document.getElementById('submitSpinner');
-    const statusEl = document.getElementById('status');
+<!-- ===== Bottom-right chat widget (visible on load) ===== -->
+<div class="chat-widget" id="chatWidget">
+  <div class="chat-bubble">Live Chat • Available</div>
+  <button class="chat-button" id="chatButton" aria-label="Chat">
+    <!-- Bot icon -->
+    <svg class="chat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <rect x="3" y="8" width="18" height="10" rx="4" ry="4"></rect>
+      <circle cx="8.5" cy="13" r="1.6"></circle>
+      <circle cx="15.5" cy="13" r="1.6"></circle>
+      <path d="M12 4v3"></path>
+    </svg>
+    <!-- Spinner shown while "connecting" -->
+    <span class="chat-spinner" aria-hidden="true"></span>
+  </button>
+</div>
 
-    function showError(name, message){
-      const el = form.querySelector(`[data-error-for="${name}"]`);
-      if(el){ el.textContent = message; el.style.display = 'block'; }
-    }
-    function clearErrors(){
-      form.querySelectorAll('.error-text').forEach(el => el.style.display = 'none');
-    }
+<!-- Optional simple drawer (pure UI) -->
+<div class="chat-drawer" id="chatDrawer" aria-hidden="true">
+  <header>Customer Service</header>
+  <div class="content">
+    <p>Thanks for reaching out! A live chat integration can be connected here. For now this is a UI placeholder.</p>
+    <p>https://teamglobalexp--tgedev.sandbox.my.salesforce-setup.comOpen Salesforce (tgedev)</a></p>
+  </div>
+</div>
 
-    function startLoading(){
-      submitBtn.disabled = true;
-      spinner.parentElement.classList.add('loading');
-      statusEl.textContent = 'Submitting…';
-    }
-    function stopLoading(){
-      submitBtn.disabled = false;
-      spinner.parentElement.classList.remove('loading');
-      statusEl.textContent = '';
-    }
+<script>
+  /* --- Web-to-Case UX: minimal validation + submit spinner --- */
+  const form = document.getElementById('w2cForm');
+  const submitRow = document.getElementById('submitRow');
+  const submitBtn = document.getElementById('submitBtn');
 
-    form.addEventListener('submit', function(e){
-      clearErrors();
+  function showError(name, msg){
+    const el = form.querySelector(`[data-error-for="${name}"]`);
+    if(el){ el.textContent = msg; el.style.display = 'block'; }
+  }
+  function clearErrors(){
+    form.querySelectorAll('.error-text').forEach(el => el.style.display = 'none');
+  }
 
-      // Basic checks for required HTML5 inputs (extra safety)
-      const requiredIds = [
-        ['firstName','First name is required.'],
-        ['lastName','Last name is required.'],
-        ['company','Company is required.'],
-        ['email','Valid email is required.'],
-        ['phone','Phone is required.']
-      ];
-      let ok = true;
-      requiredIds.forEach(([name,msg])=>{
-        const input = form.querySelector(`[name="${name}"]`);
-        if(input && !input.value.trim()){
-          showError(name, msg);
-          ok = false;
-        }
-      });
-
-      const industry = form.querySelector('[name="00N_industry__c"]');
-      if(industry && !industry.value){
-        showError('00N_industry__c', 'Industry is required.');
-        ok = false;
-      }
-
-      if(!ok){
-        e.preventDefault();
-        return;
-      }
-
-      // Start spinner and allow native form POST to Salesforce
-      startLoading();
-      // The browser will navigate to retURL after successful submission.
-      // If submission fails, stop loading after a short delay (best-effort).
-      setTimeout(()=>stopLoading(), 8000);
+  form.addEventListener('submit', (e) => {
+    clearErrors();
+    let ok = true;
+    const reqs = [
+      ['firstName','First name is required.'],
+      ['lastName','Last name is required.'],
+      ['company','Company is required.'],
+      ['email','Valid email is required.'],
+      ['phone','Phone is required.']
+    ];
+    reqs.forEach(([name,msg])=>{
+      const input = form.querySelector(`[name="${name}"]`);
+      if(input && !input.value.trim()){ showError(name, msg); ok = false; }
     });
-  </script>
+    const industry = form.querySelector('[name="00N_industry__c"]');
+    if(industry && !industry.value){ showError('00N_industry__c','Industry is required.'); ok = false; }
 
+    if(!ok){
+      e.preventDefault();
+      return;
+    }
+    submitBtn.disabled = true;
+    submitRow.classList.add('loading');
+
+    // Let native POST proceed; if you stay on the page (e.g., validation fails server-side),
+    // clear loading after a grace period.
+    setTimeout(()=>{ submitBtn.disabled = false; submitRow.classList.remove('loading'); }, 10000);
+  });
+
+  /* --- Bottom-right chat widget (UI-only placeholder) --- */
+  const chatButton = document.getElementById('chatButton');
+  const chatDrawer = document.getElementById('chatDrawer');
+
+  chatButton.addEventListener('click', () => {
+    // Simulate "connecting" for UX
+    chatButton.classList.add('loading');
+    setTimeout(() => {
+      chatButton.classList.remove('loading');
+      chatDrawer.classList.toggle('visible');
+      chatDrawer.setAttribute('aria-hidden', String(!chatDrawer.classList.contains('visible')));
+    }, 1200);
+  });
+</script>
 </body>
 </html>
