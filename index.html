@@ -1137,10 +1137,7 @@
       display:flex; align-items:center; gap:12px;
       background:#0c140c; color:#fff;
       border:2px solid #cfd8dc;
-      border-radius:18px 28px 28px 18px;
-      padding:10px 14px;
-      box-shadow:0 12px 28px rgba(0,0,0,.22);
-      cursor:pointer; text-decoration:none; font-family:Segoe UI, system-ui, -apple-system, Roboto, Helvetica, Arial;
+     -system, Roboto, Helvetica, Arial;      border-radius:18px 28px 28px 18px;
     }
     .chat-cta:hover{ filter:brightness(1.05); }
     .chat-cta.hidden{ display:none !important; }
@@ -1181,31 +1178,44 @@
       animation:spin .8s linear infinite;
     }
 
-    /* Simple form spacing for readability */
-    form label{ display:inline-block; width:180px; margin:6px 0; font-weight:600; }
+    /* ===================== ADDITIVE CSS FOR ALIGNMENT ===================== */
 
-    /* ===================== ADDITIVE CSS FOR ALIGNMENT (Screenshot-like) ===================== */
-
-    /* Form container — centered and readable width */
-    body form {
-      max-width: 720px;
-      margin: 24px auto;
-      padding: 0 8px;
-      box-sizing: border-box;
+    /* 1) Create a centered column container feel even if fields are not inside <form> */
+    body, body form {
       font-family: Segoe UI, system-ui, -apple-system, Roboto, Helvetica, Arial;
       color: #0c140c;
     }
+    /* main content column width */
+    body form, body {
+      --column-width: 720px;
+      --field-width: 560px;
+    }
+    /* If inputs are directly under body (no form), give the page a centered content flow */
+    body {
+      display: block;
+    }
+    /* Apply a centered column to form if present */
+    body form {
+      max-width: var(--column-width);
+      margin: 24px auto;
+      padding: 0 8px;
+      box-sizing: border-box;
+    }
 
-    /* Labels stacked above controls, bold */
-    body form label {
+    /* 2) Reset original label rule but keep bold */
+    form label { font-weight: 600; }
+    /* Stack labels above fields (for both cases: inside form or direct children of body) */
+    body form label,
+    body > label {
       display: block !important;
-      width: auto !important;                 /* neutralize original width */
-      margin: 16px 0 6px !important;          /* spacing like screenshot */
+      width: auto !important;
+      margin: 16px 0 6px !important;
       font-weight: 700 !important;
       color: #0c140c;
     }
 
-    /* Inputs and selects full width with consistent height and spacing */
+    /* 3) Make inputs/selects full width and consistent height */
+    /* Inside a form */
     body form input[type="text"],
     body form input[type="email"],
     body form input[type="tel"],
@@ -1213,29 +1223,68 @@
     body form textarea {
       display: block;
       width: 100%;
-      max-width: 560px;                        /* aligns with screenshot feel */
+      max-width: var(--field-width);
       height: 36px;
       padding: 8px 10px;
-      border: 1.5px solid #5a6b55;            /* subtle greenish border */
+      border: 1.5px solid #5a6b55;
       border-radius: 4px;
       background: #fff;
       color: #0c140c;
       font-size: 16px;
       box-sizing: border-box;
       outline: none;
-      margin: 0 0 12px;                       /* spacing between fields */
+      margin: 0 0 12px;
+    }
+    /* If the fields are direct children of body (no form wrapper) */
+    body > input[type="text"],
+    body > input[type="email"],
+    body > input[type="tel"],
+    body > select,
+    body > textarea {
+      display: block;
+      width: 100%;
+      max-width: var(--field-width);
+      height: 36px;
+      padding: 8px 10px;
+      border: 1.5px solid #5a6b55;
+      border-radius: 4px;
+      background: #fff;
+      color: #0c140c;
+      font-size: 16px;
+      box-sizing: border-box;
+      outline: none;
+      margin: 0 auto 12px;                 /* center in page column */
     }
 
-    /* Multi-select or larger text areas */
+    /* 4) Ensure label + field grouping works even without a wrapper */
+    /* place fields directly under body centered with labels above */
+    body > label + input,
+    body > label + select,
+    body > label + textarea {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* 5) Multi-select or tall fields */
     body form select[multiple],
-    body form textarea {
-      height: 140px;                           /* matches tall list in screenshot */
+    body form textarea,
+    body > select[multiple],
+    body > textarea {
+      height: 140px;
       resize: vertical;
     }
 
-    /* Submit button — rounded green like screenshot */
+    /* 6) Remove visual gaps from <br> tags printed by SF Web-to-Lead */
+    body form br,
+    body > br {
+      display: none;  /* hides line breaks to keep stacked flow clean */
+    }
+
+    /* 7) Submit button — rounded green like screenshot */
     body form input[type="submit"],
-    body form button[type="submit"] {
+    body form button[type="submit"],
+    body > input[type="submit"],
+    body > button[type="submit"] {
       background: #143a00;
       color: #fff;
       border: none;
@@ -1247,38 +1296,49 @@
       box-shadow: 0 2px 6px rgba(0,0,0,.18);
       transition: filter .2s ease, transform .02s ease;
       margin-top: 12px;
+      width: auto;
+      display: inline-block;
     }
     body form input[type="submit"]:hover,
-    body form button[type="submit"]:hover { filter: brightness(1.05); }
+    body form button[type="submit"]:hover,
+    body > input[type="submit"]:hover,
+    body > button[type="submit"]:hover { filter: brightness(1.05); }
     body form input[type="submit"]:active,
-    body form button[type="submit"]:active { transform: translateY(1px); }
+    body form button[type="submit"]:active,
+    body > input[type="submit"]:active,
+    body > button[type="submit"]:active { transform: translateY(1px); }
 
-    /* Optional: red asterisk for any labels you mark as required */
-    body form label.required::after {
+    /* 8) Optional: red asterisk for any labels you mark as required */
+    body form label.required::after,
+    body > label.required::after {
       content: '*';
       color: #c62828;
       margin-left: 4px;
       font-weight: 800;
     }
 
-    /* Consent block styling appended after form */
+    /* ---------- Opt-in + Consent block styles (added after form) ---------- */
     .consent-block {
-      max-width: 560px;
-      margin: 18px auto 14px;
+      max-width: var(--field-width);
+      margin: 24px auto 14px;
       color: #0c140c;
-      line-height: 1.5;
+      line-height: 1.6;
       font-family: Segoe UI, system-ui, -apple-system, Roboto, Helvetica, Arial;
+    }
+    .consent-block p {
+      margin: 0 0 12px;
     }
     .consent-block .optin {
       display: flex;
       align-items: center;
       gap: 10px;
       margin: 8px 0 10px;
-      font-weight: 600;
+      font-weight: 700;
+      font-size: 18px;
     }
     .consent-block .optin input[type="checkbox"] {
       width: 18px; height: 18px;
-      accent-color: #143a00; /* checkbox color */
+      accent-color: #143a00;
       cursor: pointer;
     }
     .consent-block .consent-text {
@@ -1289,11 +1349,13 @@
       text-decoration: underline;
     }
 
-    /* Optional wrapper if you place reCAPTCHA below consent */
+    /* ---------- Optional: align reCAPTCHA if present ---------- */
     .captcha-wrap {
-      max-width: 560px;
+      max-width: var(--field-width);
       margin: 12px auto 18px;
     }
+
+    /* Keep your live chat pill styles untouched */
   </style>
 </head>
 
@@ -1366,6 +1428,7 @@
       I would like to receive marketing communications, news, research, business insights and relevant industry event
       invitations from Team Global Express.
     </p>
+
     <label class="optin" for="opt_in">
       <span>Opt In</span>
       <input id="opt_in" name="opt_in" type="checkbox" value="Yes">
@@ -1373,7 +1436,7 @@
 
     <p class="consent-text">
       I consent to my personal information being collected, used, stored, and disclosed as set out in the
-      <a href="https://www.teamglobalexp.com/privacy-collection-notice" target="_blank"ice</a>
+      <a href="https://www.teamglobalexp.com/privacyon-noticeTGE Privacy Collection Notice</a>
       and the
       <a href="https://www.teamglobalexp.com/privacyE Privacy Policy</a>.
     </p>
