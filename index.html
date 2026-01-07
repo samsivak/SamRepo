@@ -1129,32 +1129,100 @@
 <head>
   <meta http-equiv="Content-type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Web-to-Lead (Sandbox) + Static Live Chat Button</title>
+  <title>Web-to-Lead (Sandbox) + Inert Live Chat Button</title>
+
   <style>
-    /* Your original label/field spacing */
+    /* Keep your original form spacing (optional) */
     form label { display:inline-block; width:180px; margin:6px 0; font-weight:600; }
     form input, form select { margin:6px 0; }
 
-    /* Live Chat pill (bottom-right) — no JS, no form changes */
+    /* ---------- Live Chat pill (bottom-right), purely decorative ---------- */
     .chat-cta{
-      position:fixed; right:24px; bottom:24px; z-index:2000;
-      display:flex; align-items:center; gap:12px;
-      background:#0c140c; color:#fff;
-      border:2px solid #cfd8dc;
-      border-radius:18px 28px 28px 18px;
-      padding:10px 14px;
-      box-shadow:0 12px 28px rgba(0,0,0,.22);
-      cursor:pointer; text-decoration:none; font-family:Segoe UI, system-ui, -apple-system, Roboto, Helvetica, Arial;
-      /* Ensure it never overlays the submit area: keep it bottom-right only */
-      pointer-events:auto;
-   label for="phone">Phone</label>    }
-    <input id="phone" maxlength="40" name="phone" size="20" type="text"><br>
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 2000;
 
-    Account Number:
-    <input id="00N2P000000O4xQ" maxlength="100" name="00N2P000000O4xQ" size="20" type="text"><br>
+      display: flex;
+      align-items: center;
+      gap: 12px;
 
-    Lead Type:
-    <select id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type">
+      background: #0c140c;
+      color: #fff;
+      border: 2px solid #cfd8dc;
+      border-radius: 18px 28px 28px 18px;
+      padding: 10px 14px;
+      box-shadow: 0 12px 28px rgba(0,0,0,.22);
+
+      /* CRITICAL: make it inert so it cannot intercept clicks */
+      pointer-events: none;
+      user-select: none;
+      cursor: default;
+
+      text-decoration: none;
+      font-family: Segoe UI, system-ui, -apple-system, Roboto, Helvetica, Arial;
+    }
+    .chat-cta .icon{
+      width: 24px; height: 24px;
+      stroke: #fff; fill: none;
+      flex: 0 0 24px;
+    }
+    .chat-cta .text{ display:flex; flex-direction:column; line-height:1.1; }
+    .chat-cta .line1{ font-weight:800; font-size:.98rem; color:#fff; }
+    .chat-cta .line2{ display:flex; align-items:center; gap:6px; font-weight:600; font-size:.86rem; color:#d7f7d7; }
+    .chat-cta .dot{
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #2bd24f;
+      box-shadow: 0 0 0 2px rgba(43,210,79,.25);
+    }
+  </style>
+</head>
+
+<body>
+  <!--  ----------------------------------------------------------------------  -->
+  <!--  NOTE: Please add the following META element to your page HEAD.          -->
+  <!--  If necessary, modify the charset parameter to specify the               -->
+  <!--  character set of your HTML page.                                        -->
+  <!--  ----------------------------------------------------------------------  -->
+
+  <!--  ----------------------------------------------------------------------  -->
+  <!--  NOTE: Please add the following FORM element to your page.               -->
+  <!--  ----------------------------------------------------------------------  -->
+  https://test.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&orgId=00DAD000008PLr4
+
+    <input type="hidden" name="oid" value="00DAD000008PLr4">
+    <input type="hidden" name="retURL" value="https://samsivak.github.io/SamRepo/thank-you.html">
+
+    <!--  ----------------------------------------------------------------------  -->
+    <!--  NOTE: Optional debugging elements. Uncomment to test in debug mode.     -->
+    <!--  <input type="hidden" name="debug" value="1">                             -->
+    <!--  <input type="hidden" name="debugEmail" value="sambasiva.koidala@teamglobalexp.com"> -->
+    <!--  ----------------------------------------------------------------------  -->
+
+    <label for="first_name">First Name</label>
+    <input id="first_name" maxlength="40" name="first_name" size="20" type="text"><br>
+
+    <label for="last_name">Last Name</label>
+    <input id="last_name" maxlength="80" name="last_name" size="20" type="text"><br>
+
+    <label for="email">Email</label>
+    <input id="email" maxlength="80" name="email" size="20" type="text"><br>
+
+    <label for="company">Company</label>
+    <input id="company" maxlength="40" name="company" size="20" type="text"><br>
+
+    <label for="city">City</label>
+    <input id="city" maxlength="40" name="city" size="20" type="text"><br>
+
+    <label for="state">State/Province</label>
+    <input id="state" maxlength="20" name="state" size="20" type="text"><br>
+
+    <label for="industry">Industry</label>
+    <select id="industry" name="industry">
+      <option value="">--None--</option>
+      <option value="Agriculture, Forestry and Fishing">Agriculture, Forestry and Fishing</option>
+      <select id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type">      <option value="Mining">Mining</option>
       <option value="">--None--</option>
       <option value="Reoccurring">Reoccurring</option>
       <option value="Tender">Tender</option>
@@ -1199,8 +1267,9 @@
     <input type="submit" name="submit" value="Submit">
   </form>
 
-  <!-- Static Live Chat button (bottom-right). No JS attached. -->
-  <button class="chat-cta" id="liveChatBtn" type="button" aria-label="Live Chat">
+  <!-- ---------- Inert Live Chat button (bottom-right). No JS; cannot intercept clicks ---------- -->
+  <button class="chat-cta" id="liveChatBtn" type="button" aria-label="Live Chat" role="presentation" tabindex="-1">
+    <!-- Chat bubble icon -->
     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <path d="M4 16V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-5 4v-4z"/>
@@ -1214,73 +1283,8 @@
     </span>
   </button>
 
-  <!-- No script attached; the button is inert by design -->
+  <!-- No script attached; the button is decorative only -->
 </body>
-</html>
-    .chat-cta:hover{ filter:brightness(1.05); }
-    .chat-cta .icon{
-      width:24px; height:24px; stroke:#fff; fill:none; flex:0 0 24px;
-    }
-    .chat-cta .text{ display:flex; flex-direction:column; line-height:1.1; }
-    .chat-cta .line1{ font-weight:800; font-size:.98rem; color:#fff; }
-    .chat-cta .line2{ display:flex; align-items:center; gap:6px; font-weight:600; font-size:.86rem; color:#d7f7d7; }
-    .chat-cta .dot{ width:8px; height:8px; border-radius:50%; background:#2bd24f; box-shadow:0 0 0 2px rgba(43,210,79,.25); }
-  </style>
-</head>
-
-<body>
-  <!--  ----------------------------------------------------------------------  -->
-  <!--  Your Web-to-Lead form (Sandbox) — UNCHANGED                             -->
-  <!--  ----------------------------------------------------------------------  -->
-  https://test.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&orgId=00DAD000008PLr4
-
-    <input type="hidden" name="oid" value="00DAD000008PLr4">
-    <input type="hidden" name="retURL" value="https://samsivak.github.io/SamRepo/thank-you.html">
-
-    <!-- Optional debug for diagnostics (uncomment to get error emails) -->
-    <!-- <input type="hidden" name="debug" value="1"> -->
-    <!-- <input type="hidden" name="debugEmail" value="sambasiva.koidala@teamglobalexp.com"> -->
-
-    <label for="first_name">First Name</label>
-    <input id="first_name" maxlength="40" name="first_name" size="20" type="text"><br>
-
-    <label for="last_name">Last Name</label>
-    <input id="last_name" maxlength="80" name="last_name" size="20" type="text"><br>
-
-    <label for="email">Email</label>
-    <input id="email" maxlength="80" name="email" size="20" type="text"><br>
-
-    <label for="company">Company</label>
-    <input id="company" maxlength="40" name="company" size="20" type="text"><br>
-
-    <label for="city">City</label>
-    <input id="city" maxlength="40" name="city" size="20" type="text"><br>
-
-    <label for="state">State/Province</label>
-    <input id="state" maxlength="20" name="state" size="20" type="text"><br>
-
-    <label for="industry">Industry</label>
-    <select id="industry" name="industry">
-      <option value="">--None--</option>
-      <option value="Agriculture, Forestry and Fishing">Agriculture, Forestry and Fishing</option>
-      <option value="Mining">Mining</option>
-      <option value="Manufacturing">Manufacturing</option>
-      <option value="Electricity, Gas, Water And Waste Services">Electricity, Gas, Water And Waste Services</option>
-      <option value="Construction">Construction</option>
-      <option value="Wholesale Trade">Wholesale Trade</option>
-      <option value="Retail Trade">Retail Trade</option>
-      <option value="Accommodation and Food Services">Accommodation and Food Services</option>
-      <option value="Transport, Postal and Warehousing">Transport, Postal and Warehousing</option>
-      <option value="Information Media and Telecommunications">Information Media and Telecommunications</option>
-      <option value="Financial and Insurance Services">Financial and Insurance Services</option>
-      <option value="Rental, Hiring And Real Estate Services">Rental, Hiring And Real Estate Services</option>
-      <option value="Professional, Scientific And Technical Services">Professional, Scientific And Technical Services</option>
-      <option value="Administrative and Support Services">Administrative and Support Services</option>
-      <option value="Public Administration and Safety">Public Administration and Safety</option>
-      <option value="Education and Training">Education and Training</option>
-      <option value="Health Care and Social Assistance">Health Care and Social Assistance</option>
-      <option value="Arts and Recreation Services">Arts and Recreation Services</option>
-      <option value="Other Services">Other Services</option>
-    </select><br>
+</html>      
 
 
