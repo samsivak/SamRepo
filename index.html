@@ -1124,175 +1124,193 @@
 
 //WebToLead Form:
 
-
 <!doctype html>
 <html lang="en">
 <head>
-<meta http-equiv="Content-type" content="text/html; charset=UTF-8">
-<meta {
-    max-width: 500px;
-    margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    background: #fafafa;
-  }
+  <meta http-equiv="Content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  h2 {
-    margin-bottom: 16px;
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: #333;
-  }
+  <!-- Form-only styles: scoped and minimal; do not affect Live Chat pill -->
+  <style>
+    :root{
+      --form-max: 560px;
+      --label-color:#222;
+      --text:#111;
+      --muted:#666;
+      --border:#c9c9c9;
+      --bg:#ffffff;
+      --input-h: 38px;
+      --radius:8px;
+      --gap:14px;
+      --submit-bg:#1f7a2d;
+      --submit-bg-hover:#185f22;
+      --submit-text:#fff;
+    }
 
-  form .field {
-    margin-bottom: 14px;
-  }
+    body{
+      font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial;
+      margin:0; padding:24px;
+      color:var(--text); background:var(--bg);
+    }
 
-  form label {
-    display: block;
-    font-weight: 600;
-    margin-bottom: 6px;
-    color: #222;
-  }
+    .form-wrap{
+      max-width:var(--form-max);
+      margin:0; /* left aligned as requested */
+    }
 
-  form input[type="text"],
-  form select {
-    width: 100%;
-   : 8px 10px;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-  }
+    h2{
+      margin:0 0 14px; font-size:1.6rem; font-weight:800;
+    }
 
-  .submit-row {
-    margin-top: 20px;
-  }
+    /* Stack labels above controls; consistent widths */
+    form .field{ margin-bottom:var(--gap); }
+    form label{
+      display:block; margin-bottom:6px;
+      font-weight:600; color:var(--label-color);
+    }
+    form input[type="text"],
+    form select{
+      width:100%;
+      height:var(--input-h);
+      border:1px solid var(--border);
+      border-radius:6px;
+      padding:8px 10px;
+      font-size:1rem;
+      box-sizing:border-box;
+      background:#fff;
+    }
 
-  .submit-row input[type="submit"] {
-    background: #1f7a2d;
-    color: #fff;
-    border: none;
-    padding: 10px 18px;
-    font-size: 1rem;
-    font-weight: 600;
-    border-radius: 4px;
-    cursor: pointer;
-  }
+    /* Submit row aligned left at the end */
+    .submit-row{ margin-top:18px; }
+    .submit-row input[type="submit"]{
+      background:var(--submit-bg); color:var(--submit-text);
+      border:none; border-radius:20px;
+      padding:10px 18px; font-size:1rem; font-weight:700;
+      cursor:pointer; box-shadow:0 3px 10px rgba(0,0,0,.10);
+    }
+    .submit-row input[type="submit"]:hover{ background:var(--submit-bg-hover); }
 
-  .submit-row input[type="submit"]:hover {
-    background: #185f22;
-  }
-</style>
+    /* Make selects and inputs consistent on narrow screens */
+    @media (max-width:480px){
+      body{ padding:16px; }
+      h2{ font-size:1.4rem; }
+      :root{ --form-max: 100%; }
+    }
+  </style>
 </head>
 <body>
 
-<div class="form-container">
-  <h2>Web-to-Lead Form</h2>
-  https://test.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&orgId=00DAD000008PLr4
-    <input type="hidden" name="oid" value="00DAD000008PLr4">
-    <input type="hidden" name="retURL" value="https://samsivak.github.io/SamRepo/thank-you.html">
+  <!-- ===== Aligned Web-to-Lead form (functionality unchanged) ===== -->
+  <div class="form-wrap">
+    <h2>Web-to-Lead Form</h2>
 
-    <div class="field">
-      <label for="first_name">First Name</label>
-      <input id="first_name" maxlength="40" name="first_name" type="text">
-    </div>
+    <form://test.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&orgId=00DAD000008PLr4
+      <input type="hidden" name="oid" value="00DAD000008PLr4">
+      <input type="hidden" name="retURL" value="https://samsivak.github.io/SamRepo/thank-you.html">
 
-    <div class="field">
-      <label for="last_name">Last Name</label>
-      <input id="last_name" maxlength="80" name="last_name" type="text">
-    </div>
+      <div class="field">
+        <label for="first_name">First Name</label>
+        <input id="first_name" maxlength="40" name="first_name" type="text">
+      </div>
 
-    <div class="field">
-      <label for="email">Email</label>
-      <input id="email" maxlength="80" name="email" type="text">
-    </div>
+      <div class="field">
+        <label for="last_name">Last Name</label>
+        <input id="last_name" maxlength="80" name="last_name" type="text">
+      </div>
 
-    <div class="field">
-      <label for="company">Company</label>
-      <input id="company" maxlength="40" name="company" type="text">
-    </div>
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" maxlength="80" name="email" type="text">
+      </div>
 
-    <div class="field">
-      <label for="city">City</label>
-      <input id="city" maxlength="40" name="city" type="text">
-    </div>
+      <div class="field">
+        <label for="company">Company</label>
+        <input id="company" maxlength="40" name="company" type="text">
+      </div>
 
-    <div class="field">
-      <label for="state">State/Province</label>
-      <input id="state" maxlength="20" name="state" type="text">
-    </div>
+      <div class="field">
+        <label for="city">City</label>
+        <input id="city" maxlength="40" name="city" type="text">
+      </div>
 
-    <div class="field">
-      <label for="phone">Phone</label>
-      <input id="phone" maxlength="40" name="phone" type="text">
-    </div>
+      <div class="field">
+        <label for="state">State/Province</label>
+        <input id="state" maxlength="20" name="state" type="text">
+      </div>
 
-    <div class="field">
-      <label for="00NOa000007qyDt">Which delivery service do you use now?</label>
-      <select id="00NOa000007qyDt" name="00NOa000007qyDt">
-        <option value="">--None--</option>
-        <option value="Australia Post">Australia Post</option>
-        <option value="Star Track">Star Track</option>
-        <option value="Seko">Seko</option>
-        <option value="Couriers Please">Couriers Please</option>
-        <option value="Aramex">Aramex</option>
-        <option value="Other">Other</option>
-      </select>
-    </div>
+      <div class="field">
+        <label for="phone">Phone</label>
+        <input id="phone" maxlength="40" name="phone" type="text">
+      </div>
 
-    <div class="field">
-      <label for="00N2P000000O4yf">What would you like moved or delivered?</label>
-      <select id="00N2P000000O4yf" name="00N2P000000O4yf">
-        <option value="">--None--</option>
-        <option value="Apparel, Accessories &amp; Luxury Goods">Apparel, Accessories &amp; Luxury Goods</option>
-        <option value="Automotive Parts &amp; Equipment">Automotive Parts &amp; Equipment</option>
-        <option value="Building Products">Building Products</option>
-        <option value="Chemicals / Dangerous Goods">Chemicals / Dangerous Goods</option>
-        <option value="Containers / Packaging">Containers / Packaging</option>
-        <option value="Documents">Documents</option>
-        <option value="Electronics / Telecommunications">Electronics / Telecommunications</option>
-        <option value="Entertainment Equipment">Entertainment Equipment</option>
-        <option value="Food &amp; Beverage">Food &amp; Beverage</option>
-        <option value="Health Care">Health Care</option>
-        <option value="Marketing, Advertising &amp; Promotional Goods">Marketing, Advertising &amp; Promotional Goods</option>
-        <option value="Office Supplies">Office Supplies</option>
-        <option value="Perishables">Perishables</option>
-        <option value="Pets / Plants">Pets / Plants</option>
-        <option value="Tobacco">Tobacco</option>
-        <option value="Transport - Freight">Transport - Freight</option>
-        <option value="Household/Personal Items">Household/Personal Items</option>
-      </select>
-    </div>
+      <div class="field">
+        <label for="00NOa000007qyDt">Which delivery service do you use now?</label>
+        <select id="00NOa000007qyDt" name="00NOa000007qyDt" title="Which delivery service do you use now?">
+          <option value="">--None--</option>
+          <option value="Australia Post">Australia Post</option>
+          <option value="Star Track">Star Track</option>
+          <option value="Seko">Seko</option>
+          <option value="Couriers Please">Couriers Please</option>
+          <option value="Aramex">Aramex</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
 
-    <div class="submit-row">
-      <input type="submit" name="submit" value="Submit">
-    </div>
-  </form>
-</div>
-<!-- Live Chat Button (untouched) -->
-<button class="chat-cta" id="liveChatBtn" type="button" aria-label="Live Chat">
-  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M4 16V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-5 4v-4z"/>
-    <circle cx="9" cy="10" r="1.2"/>
-    <circle cx="13" cy="10" r="1.2"/>
-    <circle cx="17" cy="10" r="1.2"/>
-  </svg>
-  <span class="text">
-    <span class="line1">Live Chat</span>
-    <span class="line2"><span class="dot"></span>Available</span>
-  </span>
-  <span class="spinner" aria-hidden="true"></span>
-</button>
-<div class="chat-loading" id="chatLoading" aria-hidden="true">
-  <span class="spinner" aria-hidden="true"></span>
-</div>
-<!-- Keep your existing JS for chat functionality -->
-<script>
-  // Your existing chat logic remains unchanged
-</script>
+      <div class="field">
+        <label for="00N2P000000O4yf">What would you like moved or delivered?</label>
+        <select id="00N2P000000O4yf" name="00N2P000000O4yf" title="What would you like moved or delivered?">
+          <option value="">--None--</option>
+          <option value="Apparel, Accessories &amp; Luxury Goods">Apparel, Accessories &amp; Luxury Goods</option>
+          <option value="Automotive Parts &amp; Equipment">Automotive Parts &amp; Equipment</option>
+          <option value="Building Products">Building Products</option>
+          <option value="Chemicals / Dangerous Goods">Chemicals / Dangerous Goods</option>
+          <option value="Containers / Packaging">Containers / Packaging</option>
+          <option value="Documents">Documents</option>
+          <option value="Electronics / Telecommunications">Electronics / Telecommunications</option>
+          <option value="Entertainment Equipment">Entertainment Equipment</option>
+          <option value="Food &amp; Beverage">Food &amp; Beverage</option>
+          <option value="Health Care">Health Care</option>
+          <option value="Marketing, Advertising &amp; Promotional Goods">Marketing, Advertising &amp; Promotional Goods</option>
+          <option value="Office Supplies">Office Supplies</option>
+          <option value="Perishables">Perishables</option>
+          <option value="Pets / Plants">Pets / Plants</option>
+          <option value="Tobacco">Tobacco</option>
+          <option value="Transport - Freight">Transport - Freight</option>
+          <option value="Household/Personal Items">Household/Personal Items</option>
+        </select>
+      </div>
+
+      <!-- Submit aligned left at the very end -->
+      <div class="submit-row">
+        <input type="submit" name="submit" value="Submit">
+      </div>
+    </form>
+  </div>
+
+  <!-- ===== Live Chat pill & loader (UNCHANGED, still works) ===== -->
+  <button class="chat-cta" id="liveChatBtn" type="button" aria-label="Live Chat">
+    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M4 16V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-5 4v-4z"/>
+      <circle cx="9" cy="10" r="1.2"/>
+      <circle cx="13" cy="10" r="1.2"/>
+      <circle cx="17" cy="10" r="1.2"/>
+    </svg>
+    <span class="text">
+      <span class="line1">Live Chat</span>
+      <span class="line2"><span class="dot"></span>Available</span>
+    </span>
+    <span class="spinner" aria-hidden="true"></span>
+  </button>
+
+  <div class="chat-loading" id="chatLoading" aria-hidden="true">
+    <span class="spinner" aria-hidden="true"></span>
+  </div>
+
+  <!-- Keep your existing JS for embedded messaging exactly as before -->
+  <script>
+    /** Your existing chat logic & initEmbeddedMessaging, loadEmbeddedBootstrapOnce, etc.
+        This block is intentionally left unchanged to preserve working behavior. **/
+  </script>
 </body>
 </html>
 
