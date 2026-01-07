@@ -1124,6 +1124,7 @@
 
 //WebToLead Form:
 
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -1131,7 +1132,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <style>
-    /* -------- Live Chat pill (matches screenshot) -------- */
+    /* -------- Live Chat pill (keep as-is) -------- */
     .chat-cta{
       position:fixed; right:24px; bottom:24px; z-index:2000;
       display:flex; align-items:center; gap:12px;
@@ -1144,24 +1145,12 @@
     }
     .chat-cta:hover{ filter:brightness(1.05); }
     .chat-cta.hidden{ display:none !important; }
-
-    .chat-cta .icon{
-      width:24px; height:24px;
-      stroke:#fff; fill:none;
-      flex:0 0 24px;
-    }
+    .chat-cta .icon{ width:24px; height:24px; stroke:#fff; fill:none; flex:0 0 24px; }
     .chat-cta .text{ display:flex; flex-direction:column; line-height:1.1; }
     .chat-cta .line1{ font-weight:800; font-size:.98rem; color:#fff; }
     .chat-cta .line2{ display:flex; align-items:center; gap:6px; font-weight:600; font-size:.86rem; color:#d7f7d7; }
     .chat-cta .dot{ width:8px; height:8px; border-radius:50%; background:#2bd24f; box-shadow:0 0 0 2px rgba(43,210,79,.25); }
-
-    /* Inline spinner shown inside the CTA while loading bootstrap */
-    .chat-cta .spinner{
-      width:18px; height:18px; border-radius:50%;
-      border:3px solid transparent; border-top-color:#fff;
-      animation:spin .8s linear infinite; display:none;
-      flex:0 0 18px;
-    }
+    .chat-cta .spinner{ width:18px; height:18px; border-radius:50%; border:3px solid transparent; border-top-color:#fff; animation:spin .8s linear infinite; display:none; flex:0 0 18px; }
     .chat-cta.loading .icon{ opacity:.35; }
     .chat-cta.loading .spinner{ display:inline-block; }
     @keyframes spin{ to{ transform:rotate(360deg); } }
@@ -1181,7 +1170,7 @@
       animation:spin .8s linear infinite;
     }
 
-    /* ---------------- Existing simple form spacing rule ---------------- */
+    /* ---------------- Existing simple form spacing rule from your page ---------------- */
     form label{ display:inline-block; width:180px; margin:6px 0; font-weight:600; }
     form input, form select{ margin:6px 0; }
 
@@ -1197,7 +1186,7 @@
     }
     body form label {
       display: block !important;
-      width: auto !important;                  /* override the 180px width */
+      width: auto !important;                  /* override the older fixed width */
       margin: 16px 0 6px !important;
       font-weight: 700 !important;
       color: #0c140c;
@@ -1276,12 +1265,22 @@
 </head>
 
 <body>
-  <!-- ---------------- Web-to-Lead Form (action + method added) ---------------- -->
-  <!-- Keeping your URL reference above as a comment for clarity -->
-  <!-- WebToLead endpoint: https://test.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8 -->
 
-  <form action="https://test.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8"e="hidden" name="oid" value="00DAD000008PLr4">
+  <!-- ---------------------------------------------------------------------- -->
+  <!-- Salesforce Web-to-Lead FORM (your provided generated code, merged here) -->
+  <!-- ---------------------------------------------------------------------- -->
+  <!-- META tag already present at the top of this file -->
+
+  <!-- IMPORTANT: The action includes encoding and orgId from your snippet. -->
+  <!-- If you face issues, you can also use the standard action without orgId:
+       https://test.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8
+       The hidden oid below is what actually identifies the org. -->
+  <form action="https://test.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&orgId=00DAD000008PLr4ype="hidden" name="oid" value="00DAD000008PLr4">
     <input type="hidden" name="retURL" value="https://samsivak.github.io/SamRepo/thank-you.html">
+
+    <!-- Optional debug (uncomment while testing) -->
+    <!-- <input type="hidden" name="debug" value="1"> -->
+    <!-- <input type="hidden" name="debugEmail" value="sambasiva.koidala@teamglobalexp.com"> -->
 
     <label for="first_name">First Name</label>
     <input id="first_name" maxlength="40" name="first_name" size="20" type="text"><br>
@@ -1301,9 +1300,11 @@
     <label for="state">State/Province</label>
     <input id="state" maxlength="20" name="state" size="20" type="text"><br>
 
-    <label for="phone">Phone</label>
-    <input id="phone" maxlength="40" name="phone" size="20" type="text"><br>
+    <!-- (Optional) Add phone if you want -->
+    <!-- <label for="phone">Phone</label>
+    <input id="phone" maxlength="40" name="phone" size="20" type="text"><br> -->
 
+    <!-- (Optional) Example custom picklists (uncomment only if these fields exist in SFDC)
     <label>Which delivery service do you use now?</label>
     <select id="00NOa000007qyDt" name="00NOa000007qyDt" title="Which delivery service do you use now?">
       <option value="">--None--</option>
@@ -1336,11 +1337,14 @@
       <option value="Transport - Freight">Transport - Freight</option>
       <option value="Household/Personal Items">Household/Personal Items</option>
     </select><br>
+    -->
 
     <input type="submit" name="submit" value="Submit">
   </form>
 
-  <!-- ---------------- Opt-in + Consent (separate block) ---------------- -->
+  <!-- ---------------- Opt-in + Consent (separate block, outside the form) ---------------- -->
+  <!-- If you want Opt-In stored on the Lead, tell me the SFDC field API/ID (e.g., 00Nxxxxxxxxxxxx)
+       and I’ll change name="opt_in" to that so it posts with the form. -->
   <div class="consent-block">
     <p>
       I would like to receive marketing communications, news, research, business insights and relevant industry event
@@ -1349,15 +1353,14 @@
 
     <label class="optin" for="opt_in">
       <span>Opt In</span>
-      <!-- If you want this captured in Salesforce, replace name with your SFDC field API/ID (e.g. 00Nxxxxxxxxxxxx) -->
       <input id="opt_in" name="opt_in" type="checkbox" value="Yes">
     </label>
 
     <p class="consent-text">
       I consent to my personal information being collected, used, stored, and disclosed as set out in the
-      <a href="https://www.teamglobalexp.com/privacy-collection-notice" target="_blank" rel/a>
+      https://www.teamglobalexp.com/privacy-collection-noticeTGE Privacy Collection Notice</a>
       and the
-      https://www.teamglobalexp.com/privacy-policyTGE Privacy Policy</a>.
+      <a href="https://www.teamglobalexp.com/privacy-policy" targety</a>.
     </p>
   </div>
 
@@ -1365,7 +1368,7 @@
     <!-- Place reCAPTCHA widget here if required -->
   </div>
 
-  <!-- ---------------- Live Chat pill (unchanged) ---------------- -->
+  <!-- ---------------- Live Chat pill (unchanged; bottom-right) ---------------- -->
   <button class="chat-cta" id="liveChatBtn" type="button" aria-label="Live Chat">
     <!-- Chat bubble icon -->
     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -1448,7 +1451,7 @@
         const existing = document.querySelector(`script[src="${BOOTSTRAP_SRC}"]`);
         if (existing) {
           existing.addEventListener('load', () => resolve());
-          existing.addEventListener('error', (e) => reject(e));
+          existing.addEventListener('error,', (e) => reject(e));
           // in case it was already loaded
           if (existing.dataset?.loaded === 'true') resolve();
           return;
@@ -1491,4 +1494,3 @@
   </script>
 </body>
 </html>
-
