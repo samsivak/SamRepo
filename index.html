@@ -1125,6 +1125,7 @@
 //WebToLead Form:
 
 
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -1180,11 +1181,11 @@
       animation:spin .8s linear infinite;
     }
 
-    /* ---------------- Original simple form rule (left intact) ---------------- */
+    /* ---------------- Original simple form spacing (left intact) ---------------- */
     form label{ display:inline-block; width:180px; margin:6px 0; font-weight:600; }
     form input, form select{ margin:6px 0; }
 
-    /* ===================== ADDITIVE CSS FOR CLEAN ALIGNMENT ===================== */
+    /* ===================== ADDITIVE CSS FOR CLEAN ALIGNMENT (labels stacked) ===================== */
     body form {
       max-width: 720px;
       margin: 24px auto;
@@ -1221,8 +1222,11 @@
     }
     body form select[multiple],
     body form textarea { height: 140px; }
+
+    /* Hide <br> so stacked layout looks clean */
     body form br { display: none; }
 
+    /* Submit button styling */
     body form input[type="submit"] {
       background: #143a00;
       color: #fff;
@@ -1270,20 +1274,18 @@
 </head>
 
 <body>
-
-  <!-- ---------------- Salesforce Web-to-Lead FORM (Regenerated) ---------------- -->
-  <!-- Action targets Sandbox; hidden 'oid' identifies your org. -->
-  <form action="https://test.salesforce.com/servlet/servlet.WebToUTF-8
-
-    <!-- Required identifiers -->
+  <!-- ---------------- Salesforce Web-to-Lead FORM (Sandbox) ---------------- -->
+  <!-- Action: Sandbox endpoint; 'oid' identifies your org; 'retURL' is where to redirect -->
+  <form action="https://test.salesforce.com/servlet/ead?encoding=UTF-8
     <input type="hidden" name="oid" value="00DAD000008PLr4">
     <input type="hidden" name="retURL" value="https://samsivak.github.io/SamRepo/thank-you.html">
 
-    <!-- Enable debug while testing (remove after confirming lead creation) -->
+    <!-- Debug removed to restore redirect; re-enable if you need diagnostics
     <input type="hidden" name="debug" value="1">
     <input type="hidden" name="debugEmail" value="sambasiva.koidala@teamglobalexp.com">
+    -->
 
-    <!-- Standard fields (Last Name & Company are typically required) -->
+    <!-- Standard fields (Salesforce typically requires Last Name + Company) -->
     <label for="first_name">First Name</label>
     <input id="first_name" maxlength="40" name="first_name" size="20" type="text"><br>
 
@@ -1305,7 +1307,7 @@
     <label for="phone">Phone</label>
     <input id="phone" maxlength="40" name="phone" size="20" type="text"><br>
 
-    <!-- Custom picklist (from your regenerated code) -->
+    <!-- Your custom picklist (regenerated code) -->
     <label for="00N2P000000O4yf">What would you like moved or delivered?</label>
     <select id="00N2P000000O4yf" name="00N2P000000O4yf" title="What would you like moved or delivered?">
       <option value="">--None--</option>
@@ -1331,8 +1333,8 @@
     <input type="submit" name="submit" value="Submit">
   </form>
 
-  <!-- ---------------- Opt-in + Consent (outside the form) ---------------- -->
-  <!-- If you want Opt-In stored on the Lead, share the SF field ID/API name (e.g., 00N...) -->
+  <!-- ---------------- Opt-in + Consent (outside form) ---------------- -->
+  <!-- If you want Opt-In saved to the Lead, send me the SF field ID/API name (e.g., 00N… or HasOptedIn__c) -->
   <div class="consent-block">
     <p>
       I would like to receive marketing communications, news, research, business insights and relevant industry event
@@ -1346,9 +1348,9 @@
 
     <p class="consent-text">
       I consent to my personal information being collected, used, stored, and disclosed as set out in the
-      <a href="https://www.teamglobalexp.com/privacy-collectionE Privacy Collection Notice</a>
+      https://www.teamglobalexp.com/privacy-collection-noticeTGE Privacy Collection Notice</a>
       and the
-      https://www.teamglobalexp.com/privacy-policyTGE Privacy Policy</a>.
+      <a href="https://wwwalexp.com/privacy-policyTGE Privacy Policy</a>.
     </p>
   </div>
 
