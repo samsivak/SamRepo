@@ -1130,20 +1130,26 @@
   <meta http-equiv="Content-type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Web-to-Lead (Sandbox) + Inert Live Chat Button</title>
+
   <style>
+    /* Your original spacing (optional) */
     form label { display:inline-block; width:180px; margin:6px 0; font-weight:600; }
     form input, form select { margin:6px 0; }
+
+    /* Live Chat pill styles (button will be injected via JS) */
     .chat-cta{
       position: fixed; right: 24px; bottom: 24px; z-index: 2000;
       display: flex; align-items: center; gap: 12px;
       background: #0c140c; color: #fff;
       border: 2px solid #cfd8dc; border-radius: 18px 28px 28px 18px;
       padding: 10px 14px; box-shadow: 0 12px 28px rgba(0,0,0,.22);
+      /* Make the pill fully decorative/inert for now */
       pointer-events: none; user-select: none; cursor: default;
-      text-decoration: none;
       font-family: Segoe UI, system-ui, -apple-system, Roboto, Helvetica, Arial;
     }
-    .chat-cta .icon{ width:24px; height:24px; stroke:#fff; fill:none; flex:0 0 24px; }
+    .chat-cta .icon{
+      width: 24px; height: 24px; stroke: #fff; fill: none; flex: 0 0 24px;
+    }
     .chat-cta .text{ display:flex; flex-direction:column; line-height:1.1; }
     .chat-cta .line1{ font-weight:800; font-size:.98rem; color:#fff; }
     .chat-cta .line2{ display:flex; align-items:center; gap:6px; font-weight:600; font-size:.86rem; color:#d7f7d7; }
@@ -1152,36 +1158,32 @@
 </head>
 
 <body>
-  https://test.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8
+  <!--  ----------------------------------------------------------------------  -->
+  <!--  NOTE: Please add the following FORM element to your page.               -->
+  <!--  ----------------------------------------------------------------------  -->
+  https://test.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&orgId=00DAD000008PLr4
 
     <input type="hidden" name="oid" value="00DAD000008PLr4">
     <input type="hidden" name="retURL" value="https://samsivak.github.io/SamRepo/thank-you.html">
 
-    <!-- Optional debug (uncomment for diagnostics)
+    <!-- Optional debug (leave commented unless diagnosing)
     <input type="hidden" name="debug" value="1">
     <input type="hidden" name="debugEmail" value="sambasiva.koidala@teamglobalexp.com">
     -->
 
-    <label for="first_name">First Name</label>
-    <input id="first_name" maxlength="40" name="first_name" size="20" type="text"><br>
+    <label for="first_name">First Name</label><input id="first_name" maxlength="40" name="first_name" size="20" type="text" /><br>
 
-    <label for="last_name">Last Name</label>
-    <input id="last_name" maxlength="80" name="last_name" size="20" type="text"><br>
+    <label for="last_name">Last Name</label><input id="last_name" maxlength="80" name="last_name" size="20" type="text" /><br>
 
-    <label for="email">Email</label>
-    <input id="email" maxlength="80" name="email" size="20" type="text"><br>
+    <label for="email">Email</label><input id="email" maxlength="80" name="email" size="20" type="text" /><br>
 
-    <label for="company">Company</label>
-    <input id="company" maxlength="40" name="company" size="20" type="text"><br>
+    <label for="company">Company</label><input id="company" maxlength="40" name="company" size="20" type="text" /><br>
 
-    <label for="city">City</label>
-    <input id="city" maxlength="40" name="city" size="20" type="text"><br>
+    <label for="city">City</label><input id="city" maxlength="40" name="city" size="20" type="text" /><br>
 
-    <label for="state">State/Province</label>
-    <input id="state" maxlength="20" name="state" size="20" type="text"><br>
+    <label for="state">State/Province</label><input id="state" maxlength="20" name="state" size="20" type="text" /><br>
 
-    <label for="industry">Industry</label>
-    <select id="industry" name="industry">
+    <label for="industry">Industry</label><select id="industry" name="industry">
       <option value="">--None--</option>
       <option value="Agriculture, Forestry and Fishing">Agriculture, Forestry and Fishing</option>
       <option value="Mining">Mining</option>
@@ -1204,21 +1206,17 @@
       <option value="Other Services">Other Services</option>
     </select><br>
 
-    <label for="phone">Phone</label>
-    <input id="phone" maxlength="40" name="phone" size="20" type="text"><br>
+    <label for="phone">Phone</label><input id="phone" maxlength="40" name="phone" size="20" type="text" /><br>
 
-    Account Number:
-    <input id="00N2P000000O4xQ" maxlength="100" name="00N2P000000O4xQ" size="20" type="text"><br>
+    Account Number:<input id="00N2P000000O4xQ" maxlength="100" name="00N2P000000O4xQ" size="20" type="text" /><br>
 
-    <label for="00N2P000000O4xt">Lead Type</label>
-    <select id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type">
+    <label for="00N2P000000O4xt">Lead Type</label><select id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type">
       <option value="">--None--</option>
       <option value="Reoccurring">Reoccurring</option>
       <option value="Tender">Tender</option>
     </select><br>
 
-    <label for="00N2P000000O4yf">What would you like moved or delivered?</label>
-    <select id="00N2P000000O4yf" name="00N2P000000O4yf" title="What would you like moved or delivered?">
+    <label for="00N2P000000O4yf">What would you like moved or delivered?</label><select id="00N2P000000O4yf" name="00N2P000000O4yf" title="What would you like moved or delivered?">
       <option value="">--None--</option>
       <option value="Apparel, Accessories &amp; Luxury Goods">Apparel, Accessories &amp; Luxury Goods</option>
       <option value="Automotive Parts &amp; Equipment">Automotive Parts &amp; Equipment</option>
@@ -1239,8 +1237,7 @@
       <option value="Household/Personal Items">Household/Personal Items</option>
     </select><br>
 
-    <label for="00N2P000000O4y8">What services are you interested in?</label>
-    <select id="00N2P000000O4y8" name="00N2P000000O4y8" title="What services are you interested in?" multiple>
+    <label for="00N2P000000O4y8">What services are you interested in?</label><select id="00N2P000000O4y8" multiple="multiple" name="00N2P000000O4y8" title="What services are you interested in?">
       <option value="eCommerce">eCommerce</option>
       <option value="Air Freight">Air Freight</option>
       <option value="Road Freight">Road Freight</option>
@@ -1256,50 +1253,35 @@
     <input type="submit" name="submit" value="Submit">
   </form>
 
-  <!-- Decorative Live Chat pill -->
-  <button class="chat-cta" id="liveChatBtn" type="button" aria-label="Live Chat" role="presentation" tabindex="-1">
-    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M4 16V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-5 4v-4z"/>
-      <circle cx="9" cy="10" r="1.2"/>
-      <circle cx="13" cy="10" r="1.2"/>
-      <circle cx="17" cy="10" r="1.2"/>
-    </svg>
-    <span class="text">
-      <span class="line1">Live Chat</span>
-      <span class="line2"><span class="dot"></span>Available</span>
-    </span>
-  </button>
-
-  <!-- Diagnostic helper: log and force submit -->
+  <!-- Inject the Live Chat button via JS to avoid any HTML mis-nesting -->
   <script>
-    document.addEventListener('DOMContentLoaded', function(){
-      const form = document.querySelector('form[action^="https://test.salesforce.com/servlet/servlet.WebToLead"]');
-      const submit = form?.querySelector('input[type="submit"][name="submit"]');
-      if (!form || !submit) return;
+    (function(){
+      const btn = document.createElement('button');
+      btn.className = 'chat-cta';
+      btn.id = 'liveChatBtn';
+      btn.type = 'button';
+      btn.setAttribute('aria-label', 'Live Chat');
 
-      form.addEventListener('submit', function(ev){
-        console.log('[W2L] submit event fired:', ev);
-      });
+      // SVG icon
+      btn.innerHTML =
+        '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
+        'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+        '  <path d="M4 16V6a2 2 0 0 1 2-2h12a 2 2 0 0 1 2 2v8a 2 2 0 0 1-2 2H9l-5 4v-4z"/>' +
+        '  <circle cx="9" cy="10" r="1.2"/>' +
+        '  <circle cx="13" cy="10" r="1.2"/>' +
+        '  <circle cx="17" cy="10" r="1.2"/>' +
+        '</svg>' +
+        '<span class="text">' +
+        '  <span class="line1">Live Chat</span>' +
+        '  <span class="line2"><span class="dot"></span>Available</span>' +
+        '</span>';
 
-      submit.addEventListener('click', function(){
-        console.log('[W2L] submit button clicked');
-        setTimeout(function(){
-          if (form.checkValidity()) {
-            if (form.requestSubmit) { console.log('[W2L] calling requestSubmit()'); form.requestSubmit(); }
-            else { console.log('[W2L] calling form.submit()'); form.submit(); }
-          } else {
-            console.warn('[W2L] form not valid — check required fields.');
-          }
-        }, 0);
-      });
+      // Append at end of body (outside the form)
+      document.body.appendChild(btn);
 
-      const inIframe = (function(){ try { return window.top !== window.self; } catch(e) { return true; } })();
-      console.log('[W2L] inIframe:', inIframe);
-      if (inIframe) {
-        console.warn('[W2L] If embedded, ensure the iframe uses sandbox="allow-forms allow-scripts allow-same-origin".');
-      }
-    });
+      // IMPORTANT: keep it inert now (do not attach any click logic yet).
+      // When you're ready to add spinner and embedded chat later, we’ll wire it up step-by-step.
+    })();
   </script>
 </body>
 </html>
