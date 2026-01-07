@@ -1123,150 +1123,130 @@
 
 
 //WebToLead Form:
+<html class=""><head><style>
+  .hidden-selected {
+    display: none;
+    /*Hide the selected option */
+    
+  }
+   label {
+    font-size: 17px;  /* Set the desired font size */
+    font-family: 'GlobalSans-SemiBold', sans-serif; /* Set the desired font */
+    color: #143200;   /* Set the desired colour */
+     
+  }
+  select {
+     font-size: 17px;  /* Set the desired font size */
+    font-family: 'GlobalSans-SemiBold', sans-serif;/* Set the desired font */
+    color: #143200;   /* Set the desired colour */
+    width: 400px;
+  }
+</style>
+<meta http-equiv="Content-type" content="text/html; charset=UTF-8">
+<script type="text/javascript" async="" charset="utf-8" src="https://www.gstatic.com/recaptcha/releases/9TiwnJFHeuIw_s0wSd3fiKfN/recaptcha__en.js" crossorigin="anonymous" integrity="sha384-8WjoTBgSGHNwI9qISBgptudGYLxGXiMVQl+YQPMNRFGJm3ndbR2G+UTHBs5nLqq+"></script><script type="" src="https://www.google.com/recaptcha/api.js"></script>
+<script type="">
+ function timestamp() { var response = document.getElementById("g-recaptcha-response"); if (response == null || response.value.trim() == "") {var elems = JSON.parse(document.getElementsByName("captcha_settings")[0].value);elems["ts"] = JSON.stringify(new Date().getTime());document.getElementsByName("captcha_settings")[0].value = JSON.stringify(elems); } } setInterval(timestamp, 500); 
+</script>
 
-<!doctype html>
-<html lang="en">
-<head>
-  <meta http-equiv="Content-type" content="text/html; charset=UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Web-to-Lead (Sandbox) + Static Live Chat Button</title>
+<!--  ----------------------------------------------------------------------  -->
+<!--  NOTE: Please add the following <META> element to your page <HEAD>.      -->
+<!--  If necessary, please modify the charset parameter to specify the        -->
+<!--  character set of your HTML page.                                        -->
+<!--  ----------------------------------------------------------------------  -->
 
-  <style>
-    /* (Optional) Keep your form's default look */
-    form label { display:inline-block; width:180px; margin:6px 0; font-weight:600; }
-    form input, form select { margin:6px 0; }
+<META HTTP-EQUIV="Content-type" CONTENT="text/html; charset=UTF-8">
 
-    /* ---------- Live Chat pill (bottom-right), no JS behavior ---------- */
-    .chat-cta{
-      position:fixed; right:24px; bottom:24px; z-index:2000;
-      display:flex; align-items:center; gap:12px;
-      background:#0c140c; color:#fff;
-      border:2px solid #cfd8dc;
-      border-radius:18px 28px 28px 18px;
-      padding:10px 14px;
-      box-shadow:0 12px 28px rgba(0,0,0,.22);
-      cursor:pointer; text-decoration:none; font-family:Segoe UI, system-ui, -apple-system, Roboto, Helvetica, Arial;
-    }
-    .chat-cta:hover{ filter:brightness(1.05); }
-    .chat-cta .icon{
-      width:24px; height:24px; stroke:#fff; fill:none; flex:0 0 24px;
-    }
-    .chat-cta .text{ display:flex; flex-direction:column; line-height:1.1; }
-    .chat-cta .line1{ font-weight:800; font-size:.98rem; color:#fff; }
-    .chat-cta .line2{ display:flex; align-items:center; gap:6px; font-weight:600; font-size:.86rem; color:#d7f7d7; }
-    .chat-cta .dot{ width:8px; height:8px; border-radius:50%; background:#2bd24f; box-shadow:0 0 0 2px rgba(43,210,79,.25); }
-  </style>
+<!--  ----------------------------------------------------------------------  -->
+<!--  NOTE: Please add the following <FORM> element to your page.             -->
+<!--  ----------------------------------------------------------------------  -->
+
+<form action="https://test.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&orgId=00DAD000008PLr4" method="POST">
+
+<input type=hidden name="oid" value="00DAD000008PLr4">
+<input type=hidden name="retURL" value="https://samsivak.github.io/SamRepo/thank-you.html">
+
+<!--  ----------------------------------------------------------------------  -->
+<!--  NOTE: These fields are optional debugging elements. Please uncomment    -->
+<!--  these lines if you wish to test in debug mode.                          -->
+<!--  <input type="hidden" name="debug" value=1>                              -->
+<!--  <input type="hidden" name="debugEmail"                                  -->
+<!--  value="sambasiva.koidala@teamglobalexp.com">                            -->
+<!--  ----------------------------------------------------------------------  -->
+
+<label for="first_name">First Name</label><input  id="first_name" maxlength="40" name="first_name" size="20" type="text" /><br>
+
+<label for="last_name">Last Name</label><input  id="last_name" maxlength="80" name="last_name" size="20" type="text" /><br>
+
+<label for="email">Email</label><input  id="email" maxlength="80" name="email" size="20" type="text" /><br>
+
+<label for="company">Company</label><input  id="company" maxlength="40" name="company" size="20" type="text" /><br>
+
+<label for="city">City</label><input  id="city" maxlength="40" name="city" size="20" type="text" /><br>
+
+<label for="state">State/Province</label><input  id="state" maxlength="20" name="state" size="20" type="text" /><br>
+
+<label for="industry">Industry</label><select  id="industry" name="industry"><option value="">--None--</option><option value="Agriculture, Forestry and Fishing">Agriculture, Forestry and Fishing</option>
+<option value="Mining">Mining</option>
+<option value="Manufacturing">Manufacturing</option>
+<option value="Electricity, Gas, Water And Waste Services">Electricity, Gas, Water And Waste Services</option>
+<option value="Construction">Construction</option>
+<option value="Wholesale Trade">Wholesale Trade</option>
+<option value="Retail Trade">Retail Trade</option>
+<option value="Accommodation and Food Services">Accommodation and Food Services</option>
+<option value="Transport, Postal and Warehousing">Transport, Postal and Warehousing</option>
+<option value="Information Media and Telecommunications">Information Media and Telecommunications</option>
+<option value="Financial and Insurance Services">Financial and Insurance Services</option>
+<option value="Rental, Hiring And Real Estate Services">Rental, Hiring And Real Estate Services</option>
+<option value="Professional, Scientific And Technical Services">Professional, Scientific And Technical Services</option>
+<option value="Administrative and Support Services">Administrative and Support Services</option>
+<option value="Public Administration and Safety">Public Administration and Safety</option>
+<option value="Education and Training">Education and Training</option>
+<option value="Health Care and Social Assistance">Health Care and Social Assistance</option>
+<option value="Arts and Recreation Services">Arts and Recreation Services</option>
+<option value="Other Services">Other Services</option>
+</select><br>
+
+<label for="phone">Phone</label><input  id="phone" maxlength="40" name="phone" size="20" type="text" /><br>
+
+Account Number:<input  id="00N2P000000O4xQ" maxlength="100" name="00N2P000000O4xQ" size="20" type="text" /><br>
+
+Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"><option value="">--None--</option><option value="Reoccurring">Reoccurring</option>
+<option value="Tender">Tender</option>
+</select><br>
+
+What would you like moved or delivered?:<select  id="00N2P000000O4yf" name="00N2P000000O4yf" title="What would you like moved or delivered?"><option value="">--None--</option><option value="Apparel, Accessories &amp; Luxury Goods">Apparel, Accessories &amp; Luxury Goods</option>
+<option value="Automotive Parts &amp; Equipment">Automotive Parts &amp; Equipment</option>
+<option value="Building Products">Building Products</option>
+<option value="Chemicals / Dangerous Goods">Chemicals / Dangerous Goods</option>
+<option value="Containers / Packaging">Containers / Packaging</option>
+<option value="Documents">Documents</option>
+<option value="Electronics / Telecommunications">Electronics / Telecommunications</option>
+<option value="Entertainment Equipment">Entertainment Equipment</option>
+<option value="Food &amp; Beverage">Food &amp; Beverage</option>
+<option value="Health Care">Health Care</option>
+<option value="Marketing, Advertising &amp; Promotional Goods">Marketing, Advertising &amp; Promotional Goods</option>
+<option value="Office Supplies">Office Supplies</option>
+<option value="Perishables">Perishables</option>
+<option value="Pets / Plants">Pets / Plants</option>
+<option value="Tobacco">Tobacco</option>
+<option value="Transport - Freight">Transport - Freight</option>
+<option value="Household/Personal Items">Household/Personal Items</option>
+</select><br>
+
+What services are you interested in?:<select  id="00N2P000000O4y8" multiple="multiple" name="00N2P000000O4y8" title="What services are you interested in?"><option value="eCommerce">eCommerce</option>
+<option value="Air Freight">Air Freight</option>
+<option value="Road Freight">Road Freight</option>
+<option value="Sea Freight">Sea Freight</option>
+<option value="Rail Freight">Rail Freight</option>
+<option value="Intermodal &amp; Multimodal">Intermodal &amp; Multimodal</option>
+<option value="Courier">Courier</option>
+<option value="Dangerous Goods">Dangerous Goods</option>
+<option value="Global">Global</option>
+<option value="New Zealand">New Zealand</option>
+</select><br>
+
+<input type="submit" name="submit">
+
+</form>
 </head>
-
-<body>
-  <!-- ---------------- Your working Web-to-Lead form (UNCHANGED) ---------------- -->
-  https://test.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&orgId=00DAD000008PLr4
-
-    <input type="hidden" name="oid" value="00DAD000008PLr4">
-    <input type="hidden" name="retURL" value="https://samsivak.github.io/SamRepo/thank-you.html">
-
-    <!-- Optional debugging (leave commented unless diagnosing)
-    <input type="hidden" name="debug" value="1">
-    <input type="hidden" name="debugEmail" value="sambasiva.koidala@teamglobalexp.com">
-    -->
-
-    <label for="first_name">First Name</label><input id="first_name" maxlength="40" name="first_name" size="20" type="text" /><br>
-
-    <label for="last_name">Last Name</label><input id="last_name" maxlength="80" name="last_name" size="20" type="text" /><br>
-
-    <label for="email">Email</label><input id="email" maxlength="80" name="email" size="20" type="text" /><br>
-
-    <label for="company">Company</label><input id="company" maxlength="40" name="company" size="20" type="text" /><br>
-
-    <label for="city">City</label><input id="city" maxlength="40" name="city" size="20" type="text" /><br>
-
-    <label for="state">State/Province</label><input id="state" maxlength="20" name="state" size="20" type="text" /><br>
-
-    <label for="industry">Industry</label><select id="industry" name="industry">
-      <option value="">--None--</option>
-      <option value="Agriculture, Forestry and Fishing">Agriculture, Forestry and Fishing</option>
-      <option value="Mining">Mining</option>
-      <option value="Manufacturing">Manufacturing</option>
-      <option value="Electricity, Gas, Water And Waste Services">Electricity, Gas, Water And Waste Services</option>
-      <option value="Construction">Construction</option>
-      <option value="Wholesale Trade">Wholesale Trade</option>
-      <option value="Retail Trade">Retail Trade</option>
-      <option value="Accommodation and Food Services">Accommodation and Food Services</option>
-      <option value="Transport, Postal and Warehousing">Transport, Postal and Warehousing</option>
-      <option value="Information Media and Telecommunications">Information Media and Telecommunications</option>
-      <option value="Financial and Insurance Services">Financial and Insurance Services</option>
-      <option value="Rental, Hiring And Real Estate Services">Rental, Hiring And Real Estate Services</option>
-      <option value="Professional, Scientific And Technical Services">Professional, Scientific And Technical Services</option>
-      <option value="Administrative and Support Services">Administrative and Support Services</option>
-      <option value="Public Administration and Safety">Public Administration and Safety</option>
-      <option value="Education and Training">Education and Training</option>
-      <option value="Health Care and Social Assistance">Health Care and Social Assistance</option>
-      <option value="Arts and Recreation Services">Arts and Recreation Services</option>
-      <option value="Other Services">Other Services</option>
-    </select><br>
-
-    <option value="Electronics / Telecommunications">Electronics / Telecommunications</option>    <label for="phone">Phone</label><input id="phone" maxlength="40" name="phone" size="20" type="text" /><br>
-      <option value="Entertainment Equipment">Entertainment Equipment</option>
-      <option value="Food &amp; Beverage">Food &amp; Beverage</option>
-      <option value="Health Care">Health Care</option>
-      <option value="Marketing, Advertising &amp; Promotional Goods">Marketing, Advertising &amp; Promotional Goods</option>
-      <option value="Office Supplies">Office Supplies</option>
-      <option value="Perishables">Perishables</option>
-      <option value="Pets / Plants">Pets / Plants</option>
-      <option value="Tobacco">Tobacco</option>
-      <option value="Transport - Freight">Transport - Freight</option>
-      <option value="Household/Personal Items">Household/Personal Items</option>
-    </select><br>
-
-    What services are you interested in?:<select id="00N2P000000O4y8" multiple="multiple" name="00N2P000000O4y8" title="What services are you interested in?">
-      <option value="eCommerce">eCommerce</option>
-      <option value="Air Freight">Air Freight</option>
-      <option value="Road Freight">Road Freight</option>
-      <option value="Sea Freight">Sea Freight</option>
-      <option value="Rail Freight">Rail Freight</option>
-      <option value="Intermodal &amp; Multimodal">Intermodal &amp; Multimodal</option>
-      <option value="Courier">Courier</option>
-      <option value="Dangerous Goods">Dangerous Goods</option>
-      <option value="Global">Global</option>
-      <option value="New Zealand">New Zealand</option>
-    </select><br>
-
-    <input type="submit" name="submit" value="Submit">
-  </form>
-
-  <!-- ---------- Live Chat button (bottom-right). No JS attached. ---------- -->
-  <button class="chat-cta" id="liveChatBtn" type="button" aria-label="Live Chat">
-    <!-- Chat bubble icon -->
-    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M4 16V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-5 4v-4z"/>
-      <circle cx="9" cy="10" r="1.2"/>
-      <circle cx="13" cy="10" r="1.2"/>
-      <circle cx="17" cy="10" r="1.2"/>
-    </svg>
-    <span class="text">
-      <span class="line1">Live Chat</span>
-      <span class="line2"><span class="dot"></span>Available</span>
-    </span>
-  </button>
-
-  <!-- No JavaScript: button is static and does nothing on click -->
-</body>
 </html>
-
-    Account Number:<input id="00N2P000000O4xQ" maxlength="100" name="00N2P000000O4xQ" size="20" type="text" /><br>
-
-    Lead Type:<select id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type">
-      <option value="">--None--</option>
-      <option value="Reoccurring">Reoccurring</option>
-      <option value="Tender">Tender</option>
-    </select><br>
-
-    What would you like moved or delivered?:<select id="00N2P000000O4yf" name="00N2P000000O4yf" title="What would you like moved or delivered?">
-      <option value="">--None--</option>
-      <option value="Apparel, Accessories &amp; Luxury Goods">Apparel, Accessories &amp; Luxury Goods</option>
-      <option value="Automotive Parts &amp; Equipment">Automotive Parts &amp; Equipment</option>
-      <option value="Building Products">Building Products</option>
-      <option value="Chemicals / Dangerous Goods">Chemicals / Dangerous Goods</option>
-      <option value="Containers / Packaging">Containers / Packaging</option>
-      <option value="Documents">Documents</option>
