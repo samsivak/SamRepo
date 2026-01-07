@@ -1123,7 +1123,6 @@
 
 
 //WebToLead Form:
-
 <!doctype html>
 <html lang="en">
 <head>
@@ -1137,7 +1136,10 @@
       display:flex; align-items:center; gap:12px;
       background:#0c140c; color:#fff;
       border:2px solid #cfd8dc;
-     -system, Roboto, Helvetica, Arial;      border-radius:18px 28px 28px 18px;
+      border-radius:18px 28px 28px 18px;
+      padding:10px 14px;
+      box-shadow:0 12px 28px rgba(0,0,0,.22);
+      cursor:pointer; text-decoration:none; font-family:Segoe UI, system-ui, -apple-system, Roboto, Helvetica, Arial;
     }
     .chat-cta:hover{ filter:brightness(1.05); }
     .chat-cta.hidden{ display:none !important; }
@@ -1178,184 +1180,9 @@
       animation:spin .8s linear infinite;
     }
 
-    /* ===================== ADDITIVE CSS FOR ALIGNMENT ===================== */
-
-    /* 1) Create a centered column container feel even if fields are not inside <form> */
-    body, body form {
-      font-family: Segoe UI, system-ui, -apple-system, Roboto, Helvetica, Arial;
-      color: #0c140c;
-    }
-    /* main content column width */
-    body form, body {
-      --column-width: 720px;
-      --field-width: 560px;
-    }
-    /* If inputs are directly under body (no form), give the page a centered content flow */
-    body {
-      display: block;
-    }
-    /* Apply a centered column to form if present */
-    body form {
-      max-width: var(--column-width);
-      margin: 24px auto;
-      padding: 0 8px;
-      box-sizing: border-box;
-    }
-
-    /* 2) Reset original label rule but keep bold */
-    form label { font-weight: 600; }
-    /* Stack labels above fields (for both cases: inside form or direct children of body) */
-    body form label,
-    body > label {
-      display: block !important;
-      width: auto !important;
-      margin: 16px 0 6px !important;
-      font-weight: 700 !important;
-      color: #0c140c;
-    }
-
-    /* 3) Make inputs/selects full width and consistent height */
-    /* Inside a form */
-    body form input[type="text"],
-    body form input[type="email"],
-    body form input[type="tel"],
-    body form select,
-    body form textarea {
-      display: block;
-      width: 100%;
-      max-width: var(--field-width);
-      height: 36px;
-      padding: 8px 10px;
-      border: 1.5px solid #5a6b55;
-      border-radius: 4px;
-      background: #fff;
-      color: #0c140c;
-      font-size: 16px;
-      box-sizing: border-box;
-      outline: none;
-      margin: 0 0 12px;
-    }
-    /* If the fields are direct children of body (no form wrapper) */
-    body > input[type="text"],
-    body > input[type="email"],
-    body > input[type="tel"],
-    body > select,
-    body > textarea {
-      display: block;
-      width: 100%;
-      max-width: var(--field-width);
-      height: 36px;
-      padding: 8px 10px;
-      border: 1.5px solid #5a6b55;
-      border-radius: 4px;
-      background: #fff;
-      color: #0c140c;
-      font-size: 16px;
-      box-sizing: border-box;
-      outline: none;
-      margin: 0 auto 12px;                 /* center in page column */
-    }
-
-    /* 4) Ensure label + field grouping works even without a wrapper */
-    /* place fields directly under body centered with labels above */
-    body > label + input,
-    body > label + select,
-    body > label + textarea {
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    /* 5) Multi-select or tall fields */
-    body form select[multiple],
-    body form textarea,
-    body > select[multiple],
-    body > textarea {
-      height: 140px;
-      resize: vertical;
-    }
-
-    /* 6) Remove visual gaps from <br> tags printed by SF Web-to-Lead */
-    body form br,
-    body > br {
-      display: none;  /* hides line breaks to keep stacked flow clean */
-    }
-
-    /* 7) Submit button — rounded green like screenshot */
-    body form input[type="submit"],
-    body form button[type="submit"],
-    body > input[type="submit"],
-    body > button[type="submit"] {
-      background: #143a00;
-      color: #fff;
-      border: none;
-      border-radius: 28px;
-      padding: 12px 28px;
-      font-weight: 700;
-      font-size: 16px;
-      cursor: pointer;
-      box-shadow: 0 2px 6px rgba(0,0,0,.18);
-      transition: filter .2s ease, transform .02s ease;
-      margin-top: 12px;
-      width: auto;
-      display: inline-block;
-    }
-    body form input[type="submit"]:hover,
-    body form button[type="submit"]:hover,
-    body > input[type="submit"]:hover,
-    body > button[type="submit"]:hover { filter: brightness(1.05); }
-    body form input[type="submit"]:active,
-    body form button[type="submit"]:active,
-    body > input[type="submit"]:active,
-    body > button[type="submit"]:active { transform: translateY(1px); }
-
-    /* 8) Optional: red asterisk for any labels you mark as required */
-    body form label.required::after,
-    body > label.required::after {
-      content: '*';
-      color: #c62828;
-      margin-left: 4px;
-      font-weight: 800;
-    }
-
-    /* ---------- Opt-in + Consent block styles (added after form) ---------- */
-    .consent-block {
-      max-width: var(--field-width);
-      margin: 24px auto 14px;
-      color: #0c140c;
-      line-height: 1.6;
-      font-family: Segoe UI, system-ui, -apple-system, Roboto, Helvetica, Arial;
-    }
-    .consent-block p {
-      margin: 0 0 12px;
-    }
-    .consent-block .optin {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin: 8px 0 10px;
-      font-weight: 700;
-      font-size: 18px;
-    }
-    .consent-block .optin input[type="checkbox"] {
-      width: 18px; height: 18px;
-      accent-color: #143a00;
-      cursor: pointer;
-    }
-    .consent-block .consent-text {
-      font-style: italic;
-    }
-    .consent-block .consent-text a {
-      color: #154a7e;
-      text-decoration: underline;
-    }
-
-    /* ---------- Optional: align reCAPTCHA if present ---------- */
-    .captcha-wrap {
-      max-width: var(--field-width);
-      margin: 12px auto 18px;
-    }
-
-    /* Keep your live chat pill styles untouched */
+    /* Simple form spacing for readability */
+    form label{ display:inline-block; width:180px; margin:6px 0; font-weight:600; }
+    form input, form select{ margin:6px 0; }
   </style>
 </head>
 
@@ -1421,31 +1248,6 @@
 
     <input type="submit" name="submit" value="Submit">
   </form>
-
-  <!-- ---------------- Opt-in + Consent (added AFTER your form) ---------------- -->
-  <div class="consent-block">
-    <p>
-      I would like to receive marketing communications, news, research, business insights and relevant industry event
-      invitations from Team Global Express.
-    </p>
-
-    <label class="optin" for="opt_in">
-      <span>Opt In</span>
-      <input id="opt_in" name="opt_in" type="checkbox" value="Yes">
-    </label>
-
-    <p class="consent-text">
-      I consent to my personal information being collected, used, stored, and disclosed as set out in the
-      <a href="https://www.teamglobalexp.com/privacyon-noticeTGE Privacy Collection Notice</a>
-      and the
-      <a href="https://www.teamglobalexp.com/privacyE Privacy Policy</a>.
-    </p>
-  </div>
-
-  <!-- Optional wrapper for CAPTCHA if you embed it below -->
-  <div class="captcha-wrap">
-    <!-- Place your reCAPTCHA widget here if required -->
-  </div>
 
   <!-- ---------------- Live Chat pill ---------------- -->
   <button class="chat-cta" id="liveChatBtn" type="button" aria-label="Live Chat">
