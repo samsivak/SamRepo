@@ -1130,34 +1130,46 @@
   <meta http-equiv="Content-type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Web-to-Lead (Sandbox) + Inert Live Chat Button</title>
+
   <style>
+    /* Your original spacing */
     form label { display:inline-block; width:180px; margin:6px 0; font-weight:600; }
     form input, form select { margin:6px 0; }
-    /* Inert Live Chat button (bottom-right); cannot intercept clicks */
+
+    /* Inert Live Chat pill (bottom-right) — cannot intercept clicks */
     .chat-cta{
       position: fixed; right: 24px; bottom: 24px; z-index: 2000;
       display: flex; align-items: center; gap: 12px;
       background: #0c140c; color: #fff;
       border: 2px solid #cfd8dc; border-radius: 18px 28px 28px 18px;
       padding: 10px 14px; box-shadow: 0 12px 28px rgba(0,0,0,.22);
-      pointer-events: none; user-select: none; cursor: default;
-      text-decoration: none; font-family: Segoe UI, system-ui, -apple-system, Roboto, Helvetica, Arial;
+      pointer-events: none; /* decorative only */
+      user-select: none; cursor: default;
+      text-decoration: none;
+      font-family: Segoe UI, system-ui, -apple-system, Roboto, Helvetica, Arial;
     }
     .chat-cta .icon{ width:24px; height:24px; stroke:#fff; fill:none; flex:0 0 24px; }
     .chat-cta .text{ display:flex; flex-direction:column; line-height:1.1; }
     .chat-cta .line1{ font-weight:800; font-size:.98rem; color:#fff; }
     .chat-cta .line2{ display:flex; align-items:center; gap:6px; font-weight:600; font-size:.86rem; color:#d7f7d7; }
     .chat-cta .dot{ width:8px; height:8px; border-radius:50%; background:#2bd24f; box-shadow:0 0 0 2px rgba(43,210,79,.25); }
+    /* Make sure nothing overlays the form submit area */
+    body { min-height: 100vh; }
   </style>
 </head>
+
 <body>
-  https://test.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&orgId=00DAD000008PLr4
+  <!-- Salesforce Web-to-Lead FORM (Sandbox) -->
+  <form action="https://e.com/servlet/servlet.WebToLead?encoding=UTF-8&orgId=00DAD000008PLr4
+
     <input type="hidden" name="oid" value="00DAD000008PLr4">
     <input type="hidden" name="retURL" value="https://samsivak.github.io/SamRepo/thank-you.html">
-    <!-- Optional debug (uncomment once if you need diagnostics)
+
+    <!-- Optional debug (uncomment once to get a diagnostic email)
     <input type="hidden" name="debug" value="1">
     <input type="hidden" name="debugEmail" value="sambasiva.koidala@teamglobalexp.com">
     -->
+
     <label for="first_name">First Name</label>
     <input id="first_name" maxlength="40" name="first_name" size="20" type="text"><br>
 
@@ -1236,7 +1248,7 @@
     </select><br>
 
     <label for="00N2P000000O4y8">What services are you interested in?</label>
-    <select id="00N2P000000O4y8" multiple="multiple" name="00N2P000000O4y8" title="What services are you interested in?">
+    <select id="00N2P000000O4y8" name="00N2P000000O4y8" title="What services are you interested in?" multiple>
       <option value="eCommerce">eCommerce</option>
       <option value="Air Freight">Air Freight</option>
       <option value="Road Freight">Road Freight</option>
@@ -1256,7 +1268,7 @@
   <button class="chat-cta" id="liveChatBtn" type="button" aria-label="Live Chat" role="presentation" tabindex="-1">
     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M4 16V6a2 2 0 0 1 2-2h12a 2 2 0 0 1 2 2v8a 2 2 0 0 1-2 2H9l-5 4v-4z"/>
+      <path d="M4 16V6a2 2 0 0 1 2-2h12a 2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-5 4v-4z"/>
       <circle cx="9" cy="10" r="1.2"/>
       <circle cx="13" cy="10" r="1.2"/>
       <circle cx="17" cy="10" r="1.2"/>
@@ -1266,5 +1278,42 @@
       <span class="line2"><span class="dot"></span>Available</span>
     </span>
   </button>
+
+  <!-- Tiny diagnostic helper: log and force submit if click is swallowed -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function(){
+      const form = document.querySelector('form[action^="https://test.salesforce.com/servlet/servlet.WebToLead"]');
+      const submit = form?.querySelector('input[type="submit"][name="submit"]');
+      if (!form || !submit) return;
+
+      form.addEventListener('submit', function(ev){
+        console.log('[W2L] submit event fired:', ev);
+        // Do NOT preventDefault — we want the browser to post the form
+      });
+
+      submit.addEventListener('click', function(){
+        console.log('[W2L] submit button clicked');
+        // Let native validation run; then ensure submit is triggered
+        setTimeout(function(){
+          if (form.checkValidity()) {
+            if (form.requestSubmit) {
+              console.log('[W2L] calling requestSubmit()');
+              form.requestSubmit();
+            } else {
+              console.log('[W2L] calling form.submit()');
+              form.submit();
+            }
+          } else {
+            console.warn('[W2L] form not valid — check required fields');
+          }
+        }, 0);
+      });
+
+      // Detect if this page is inside an iframe (sandbox may block forms)
+      if (window.top !== window.self) {
+        console.warn('[W2L] Page is inside an iframe — ensure iframe has sandbox="allow-forms allow-scripts allow-same-origin"');
+      }
+    });
+  </script>
 </body>
 </html>
