@@ -1189,7 +1189,7 @@
 
 <body>
   <!-- ---------------- Your working Salesforce Web-to-Lead form (UNCHANGED) ---------------- -->
-  https://test.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&orgId=00DAD000008PLr4
+  <form action="https://test.salesforce.com/servlet/servlet.WebToLead?encoding0DAD000008PLr4
     <input type="hidden" name="oid" value="00DAD000008PLr4">
     <input type="hidden" name="retURL" value="https://samsivak.github.io/SamRepo/thank-you.html">
 
@@ -1287,8 +1287,7 @@
     <input type="submit" name="submit" value="Submit">
   </form>
 
-  <!-- ---------------- Live Chat pill (bottom-right) ---------------- -->
-  <!-- IMPORTANT: This button is OUTSIDE the form to avoid any submit interference -->
+  <!-- ---------------- Live Chat pill (outside the form; bottom-right) ---------------- -->
   <button class="chat-cta" id="liveChatBtn" type="button" aria-label="Live Chat">
     <!-- Chat bubble icon -->
     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -1398,7 +1397,7 @@
       liveChatBtn.addEventListener('click', async function(e){
         // IMPORTANT: This listener is attached ONLY to the chat button
         e.preventDefault();
-        e.stopPropagation();
+        // e.stopPropagation();  // Not needed; avoid affecting outer listeners
 
         // Show inline spinner, then show round spinner
         liveChatBtn.classList.add('loading');
