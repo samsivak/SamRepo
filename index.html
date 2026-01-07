@@ -1183,7 +1183,117 @@
 
     /* Simple form spacing for readability */
     form label{ display:inline-block; width:180px; margin:6px 0; font-weight:600; }
-    form input, form select{ margin:6px 0; }
+
+    /* ===================== ADDITIVE CSS FOR ALIGNMENT (Screenshot-like) ===================== */
+
+    /* Form container — centered and readable width */
+    body form {
+      max-width: 720px;
+      margin: 24px auto;
+      padding: 0 8px;
+      box-sizing: border-box;
+      font-family: Segoe UI, system-ui, -apple-system, Roboto, Helvetica, Arial;
+      color: #0c140c;
+    }
+
+    /* Labels stacked above controls, bold */
+    body form label {
+      display: block !important;
+      width: auto !important;                 /* neutralize original width */
+      margin: 16px 0 6px !important;          /* spacing like screenshot */
+      font-weight: 700 !important;
+      color: #0c140c;
+    }
+
+    /* Inputs and selects full width with consistent height and spacing */
+    body form input[type="text"],
+    body form input[type="email"],
+    body form input[type="tel"],
+    body form select,
+    body form textarea {
+      display: block;
+      width: 100%;
+      max-width: 560px;                        /* aligns with screenshot feel */
+      height: 36px;
+      padding: 8px 10px;
+      border: 1.5px solid #5a6b55;            /* subtle greenish border */
+      border-radius: 4px;
+      background: #fff;
+      color: #0c140c;
+      font-size: 16px;
+      box-sizing: border-box;
+      outline: none;
+      margin: 0 0 12px;                       /* spacing between fields */
+    }
+
+    /* Multi-select or larger text areas */
+    body form select[multiple],
+    body form textarea {
+      height: 140px;                           /* matches tall list in screenshot */
+      resize: vertical;
+    }
+
+    /* Submit button — rounded green like screenshot */
+    body form input[type="submit"],
+    body form button[type="submit"] {
+      background: #143a00;
+      color: #fff;
+      border: none;
+      border-radius: 28px;
+      padding: 12px 28px;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,.18);
+      transition: filter .2s ease, transform .02s ease;
+      margin-top: 12px;
+    }
+    body form input[type="submit"]:hover,
+    body form button[type="submit"]:hover { filter: brightness(1.05); }
+    body form input[type="submit"]:active,
+    body form button[type="submit"]:active { transform: translateY(1px); }
+
+    /* Optional: red asterisk for any labels you mark as required */
+    body form label.required::after {
+      content: '*';
+      color: #c62828;
+      margin-left: 4px;
+      font-weight: 800;
+    }
+
+    /* Consent block styling appended after form */
+    .consent-block {
+      max-width: 560px;
+      margin: 18px auto 14px;
+      color: #0c140c;
+      line-height: 1.5;
+      font-family: Segoe UI, system-ui, -apple-system, Roboto, Helvetica, Arial;
+    }
+    .consent-block .optin {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 8px 0 10px;
+      font-weight: 600;
+    }
+    .consent-block .optin input[type="checkbox"] {
+      width: 18px; height: 18px;
+      accent-color: #143a00; /* checkbox color */
+      cursor: pointer;
+    }
+    .consent-block .consent-text {
+      font-style: italic;
+    }
+    .consent-block .consent-text a {
+      color: #154a7e;
+      text-decoration: underline;
+    }
+
+    /* Optional wrapper if you place reCAPTCHA below consent */
+    .captcha-wrap {
+      max-width: 560px;
+      margin: 12px auto 18px;
+    }
   </style>
 </head>
 
@@ -1249,6 +1359,30 @@
 
     <input type="submit" name="submit" value="Submit">
   </form>
+
+  <!-- ---------------- Opt-in + Consent (added AFTER your form) ---------------- -->
+  <div class="consent-block">
+    <p>
+      I would like to receive marketing communications, news, research, business insights and relevant industry event
+      invitations from Team Global Express.
+    </p>
+    <label class="optin" for="opt_in">
+      <span>Opt In</span>
+      <input id="opt_in" name="opt_in" type="checkbox" value="Yes">
+    </label>
+
+    <p class="consent-text">
+      I consent to my personal information being collected, used, stored, and disclosed as set out in the
+      <a href="https://www.teamglobalexp.com/privacy-collection-notice" target="_blank"ice</a>
+      and the
+      <a href="https://www.teamglobalexp.com/privacyE Privacy Policy</a>.
+    </p>
+  </div>
+
+  <!-- Optional wrapper for CAPTCHA if you embed it below -->
+  <div class="captcha-wrap">
+    <!-- Place your reCAPTCHA widget here if required -->
+  </div>
 
   <!-- ---------------- Live Chat pill ---------------- -->
   <button class="chat-cta" id="liveChatBtn" type="button" aria-label="Live Chat">
