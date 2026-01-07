@@ -1125,438 +1125,74 @@
 WebToLead Form:
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Web-to-Lead + Live Chat</title>
+  <body>
+	  <!--  ----------------------------------------------------------------------  -->
+<!--  NOTE: Please add the following <META> element to your page <HEAD>.      -->
+<!--  If necessary, please modify the charset parameter to specify the        -->
+<!--  character set of your HTML page.                                        -->
+<!--  ----------------------------------------------------------------------  -->
 
-  <!-- Google reCAPTCHA v2 (checkbox) -->
-  https://www.google.com/recaptcha/api.js</script>
-  <style>
-    :root{
-      --text:#111; --muted:#555; --border:#b7b7b7; --error:#b00020;
-      --input-bg:#fff; --input-height:34px; --form-width:480px;
+<META HTTP-EQUIV="Content-type" CONTENT="text/html; charset=UTF-8">
 
-      /* Submit button */
-      /* tuned to match screenshot */
-      --submit-bg:#1f7a2d;
-      --submit-bg-hover:#185f22;
-      --submit-text:#ffffff;
+<!--  ----------------------------------------------------------------------  -->
+<!--  NOTE: Please add the following <FORM> element to your page.             -->
+<!--  ----------------------------------------------------------------------  -->
 
-      /* Chat pill */
-      --pill-bg:#0c140c;
-      --pill-outline:#cfd8dc;
-      --pill-text:#ffffff;
-      --pill-shadow:0 12px 28px rgba(0,0,0,.22);
+<form action="https://test.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&orgId=00DAD000008PLr4" method="POST">
 
-      /* Spinner colors */
-      --spinner:#111;
-      --lime:#c0ff4a;
-    }
+<input type=hidden name="oid" value="00DAD000008PLr4">
+<input type=hidden name="retURL" value="https://samsivak.github.io/SamRepo/thank-you.html">
 
-    /* --- Base --- */
-    html, body{ background:#fff; }
-    body{
-      font-family:"Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial;
-      color:var(--text);
-      margin:0;
-      padding:12px 16px;
-      line-height:1.35;
-    }
-    h1{ font-size:1.6rem; font-weight:800; margin:0 0 10px; }
-    .container{ max-width:1100px; margin:0 auto; }
+<!--  ----------------------------------------------------------------------  -->
+<!--  NOTE: These fields are optional debugging elements. Please uncomment    -->
+<!--  these lines if you wish to test in debug mode.                          -->
+<!--  <input type="hidden" name="debug" value=1>                              -->
+<!--  <input type="hidden" name="debugEmail"                                  -->
+<!--  value="sambasiva.koidala@teamglobalexp.com">                            -->
+<!--  ----------------------------------------------------------------------  -->
 
-    /* --- Compact stacked form (left column, narrow controls) --- */
-    form{ width:var(--form-width); background:#fff; }
-    .field{ margin:12px 0; }
-    label{ display:block; font-weight:600; margin-bottom:6px; color:#222; }
-    .required::after{ content:"*"; color:var(--error); margin-left:4px; }
-    .help{ font-size:.95rem; color:var(--muted); }
-    .inline{ display:block; } /* force stacked even for paired fields */
-    .nowrap{ white-space:nowrap; } /* for labels needing one line */
-    .singleline{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } /* long text single line */
+<label for="first_name">First Name</label><input  id="first_name" maxlength="40" name="first_name" size="20" type="text" /><br>
 
-    /* Inputs aligned and same width as labels block */
-    input[type="text"], input[type="email"], input[type="tel"], select, textarea{
-      width:100%;
-      height:var(--input-height);
-      border:1px solid var(--border); border-radius:6px;
-      padding:8px 10px; font-size:1rem; background:var(--input-bg);
-      box-sizing:border-box;
-    }
-    select[multiple]{ height:110px; padding:8px 10px; }
-    textarea{ height:100px; resize:vertical; }
-    .error-text{ color:var(--error); font-size:.92rem; display:none; margin-top:4px; }
+<label for="last_name">Last Name</label><input  id="last_name" maxlength="80" name="last_name" size="20" type="text" /><br>
 
-    /* --- Submit row / button (screenshot style) --- */
-    .submit-row{ display:flex; align-items:center; gap:10px; margin-top:14px; }
-    #submitBtn{
-      background:var(--submit-bg); color:var(--submit-text);
-      border:none; border-radius:18px; padding:10px 18px;
-      font-weight:700; font-size:1rem; cursor:pointer;
-      box-shadow:0 3px 12px rgba(0,0,0,.12);
-    }
-    #submitBtn:hover{ background:var(--submit-bg-hover); }
-    #submitBtn:disabled{ opacity:.7; cursor:not-allowed; }
-    .submit-spinner{
-      width:18px; height:18px; border-radius:50%; border:2px solid transparent; border-top-color:var(--spinner);
-      animation:spin .8s linear infinite; display:none;
-    }
-    .submit-row.loading .submit-spinner{ display:inline-block; }
-    @keyframes spin{ to{ transform:rotate(360deg); } }
+<label for="email">Email</label><input  id="email" maxlength="80" name="email" size="20" type="text" /><br>
 
-    /* --- Bottom-right Live Chat pill --- */
-    .chat-cta{
-      position:fixed; right:24px; bottom:24px; z-index:2000;
-      display:flex; align-items:center; gap:12px;
-      background:var(--pill-bg) !important; color:var(--pill-text) !important;
-      border:2px solid var(--pill-outline);
-      border-radius:18px 28px 28px 18px;
-      padding:10px 14px;
-      box-shadow:var(--pill-shadow);
-      cursor:pointer; text-decoration:none !important;
-    }
-    .chat-cta:hover{ filter:brightness(1.03); }
-    .chat-cta:active{ transform:translateY(1px); }
-    .chat-cta.hidden{ display:none !important; }
+<label for="company">Company</label><input  id="company" maxlength="40" name="company" size="20" type="text" /><br>
 
-    .chat-cta .icon{ width:24px; height:24px; stroke:var(--pill-text) !important; fill:none !important; flex:0 0 24px; }
-    .chat-cta .text{ display:flex; flex-direction:column; line-height:1.1; }
-    .chat-cta .line1{ font-weight:800; font-size:.98rem; color:var(--pill-text); }
-    .chat-cta .line2{ display:flex; align-items:center; gap:6px; font-weight:600; font-size:.86rem; color:#d7f7d7; }
-    .chat-cta .dot{ width:8px; height:8px; border-radius:50%; background:#2bd24f; box-shadow:0 0 0 2px rgba(43,210,79,.25); }
+<label for="city">City</label><input  id="city" maxlength="40" name="city" size="20" type="text" /><br>
 
-    .chat-cta .spinner{ width:18px; height:18px; border-radius:50%; border:3px solid transparent; border-top-color:#fff;
-      animation:spin .8s linear infinite; display:none; flex:0 0 18px; }
-    .chat-cta.loading .icon{ opacity:.35; }
-    .chat-cta.loading .spinner{ display:inline-block; }
+<label for="state">State/Province</label><input  id="state" maxlength="20" name="state" size="20" type="text" /><br>
 
-    .chat-loading{
-      position:fixed; right:24px; bottom:24px; z-index:1999;
-      width:56px; height:56px; border-radius:50%;
-      background:var(--lime); box-shadow:var(--pill-shadow);
-      display:none; place-items:center;
-    }
-    .chat-loading.visible{ display:grid; }
-    .chat-loading .spinner{
-      width:24px; height:24px; border-radius:50%;
-      border:3px solid transparent; border-top-color:var(--spinner);
-      animation:spin .8s linear infinite;
-    }
+<label for="phone">Phone</label><input  id="phone" maxlength="40" name="phone" size="20" type="text" /><br>
 
-    /* Links inside consent text */
-    a{ color:#034c2b; text-decoration:underline; }
-  </style>
-</head>
+Which delivery service do you use now?:<select  id="00NOa000007qyDt" name="00NOa000007qyDt" title="Which delivery service do you use now?"><option value="">--None--</option><option value="Australia Post">Australia Post</option>
+<option value="Star Track">Star Track</option>
+<option value="Seko">Seko</option>
+<option value="Couriers Please">Couriers Please</option>
+<option value="Aramex">Aramex</option>
+<option value="Other">Other</option>
+</select><br>
 
-<body>
-<div class="container">
-  <h1 style="margin-bottom:8px;">Web-to-Lead</h1>
-
-  <!-- ===== Web-to-Lead form (stacked, compact) ===== -->
-  https://webto.salesforce.com/servlet/servlet.WebToCase?encoding=UTF-8
-
-    <!-- REQUIRED hidden fields -->
-    <input type="hidden" name="orgid" value="YOUR_SF_ORG_OID_HERE">
-    <input type="hidden" name="retURL" value="https://samsivak.github.io/SamRepo/thank-you.html">
-    <!-- Common Lead fields -->
-    <input type="hidden" name="origin" value="Web">
-    <input type="hidden" name="subject" value="New logistics enquiry via website">
-
-    <!-- Account Number -->
-    <div class="field">
-      <label for="AccountNumber">Account Number (if applicable)</label>
-      <input id="AccountNumber" name="00N_account_number__c" type="text"/>
-    </div>
-
-    <!-- First / Last -->
-    <div class="field">
-      <label for="FirstName" class="required">First Name</label>
-      <input id="FirstName" name="firstName" type="text" required/>
-      <div class="error-text" data-error-for="firstName">First name is required.</div>
-    </div>
-    <div class="field">
-      <label for="LastName" class="required">Last Name</label>
-      <input id="LastName" name="lastName" type="text" required/>
-      <div class="error-text" data-error-for="lastName">Last name is required.</div>
-    </div>
-
-    <!-- Company -->
-    <div class="field">
-      <label for="Company" class="required">Company</label>
-      <input id="Company" name="company" type="text" required/>
-      <div class="error-text" data-error-for="company">Company is required.</div>
-    </div>
-
-    <!-- Email / Phone -->
-    <div class="field">
-      <label for="Email" class="required">Email</label>
-      <input id="Email" name="email" type="email" required/>
-      <div class="error-text" data-error-for="email">Valid email is required.</div>
-    </div>
-    <div class="field">
-      <label for="Phone" class="required">Phone</label>
-      <input id="Phone" name="phone" type="tel" required/>
-      <div class="error-text" data-error-for="phone">Phone is required.</div>
-    </div>
-
-    <!-- Preferred Method of Contact -->
-    <div class="field">
-      <label for="PreferredContact">Preferred Method of Contact</label>
-      <select id="PreferredContact" name="00N_preferred_contact__c">
-        <option value="">--None--</option>
-        <option>Email</option>
-        <option>Phone</option>
-      </select>
-    </div>
-
-    <!-- State -->
-    <div class="field">
-      <label for="StatePicklist">State</label>
-      <select id="StatePicklist" name="00N_state__c">
-        <option value="">--None--</option>
-        <option>NSW</option>
-        <option>VIC</option>
-        <option>QLD</option>
-        <option>WA</option>
-        <option>SA</option>
-        <option>TAS</option>
-        <option>ACT</option>
-        <option>NT</option>
-      </select>
-    </div>
-
-    <!-- Industry -->
-    <div class="field">
-      <label for="Industry" class="required">Industry</label>
-      <select id="Industry" name="00N_industry__c" required>
-        <option value="">--None--</option>
-        <option>eCommerce</option>
-        <option>Manufacturing</option>
-        <option>Retail</option>
-        <option>Healthcare</option>
-        <option>Automotive</option>
-        <option>Other</option>
-      </select>
-      <div class="error-text" data-error-for="00N_industry__c">Industry is required.</div>
-    </div>
-
-    <!-- Services -->
-    <div class="field">
-      <label for="Services">What services are you interested in?</label>
-      <select id="Services" name="00N_services_interested__c" multiple>
-        <option>eCommerce</option>
-        <option>Air Freight</option>
-        <option>Road Freight</option>
-        <option>Sea Freight</option>
-      </select>
-    </div>
-
-    <!-- Moved / Delivered -->
-    <div class="field">
-      <label for="MovedDelivered">What would you like moved or delivered?</label>
-      <select id="MovedDelivered" name="00N_moved_delivered__c">
-        <option value="">--None--</option>
-        <option>Parcels</option>
-        <option>Pallets</option>
-        <option>Containers</option>
-        <option>Bulk</option>
-        <option>Other</option>
-      </select>
-    </div>
-
-    <!-- Opt-in (single-line text + checkbox on its own line, like first screenshot) -->
-    <div class="field">
-      <p class="help singleline" style="width:100%;">
-        I would like to receive marketing communications, news, research, business insights and relevant industry event invitations from Team Global Express.
-      </p>
-      <label style="font-weight:600" class="nowrap"><input type="checkbox" name="00N_opt_in_marketing__c" value="true"> Opt in</label>
-    </div>
-
-    <!-- Consent (single-line with hypertext) -->
-    <div class="field">
-      <p class="help singleline" style="width:100%; font-style:italic;">
-        I consent to my personal information being collected, used, stored, and disclosed as set out in the
-        <aGE Privacy Collection Notice</a> and the
-        #TGE Privacy Policy</a>.
-      </p>
-    </div>
-
-    <!-- reCAPTCHA (checkbox) -->
-    <div class="field" id="captchaBlock">
-      <div class="g-recaptcha" data-sitekey="YOUR_RECAPTCHA_SITE_KEY"></div>
-      <div class="error-text" data-error-for="recaptcha">Please confirm you are not a robot.</div>
-    </div>
-
-    <!-- Description -->
-    <div class="field">
-      <label for="Description">Additional Details</label>
-      <textarea id="Description" name="description" rows="4" placeholder="Add any specifics about your shipment or request"></textarea>
-    </div>
-
-    <!-- Submit -->
-    <div class="submit-row" id="submitRow">
-      <button id="submitBtn" type="submit">Submit</button>
-      <span class="submit-spinner" aria-hidden="true"></span>
-    </div>
-  </form>
-</div>
-
-<!-- ===== Live Chat pill (visuals changed; click logic preserved) ===== -->
-<button class="chat-cta" id="liveChatBtn" type="button" aria-label="Live Chat">
-  <!-- Chat bubble icon -->
-  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M4 16V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-5 4v-4z"/>
-    <circle cx="9" cy="10" r="1.2"/>
-    <circle cx="13" cy="10" r="1.2"/>
-    <circle cx="17" cy="10" r="1.2"/>
-  </svg>
-  <span class="text">
-    <span class="line1">Live Chat</span>
-    <span class="line2"><span class="dot"></span>Available</span>
-  </span>
-  <span class="spinner" aria-hidden="true"></span>
-</button>
-
-<!-- Spinner shown after CTA hides, until embedded launcher appears -->
-<div class="chat-loading" id="chatLoading" aria-hidden="true">
-  <span class="spinner" aria-hidden="true"></span>
-</div>
-
-<script>
-  // Embedded Messaging (tgedev)
-  function initEmbeddedMessaging() {
-    try {
-      embeddedservice_bootstrap.settings.language = 'en_US';
-      embeddedservice_bootstrap.init(
-        '00DAD000008PLr4',
-        'Messaging_Routing_Channel',
-        'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770',
-        { scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com' }
-      );
-    } catch (err) {
-      console.error('Error loading Embedded Messaging: ', err);
-    }
-  }
-
-  const BOOTSTRAP_SRC = 'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770/assets/js/bootstrap.min.js';
-  let bootstrapLoadPromise = null;
-
-  function loadEmbeddedBootstrapOnce() {
-    if (bootstrapLoadPromise) return bootstrapLoadPromise;
-    bootstrapLoadPromise = new Promise((resolve, reject) => {
-      const existing = document.querySelector(`script[src="${BOOTSTRAP_SRC}"]`);
-      if (existing) {
-        existing.addEventListener('load', () => resolve());
-        existing.addEventListener('error', (e) => reject(e));
-        if (existing.dataset?.loaded === 'true') resolve();
-        return;
-      }
-      const s = document.createElement('script');
-      s.type = 'text/javascript';
-      s.src = BOOTSTRAP_SRC;
-      s.async = true;
-      s.onload = () => { s.dataset.loaded = 'true'; try { initEmbeddedMessaging(); } finally { resolve(); } };
-      s.onerror = (e) => reject(e);
-      document.head.appendChild(s);
-    });
-    return bootstrapLoadPromise;
-  }
-
-  function isLauncherPresent() {
-    return !!(
-      document.querySelector('.embeddedserviceHelpButton') ||
-      document.querySelector('.embeddedservice_launcher') ||
-      document.querySelector('#embedded-service') ||
-      document.querySelector('[class*="embeddedservice"][class*="launcher"]')
-    );
-  }
-
-  function waitForLauncherThenHideSpinner() {
-    const spinner = document.getElementById('chatLoading');
-    if (isLauncherPresent()) {
-      spinner.classList.remove('visible'); spinner.setAttribute('aria-hidden', 'true'); return;
-    }
-    const observer = new MutationObserver(() => {
-      if (isLauncherPresent()) {
-        spinner.classList.remove('visible'); spinner.setAttribute('aria-hidden', 'true'); observer.disconnect();
-      }
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
-    setTimeout(() => { spinner.classList.remove('visible'); spinner.setAttribute('aria-hidden', 'true'); observer.disconnect(); }, 20000);
-  }
-
-  const liveChatBtn = document.getElementById('liveChatBtn');
-  const chatLoading = document.getElementById('chatLoading');
-
-  // CLICK LOGIC PRESERVED
-  liveChatBtn.addEventListener('click', async (e) => {
-    e.preventDefault(); e.stopPropagation();
-    liveChatBtn.setAttribute('role', 'button');
-
-    // show CTA inline spinner while bootstrap injects
-    liveChatBtn.classList.add('loading');
-
-    // Hide CTA and show round spinner immediately (as before)
-    liveChatBtn.classList.add('hidden');
-    chatLoading.classList.add('visible');
-    chatLoading.setAttribute('aria-hidden', 'false');
-
-    try {
-      await loadEmbeddedBootstrapOnce();
-      waitForLauncherThenHideSpinner();
-    } catch (err) {
-      console.error(err);
-      // Restore CTA on failure
-      chatLoading.classList.remove('visible');
-      chatLoading.setAttribute('aria-hidden', 'true');
-      liveChatBtn.classList.remove('hidden');
-      liveChatBtn.classList.remove('loading');
-      alert('Sorry, we could not start the chat. Please try again.');
-    }
-  });
-
-  /* Web-to-Case validation/spinner – preserved, + reCAPTCHA check */
-  const form = document.getElementById('w2cForm');
-  const submitRow = document.getElementById('submitRow');
-  const submitBtn = document.getElementById('submitBtn');
-
-  function showError(name, msg){
-    const el = form.querySelector(`[data-error-for="${name}"]`);
-    if(el){ el.textContent = msg; el.style.display = 'block'; }
-  }
-  function clearErrors(){ form.querySelectorAll('.error-text').forEach(el => el.style.display = 'none'); }
-
-  form.addEventListener('submit', (e) => {
-    clearErrors();
-    let ok = true;
-    const reqs = [
-      ['firstName','First name is required.'],
-      ['lastName','Last name is required.'],
-      ['company','Company is required.'],
-      ['email','Valid email is required.'],
-      ['phone','Phone is required.']
-    ];
-    reqs.forEach(([name,msg])=>{
-      const input = form.querySelector(`[name="${name}"]`);
-      if(input && !input.value.trim()){ showError(name, msg); ok = false; }
-    });
-    const industry = form.querySelector('[name="00N_industry__c"]');
-    if(industry && !industry.value){ showError('00N_industry__c','Industry is required.'); ok = false; }
-
-    // reCAPTCHA must be completed
-    if (typeof grecaptcha !== 'undefined') {
-      const captchaResponse = grecaptcha.getResponse();
-      if (!captchaResponse) { showError('recaptcha', 'Please confirm you are not a robot.'); ok = false; }
-    }
-
-    if(!ok){ e.preventDefault(); return; }
-
-    submitBtn.disabled = true;
-    submitRow.classList.add('loading');
-    setTimeout(()=>{ submitBtn.disabled = false; submitRow.classList.remove('loading'); }, 10000);
-  });
-</script>
+What would you like moved or delivered?:<select  id="00N2P000000O4yf" name="00N2P000000O4yf" title="What would you like moved or delivered?"><option value="">--None--</option><option value="Apparel, Accessories &amp; Luxury Goods">Apparel, Accessories &amp; Luxury Goods</option>
+<option value="Automotive Parts &amp; Equipment">Automotive Parts &amp; Equipment</option>
+<option value="Building Products">Building Products</option>
+<option value="Chemicals / Dangerous Goods">Chemicals / Dangerous Goods</option>
+<option value="Containers / Packaging">Containers / Packaging</option>
+<option value="Documents">Documents</option>
+<option value="Electronics / Telecommunications">Electronics / Telecommunications</option>
+<option value="Entertainment Equipment">Entertainment Equipment</option>
+<option value="Food &amp; Beverage">Food &amp; Beverage</option>
+<option value="Health Care">Health Care</option>
+<option value="Marketing, Advertising &amp; Promotional Goods">Marketing, Advertising &amp; Promotional Goods</option>
+<option value="Office Supplies">Office Supplies</option>
+<option value="Perishables">Perishables</option>
+<option value="Pets / Plants">Pets / Plants</option>
+<option value="Tobacco">Tobacco</option>
+<option value="Transport - Freight">Transport - Freight</option>
+<option value="Household/Personal Items">Household/Personal Items</option>
+</select><br>
+<input type="submit" name="submit">
+</form>
 </body>
 </html>
 
