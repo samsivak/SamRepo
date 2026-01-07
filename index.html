@@ -1131,42 +1131,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Web-to-Lead (Sandbox) + Inert Live Chat Button</title>
   <style>
-    /* Optional: keep your original form spacing */
     form label { display:inline-block; width:180px; margin:6px 0; font-weight:600; }
     form input, form select { margin:6px 0; }
-
-    /* Live Chat pill (bottom-right) — decorative only */
+    /* Inert Live Chat button (bottom-right); cannot intercept clicks */
     .chat-cta{
       position: fixed; right: 24px; bottom: 24px; z-index: 2000;
       display: flex; align-items: center; gap: 12px;
       background: #0c140c; color: #fff;
-      border: 2px solid #cfd8dc;
-      border-radius: 18px 28px 28px 18px;
-      padding: 10px 14px;
-      box-shadow: 0 12px 28px rgba(0,0,0,.22);
-      pointer-events: none; /* inert, cannot intercept clicks */
-      user-select: none; cursor: default;
-      text-decoration: none;
-      font-family: Segoe UI, system-ui, -apple-system, Roboto, Helvetica, Arial;
+      border: 2px solid #cfd8dc; border-radius: 18px 28px 28px 18px;
+      padding: 10px 14px; box-shadow: 0 12px 28px rgba(0,0,0,.22);
+      pointer-events: none; user-select: none; cursor: default;
+      text-decoration: none; font-family: Segoe UI, system-ui, -apple-system, Roboto, Helvetica, Arial;
     }
-    .chat-cta .icon{ width: 24px; height: 24px; stroke: #fff; fill: none; flex: 0 0 24px; }
+    .chat-cta .icon{ width:24px; height:24px; stroke:#fff; fill:none; flex:0 0 24px; }
     .chat-cta .text{ display:flex; flex-direction:column; line-height:1.1; }
     .chat-cta .line1{ font-weight:800; font-size:.98rem; color:#fff; }
     .chat-cta .line2{ display:flex; align-items:center; gap:6px; font-weight:600; font-size:.86rem; color:#d7f7d7; }
     .chat-cta .dot{ width:8px; height:8px; border-radius:50%; background:#2bd24f; box-shadow:0 0 0 2px rgba(43,210,79,.25); }
   </style>
 </head>
-
 <body>
-  <!-- --- Salesforce Web-to-Lead (Sandbox) --- -->
   https://test.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&orgId=00DAD000008PLr4
     <input type="hidden" name="oid" value="00DAD000008PLr4">
     <input type="hidden" name="retURL" value="https://samsivak.github.io/SamRepo/thank-you.html">
-
-    <!-- Debug (optional for diagnostics) -->
-    <!-- <input type="hidden" name="debug" value="1"> -->
-    <!-- <input type="hidden" name="debugEmail" value="sambasiva.koidala@teamglobalexp.com"> -->
-
+    <!-- Optional debug (uncomment once if you need diagnostics)
+    <input type="hidden" name="debug" value="1">
+    <input type="hidden" name="debugEmail" value="sambasiva.koidala@teamglobalexp.com">
+    -->
     <label for="first_name">First Name</label>
     <input id="first_name" maxlength="40" name="first_name" size="20" type="text"><br>
 
@@ -1261,11 +1252,11 @@
     <input type="submit" name="submit" value="Submit">
   </form>
 
-  <!-- Inert Live Chat button -->
+  <!-- Decorative Live Chat pill -->
   <button class="chat-cta" id="liveChatBtn" type="button" aria-label="Live Chat" role="presentation" tabindex="-1">
     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M4 16V6a2 2 0 0 1 2-2h12a 2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-5 4v-4z"/>
+      <path d="M4 16V6a2 2 0 0 1 2-2h12a 2 2 0 0 1 2 2v8a 2 2 0 0 1-2 2H9l-5 4v-4z"/>
       <circle cx="9" cy="10" r="1.2"/>
       <circle cx="13" cy="10" r="1.2"/>
       <circle cx="17" cy="10" r="1.2"/>
