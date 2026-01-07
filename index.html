@@ -1131,7 +1131,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <style>
-    /* ---------------- Your form: keep default behavior ---------------- */
+    /* ---------------- Your original form styles (unchanged) ---------------- */
     form label{ display:inline-block; width:180px; margin:6px 0; font-weight:600; }
     form input, form select{ margin:6px 0; }
 
@@ -1188,9 +1188,9 @@
 </head>
 
 <body>
-  <!-- ---------------- Your WORKING Salesforce Web-to-Lead form (UNTOUCHED) ---------------- -->
-  <!-- META already added above -->
-  <form action="https://test.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&orgId=00D   <input type="hidden" name="oid" value="00DAD000008PLr4">
+  <!-- ---------------- Your working Salesforce Web-to-Lead form (UNCHANGED) ---------------- -->
+  https://test.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&orgId=00DAD000008PLr4
+    <input type="hidden" name="oid" value="00DAD000008PLr4">
     <input type="hidden" name="retURL" value="https://samsivak.github.io/SamRepo/thank-you.html">
 
     <!-- Debug (optional): uncomment when you want email diagnostics
@@ -1205,13 +1205,15 @@
     <label for="city">City</label><input id="city" maxlength="40" name="city" size="20" type="text" /><br>
     <label for="state">State/Province</label><input id="state" maxlength="20" name="state" size="20" type="text" /><br>
 
-    Lead Type:<select id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type">
+    Lead Type:
+    <select id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type">
       <option value="">--None--</option>
       <option value="Reoccurring">Reoccurring</option>
       <option value="Tender">Tender</option>
     </select><br>
 
-    Business Unit:<select id="00N2P000000YXZu" name="00N2P000000YXZu" title="Business Unit">
+    Business Unit:
+    <select id="00N2P000000YXZu" name="00N2P000000YXZu" title="Business Unit">
       <option value="">--None--</option>
       <option value="IPEC">IPEC</option>
       <option value="Priority">Priority</option>
@@ -1224,7 +1226,8 @@
 
     <label for="phone">Phone</label><input id="phone" maxlength="40" name="phone" size="20" type="text" /><br>
 
-    What services are you interested in?:<select id="00N2P000000O4y8" multiple="multiple" name="00N2P000000O4y8" title="What services are you interested in?">
+    What services are you interested in?:
+    <select id="00N2P000000O4y8" multiple="multiple" name="00N2P000000O4y8" title="What services are you interested in?">
       <option value="eCommerce">eCommerce</option>
       <option value="Air Freight">Air Freight</option>
       <option value="Road Freight">Road Freight</option>
@@ -1237,7 +1240,8 @@
       <option value="New Zealand">New Zealand</option>
     </select><br>
 
-    <label for="industry">Industry</label><select id="industry" name="industry">
+    <label for="industry">Industry</label>
+    <select id="industry" name="industry">
       <option value="">--None--</option>
       <option value="Agriculture, Forestry and Fishing">Agriculture, Forestry and Fishing</option>
       <option value="Mining">Mining</option>
@@ -1260,7 +1264,8 @@
       <option value="Other Services">Other Services</option>
     </select><br>
 
-    <label for="lead_source">Lead Source</label><select id="lead_source" name="lead_source">
+    <label for="lead_source">Lead Source</label>
+    <select id="lead_source" name="lead_source">
       <option value="">--None--</option>
       <option value="Phone">Phone</option>
       <option value="Advertising/TOLL Literature">Advertising/TOLL Literature</option>
@@ -1283,6 +1288,7 @@
   </form>
 
   <!-- ---------------- Live Chat pill (bottom-right) ---------------- -->
+  <!-- IMPORTANT: This button is OUTSIDE the form to avoid any submit interference -->
   <button class="chat-cta" id="liveChatBtn" type="button" aria-label="Live Chat">
     <!-- Chat bubble icon -->
     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -1305,90 +1311,114 @@
     <span class="spinner" aria-hidden="true"></span>
   </div>
 
-  <!-- ---------------- Embedded Messaging boot (minimal loader example) ---------------- -->
+  <!-- ---------------- Embedded Messaging loader (isolated & on-click) ---------------- -->
   <script type="text/javascript">
-    /**
-     * This section shows the button spinner and (optionally) loads your chat bootstrap.
-     * If you already have a working embedded messaging setup, replace BOOTSTRAP_SRC/init calls with your own.
-     */
-
-    // (1) OPTIONAL: If you have a Salesforce Embedded Messaging bootstrap, set it here.
-    // Replace with your site’s actual bootstrap URL, or keep a placeholder to demonstrate spinner behavior.
-    const BOOTSTRAP_SRC = 'https://example.com/path/to/bootstrap.min.js'; // TODO: replace with real URL if you have one
-
-    function initEmbeddedMessaging() {
-      // Place your actual embedded messaging init here if needed.
-      // For demo purposes, we just log:
-      console.log('Embedded messaging init called.');
-    }
-
-    // (2) Helper: load script once
-    let bootstrapLoadPromise = null;
-    function loadEmbeddedBootstrapOnce() {
-      if (bootstrapLoadPromise) return bootstrapLoadPromise;
-      bootstrapLoadPromise = new Promise((resolve, reject) => {
-        // If you don’t actually have a script to load, simulate a short delay so spinner UX works
-        if (!BOOTSTRAP_SRC || BOOTSTRAP_SRC.includes('example.com')) {
-          setTimeout(() => { try { initEmbeddedMessaging(); } finally { resolve(); } }, 1200);
-          return;
+    (function(){
+      // Your initEmbeddedMessaging() exactly as provided
+      function initEmbeddedMessaging() {
+        try {
+          embeddedservice_bootstrap.settings.language = 'en_US'; // e.g., 'en' or 'en-US'
+          embeddedservice_bootstrap.init(
+            '00DAD000008PLr4',
+            'Messaging_Routing_Channel',
+            'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770',
+            { scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com' }
+          );
+        } catch (err) {
+          console.error('Error loading Embedded Messaging: ', err);
         }
-
-        const existing = document.querySelector(`script[src="${BOOTSTRAP_SRC}"]`);
-        if (existing) {
-          existing.addEventListener('load', () => resolve());
-          existing.addEventListener('error', (e) => reject(e));
-          if (existing.dataset?.loaded === 'true') resolve();
-          return;
-        }
-        const s = document.createElement('script');
-        s.type = 'text/javascript';
-        s.src = BOOTSTRAP_SRC;
-        s.async = true;
-        s.onload = () => { s.dataset.loaded = 'true'; try { initEmbeddedMessaging(); } finally { resolve(); } };
-        s.onerror = (e) => reject(e);
-        document.head.appendChild(s);
-      });
-      return bootstrapLoadPromise;
-    }
-
-    // (3) Spinner and click logic
-    const liveChatBtn = document.getElementById('liveChatBtn');
-    const chatLoading = document.getElementById('chatLoading');
-
-    liveChatBtn.addEventListener('click', async (e) => {
-      e.preventDefault(); e.stopPropagation();
-
-      // Show inline spinner on the button
-      liveChatBtn.classList.add('loading');
-
-      // Hide the button and show round spinner while booting
-      liveChatBtn.classList.add('hidden');
-      chatLoading.classList.add('visible');
-      chatLoading.setAttribute('aria-hidden', 'false');
-
-      try {
-        await loadEmbeddedBootstrapOnce();
-
-        // Done booting: hide round spinner
-        chatLoading.classList.remove('visible');
-        chatLoading.setAttribute('aria-hidden', 'true');
-
-        // Optionally show the button again (if you want the user to be able to click again)
-        // liveChatBtn.classList.remove('hidden');
-        // liveChatBtn.classList.remove('loading');
-
-        // TODO: Open your chat launcher here if your embedded messaging exposes a launcher API.
-        console.log('Chat is ready.');
-      } catch (err) {
-        console.error(err);
-        // On failure: restore CTA and hide round spinner
-        chatLoading.classList.remove('visible');
-        chatLoading.setAttribute('aria-hidden', 'true');
-        liveChatBtn.classList.remove('hidden');
-        liveChatBtn.classList.remove('loading');
-        alert('Sorry, we could not start the chat. Please try again.');
       }
-    });
+
+      // Detect when the embedded launcher appears, then hide the round spinner
+      function isLauncherPresent() {
+        return !!(
+          document.querySelector('.embeddedserviceHelpButton') ||   // classic help button
+          document.querySelector('.embeddedservice_launcher')   ||  // embedded launcher
+          document.querySelector('#embedded-service')           ||  // container
+          document.querySelector('[class*="embeddedservice"][class*="launcher"]')
+        );
+      }
+
+      function waitForLauncherThenHideSpinner() {
+        const spinner = document.getElementById('chatLoading');
+        if (isLauncherPresent()) {
+          spinner.classList.remove('visible');
+          spinner.setAttribute('aria-hidden', 'true');
+          return;
+        }
+        const observer = new MutationObserver(() => {
+          if (isLauncherPresent()) {
+            spinner.classList.remove('visible');
+            spinner.setAttribute('aria-hidden', 'true');
+            observer.disconnect();
+          }
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+
+        // Fail-safe timeout (20s)
+        setTimeout(() => {
+          spinner.classList.remove('visible');
+          spinner.setAttribute('aria-hidden', 'true');
+          observer.disconnect();
+        }, 20000);
+      }
+
+      // Load the Salesforce bootstrap script ON CLICK (once), isolated from the form
+      const BOOTSTRAP_SRC = 'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770/assets/js/bootstrap.min.js';
+      let bootstrapLoadPromise = null;
+
+      function loadEmbeddedBootstrapOnce() {
+        if (bootstrapLoadPromise) return bootstrapLoadPromise;
+        bootstrapLoadPromise = new Promise((resolve, reject) => {
+          const existing = document.querySelector(`script[src="${BOOTSTRAP_SRC}"]`);
+          if (existing) {
+            existing.addEventListener('load', () => resolve());
+            existing.addEventListener('error', (e) => reject(e));
+            if (existing.dataset?.loaded === 'true') { resolve(); }
+            return;
+          }
+          const s = document.createElement('script');
+          s.type = 'text/javascript';
+          s.src = BOOTSTRAP_SRC;
+          s.async = true;
+          s.onload = () => {
+            s.dataset.loaded = 'true';
+            try { initEmbeddedMessaging(); } finally { resolve(); }
+          };
+          s.onerror = (e) => reject(e);
+          document.head.appendChild(s);
+        });
+        return bootstrapLoadPromise;
+      }
+
+      // Button click logic: show spinners while chat loads
+      const liveChatBtn = document.getElementById('liveChatBtn');
+      const chatLoading = document.getElementById('chatLoading');
+
+      liveChatBtn.addEventListener('click', async function(e){
+        // IMPORTANT: This listener is attached ONLY to the chat button
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Show inline spinner, then show round spinner
+        liveChatBtn.classList.add('loading');
+        liveChatBtn.classList.add('hidden');
+        chatLoading.classList.add('visible');
+        chatLoading.setAttribute('aria-hidden', 'false');
+
+        try {
+          await loadEmbeddedBootstrapOnce();   // inject bootstrap & init
+          waitForLauncherThenHideSpinner();    // keep spinner until launcher appears
+        } catch (err) {
+          console.error(err);
+          chatLoading.classList.remove('visible');
+          chatLoading.setAttribute('aria-hidden', 'true');
+          liveChatBtn.classList.remove('hidden');
+          liveChatBtn.classList.remove('loading');
+          alert('Sorry, we could not start the chat. Please try again.');
+        }
+      });
+    })();
   </script>
 </body>
 </html>
