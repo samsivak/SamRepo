@@ -1132,7 +1132,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <style>
-    /* -------- Live Chat pill (keep as-is) -------- */
+    /* -------- Live Chat pill (keep exactly as-is) -------- */
     .chat-cta{
       position:fixed; right:24px; bottom:24px; z-index:2000;
       display:flex; align-items:center; gap:12px;
@@ -1145,17 +1145,27 @@
     }
     .chat-cta:hover{ filter:brightness(1.05); }
     .chat-cta.hidden{ display:none !important; }
-    .chat-cta .icon{ width:24px; height:24px; stroke:#fff; fill:none; flex:0 0 24px; }
+
+    .chat-cta .icon{
+      width:24px; height:24px;
+      stroke:#fff; fill:none;
+      flex:0 0 24px;
+    }
     .chat-cta .text{ display:flex; flex-direction:column; line-height:1.1; }
     .chat-cta .line1{ font-weight:800; font-size:.98rem; color:#fff; }
     .chat-cta .line2{ display:flex; align-items:center; gap:6px; font-weight:600; font-size:.86rem; color:#d7f7d7; }
     .chat-cta .dot{ width:8px; height:8px; border-radius:50%; background:#2bd24f; box-shadow:0 0 0 2px rgba(43,210,79,.25); }
-    .chat-cta .spinner{ width:18px; height:18px; border-radius:50%; border:3px solid transparent; border-top-color:#fff; animation:spin .8s linear infinite; display:none; flex:0 0 18px; }
+
+    .chat-cta .spinner{
+      width:18px; height:18px; border-radius:50%;
+      border:3px solid transparent; border-top-color:#fff;
+      animation:spin .8s linear infinite; display:none;
+      flex:0 0 18px;
+    }
     .chat-cta.loading .icon{ opacity:.35; }
     .chat-cta.loading .spinner{ display:inline-block; }
     @keyframes spin{ to{ transform:rotate(360deg); } }
 
-    /* Round spinner that replaces CTA while chat boots */
     .chat-loading{
       position:fixed; right:24px; bottom:24px; z-index:1999;
       width:56px; height:56px; border-radius:50%;
@@ -1170,12 +1180,11 @@
       animation:spin .8s linear infinite;
     }
 
-    /* ---------------- Existing simple form spacing rule from your page ---------------- */
+    /* ---------------- Original simple form rule (left intact) ---------------- */
     form label{ display:inline-block; width:180px; margin:6px 0; font-weight:600; }
     form input, form select{ margin:6px 0; }
 
     /* ===================== ADDITIVE CSS FOR CLEAN ALIGNMENT ===================== */
-    /* Center the form and use stacked labels + full-width fields */
     body form {
       max-width: 720px;
       margin: 24px auto;
@@ -1186,7 +1195,7 @@
     }
     body form label {
       display: block !important;
-      width: auto !important;                  /* override the older fixed width */
+      width: auto !important;
       margin: 16px 0 6px !important;
       font-weight: 700 !important;
       color: #0c140c;
@@ -1212,11 +1221,8 @@
     }
     body form select[multiple],
     body form textarea { height: 140px; }
-
-    /* Hide <br> so stacked layout looks clean */
     body form br { display: none; }
 
-    /* Submit button styling */
     body form input[type="submit"] {
       background: #143a00;
       color: #fff;
@@ -1235,7 +1241,6 @@
     body form input[type="submit"]:hover { filter: brightness(1.05); }
     body form input[type="submit"]:active { transform: translateY(1px); }
 
-    /* Consent block styling */
     .consent-block {
       max-width: 560px;
       margin: 24px auto 14px;
@@ -1266,33 +1271,30 @@
 
 <body>
 
-  <!-- ---------------------------------------------------------------------- -->
-  <!-- Salesforce Web-to-Lead FORM (your provided generated code, merged here) -->
-  <!-- ---------------------------------------------------------------------- -->
-  <!-- META tag already present at the top of this file -->
+  <!-- ---------------- Salesforce Web-to-Lead FORM (Regenerated) ---------------- -->
+  <!-- Action targets Sandbox; hidden 'oid' identifies your org. -->
+  <form action="https://test.salesforce.com/servlet/servlet.WebToUTF-8
 
-  <!-- IMPORTANT: The action includes encoding and orgId from your snippet. -->
-  <!-- If you face issues, you can also use the standard action without orgId:
-       https://test.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8
-       The hidden oid below is what actually identifies the org. -->
-  <form action="https://test.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&orgId=00DAD000008PLr4ype="hidden" name="oid" value="00DAD000008PLr4">
+    <!-- Required identifiers -->
+    <input type="hidden" name="oid" value="00DAD000008PLr4">
     <input type="hidden" name="retURL" value="https://samsivak.github.io/SamRepo/thank-you.html">
 
-    <!-- Optional debug (uncomment while testing) -->
-    <!-- <input type="hidden" name="debug" value="1"> -->
-    <!-- <input type="hidden" name="debugEmail" value="sambasiva.koidala@teamglobalexp.com"> -->
+    <!-- Enable debug while testing (remove after confirming lead creation) -->
+    <input type="hidden" name="debug" value="1">
+    <input type="hidden" name="debugEmail" value="sambasiva.koidala@teamglobalexp.com">
 
+    <!-- Standard fields (Last Name & Company are typically required) -->
     <label for="first_name">First Name</label>
     <input id="first_name" maxlength="40" name="first_name" size="20" type="text"><br>
 
     <label for="last_name">Last Name</label>
-    <input id="last_name" maxlength="80" name="last_name" size="20" type="text"><br>
+    <input id="last_name" maxlength="80" name="last_name" size="20" type="text" required><br>
 
     <label for="email">Email</label>
     <input id="email" maxlength="80" name="email" size="20" type="text"><br>
 
     <label for="company">Company</label>
-    <input id="company" maxlength="40" name="company" size="20" type="text"><br>
+    <input id="company" maxlength="40" name="company" size="20" type="text" required><br>
 
     <label for="city">City</label>
     <input id="city" maxlength="40" name="city" size="20" type="text"><br>
@@ -1300,23 +1302,11 @@
     <label for="state">State/Province</label>
     <input id="state" maxlength="20" name="state" size="20" type="text"><br>
 
-    <!-- (Optional) Add phone if you want -->
-    <!-- <label for="phone">Phone</label>
-    <input id="phone" maxlength="40" name="phone" size="20" type="text"><br> -->
+    <label for="phone">Phone</label>
+    <input id="phone" maxlength="40" name="phone" size="20" type="text"><br>
 
-    <!-- (Optional) Example custom picklists (uncomment only if these fields exist in SFDC)
-    <label>Which delivery service do you use now?</label>
-    <select id="00NOa000007qyDt" name="00NOa000007qyDt" title="Which delivery service do you use now?">
-      <option value="">--None--</option>
-      <option value="Australia Post">Australia Post</option>
-      <option value="Star Track">Star Track</option>
-      <option value="Seko">Seko</option>
-      <option value="Couriers Please">Couriers Please</option>
-      <option value="Aramex">Aramex</option>
-      <option value="Other">Other</option>
-    </select><br>
-
-    <label>What would you like moved or delivered?</label>
+    <!-- Custom picklist (from your regenerated code) -->
+    <label for="00N2P000000O4yf">What would you like moved or delivered?</label>
     <select id="00N2P000000O4yf" name="00N2P000000O4yf" title="What would you like moved or delivered?">
       <option value="">--None--</option>
       <option value="Apparel, Accessories &amp; Luxury Goods">Apparel, Accessories &amp; Luxury Goods</option>
@@ -1337,14 +1327,12 @@
       <option value="Transport - Freight">Transport - Freight</option>
       <option value="Household/Personal Items">Household/Personal Items</option>
     </select><br>
-    -->
 
     <input type="submit" name="submit" value="Submit">
   </form>
 
-  <!-- ---------------- Opt-in + Consent (separate block, outside the form) ---------------- -->
-  <!-- If you want Opt-In stored on the Lead, tell me the SFDC field API/ID (e.g., 00Nxxxxxxxxxxxx)
-       and I’ll change name="opt_in" to that so it posts with the form. -->
+  <!-- ---------------- Opt-in + Consent (outside the form) ---------------- -->
+  <!-- If you want Opt-In stored on the Lead, share the SF field ID/API name (e.g., 00N...) -->
   <div class="consent-block">
     <p>
       I would like to receive marketing communications, news, research, business insights and relevant industry event
@@ -1358,9 +1346,9 @@
 
     <p class="consent-text">
       I consent to my personal information being collected, used, stored, and disclosed as set out in the
-      https://www.teamglobalexp.com/privacy-collection-noticeTGE Privacy Collection Notice</a>
+      <a href="https://www.teamglobalexp.com/privacy-collectionE Privacy Collection Notice</a>
       and the
-      <a href="https://www.teamglobalexp.com/privacy-policy" targety</a>.
+      https://www.teamglobalexp.com/privacy-policyTGE Privacy Policy</a>.
     </p>
   </div>
 
@@ -1368,7 +1356,7 @@
     <!-- Place reCAPTCHA widget here if required -->
   </div>
 
-  <!-- ---------------- Live Chat pill (unchanged; bottom-right) ---------------- -->
+  <!-- ---------------- Live Chat pill (UNCHANGED) ---------------- -->
   <button class="chat-cta" id="liveChatBtn" type="button" aria-label="Live Chat">
     <!-- Chat bubble icon -->
     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -1390,7 +1378,7 @@
     <span class="spinner" aria-hidden="true"></span>
   </div>
 
-  <!-- ---------------- Embedded Messaging init (unchanged) ---------------- -->
+  <!-- ---------------- Embedded Messaging init (UNCHANGED) ---------------- -->
   <script type="text/javascript">
     function initEmbeddedMessaging() {
       try {
@@ -1407,17 +1395,15 @@
       }
     }
 
-    // ---- Helper: check if embedded launcher/icon is present ----
     function isLauncherPresent() {
       return !!(
-        document.querySelector('.embeddedserviceHelpButton') ||   // classic help button
-        document.querySelector('.embeddedservice_launcher')   ||  // embedded launcher
-        document.querySelector('#embedded-service')           ||  // container
+        document.querySelector('.embeddedserviceHelpButton') ||
+        document.querySelector('.embeddedservice_launcher') ||
+        document.querySelector('#embedded-service') ||
         document.querySelector('[class*="embeddedservice"][class*="launcher"]')
       );
     }
 
-    // ---- Wait for launcher; when it appears, hide round spinner ----
     function waitForLauncherThenHideSpinner() {
       const spinner = document.getElementById('chatLoading');
       if (isLauncherPresent()) {
@@ -1434,7 +1420,6 @@
       });
       observer.observe(document.body, { childList: true, subtree: true });
 
-      // fail-safe timeout (20s) to avoid spinner being stuck
       setTimeout(() => {
         spinner.classList.remove('visible');
         spinner.setAttribute('aria-hidden', 'true');
@@ -1442,7 +1427,6 @@
       }, 20000);
     }
 
-    // ---- Load the bootstrap script once ----
     const BOOTSTRAP_SRC = 'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770/assets/js/bootstrap.min.js';
     let bootstrapLoadPromise = null;
     function loadEmbeddedBootstrapOnce() {
@@ -1451,8 +1435,7 @@
         const existing = document.querySelector(`script[src="${BOOTSTRAP_SRC}"]`);
         if (existing) {
           existing.addEventListener('load', () => resolve());
-          existing.addEventListener('error,', (e) => reject(e));
-          // in case it was already loaded
+          existing.addEventListener('error', (e) => reject(e));
           if (existing.dataset?.loaded === 'true') resolve();
           return;
         }
@@ -1467,7 +1450,6 @@
       return bootstrapLoadPromise;
     }
 
-    // ---- Click logic: show inline spinner, hide CTA, show round spinner, then wait for chat ----
     const liveChatBtn = document.getElementById('liveChatBtn');
     const chatLoading = document.getElementById('chatLoading');
 
@@ -1483,7 +1465,6 @@
         waitForLauncherThenHideSpinner();    // keep spinner until launcher appears
       } catch (err) {
         console.error(err);
-        // On failure: restore CTA and hide round spinner
         chatLoading.classList.remove('visible');
         chatLoading.setAttribute('aria-hidden', 'true');
         liveChatBtn.classList.remove('hidden');
