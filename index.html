@@ -1216,6 +1216,23 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
       }
     }
 
+	  let eswScriptLoaded = false;
+    let eswScriptLoading = false;
+
+    function loadEmbeddedMessagingScript() {
+      if (eswScriptLoaded) {
+        setStatus('Script already loaded. Initializing again…');
+        initEmbeddedMessaging();
+        return;
+      }
+      if (eswScriptLoading) {
+        setStatus('Script is loading… please wait.');
+        return;
+      }
+
+      eswScriptLoading = true;
+      setStatus('Loading Embedded Messaging script…');
+
       const btn = document.getElementById('loadMessagingBtn');
       if (btn) { btn.disabled = true; btn.textContent = 'Loading…'; }
 
