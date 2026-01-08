@@ -1158,77 +1158,52 @@
 </head>
 <body>
 
-  <!-- ----------------------------------------------------------------------
-       Salesforce Web-to-Lead form (Sandbox) — kept exactly as you provided
-       ---------------------------------------------------------------------- -->
-  <form action="https://test.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&orgId=00DAD000008PLr4"
-       en" name="oid" value="00DAD000008PLr4">
-    <input type="hidden" name="retURL" value="https://samsivak.github.io/SamRepo/thank-you.html">
+	<!--  ----------------------------------------------------------------------  -->
+<!--  NOTE: Please add the following <META> element to your page <HEAD>.      -->
+<!--  If necessary, please modify the charset parameter to specify the        -->
+<!--  character set of your HTML page.                                        -->
+<!--  ----------------------------------------------------------------------  -->
 
-    <!-- Optional debug (uncomment for one test to receive email diagnostics)
-    <input type="hidden" name="debug" value="1">
-    <input type="hidden" name="debugEmail" value="sambasiva.koidala@teamglobalexp.com">
-    -->
+<META HTTP-EQUIV="Content-type" CONTENT="text/html; charset=UTF-8">
 
-    <label for="first_name">First Name</label>
-    <input id="first_name" maxlength="40" name="first_name" size="20" type="text"><br>
+<!--  ----------------------------------------------------------------------  -->
+<!--  NOTE: Please add the following <FORM> element to your page.             -->
+<!--  ----------------------------------------------------------------------  -->
 
-    <label for="last_name">Last Name</label>
-    <input id="last_name" maxlength="80" name="last_name" size="20" type="text"><br>
+<form action="https://test.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&orgId=00DAD000008PLr4" method="POST">
 
-    <label for="email">Email</label>
-    <input id="email" maxlength="80" name="email" size="20" type="text"><br>
+<input type=hidden name="oid" value="00DAD000008PLr4">
+<input type=hidden name="retURL" value="https://samsivak.github.io/SamRepo/thank-you.html">
 
-    <label for="company">Company</label>
-    <input id="company" maxlength="40" name="company" size="20" type="text"><br>
+<!--  ----------------------------------------------------------------------  -->
+<!--  NOTE: These fields are optional debugging elements. Please uncomment    -->
+<!--  these lines if you wish to test in debug mode.                          -->
+<!--  <input type="hidden" name="debug" value=1>                              -->
+<!--  <input type="hidden" name="debugEmail"                                  -->
+<!--  value="sambasiva.koidala@teamglobalexp.com">                            -->
+<!--  ----------------------------------------------------------------------  -->
 
-    <label for="city">City</label>
-    <input id="city" maxlength="40" name="city" size="20" type="text"><br>
+<label for="first_name">First Name</label><input  id="first_name" maxlength="40" name="first_name" size="20" type="text" /><br>
 
-    <label for="state">State/Province</label>
-    <input id="state" maxlength="20" name="state" size="20" type="text"><br>
+<label for="last_name">Last Name</label><input  id="last_name" maxlength="80" name="last_name" size="20" type="text" /><br>
 
-    <label for="phone">Phone</label>
-    <input id="phone" maxlength="40" name="phone" size="20" type="text"><br>
+<label for="email">Email</label><input  id="email" maxlength="80" name="email" size="20" type="text" /><br>
 
-    Account Number:
-    <input id="00N2P000000O4xQ" maxlength="100" name="00N2P000000O4xQ" size="20" type="text"><br>
+<label for="company">Company</label><input  id="company" maxlength="40" name="company" size="20" type="text" /><br>
 
-    Lead Type:
-    <select id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type">
-      <option value="">--None--</option>
-      <option value="Reoccurring">Reoccurring</option>
-      <option value="Tender">Tender</option>
-    </select><br>
+<label for="city">City</label><input  id="city" maxlength="40" name="city" size="20" type="text" /><br>
 
-    <label for="industry">Industry</label>
-    <select id="industry" name="industry">
-      <option value="">--None--</option>
-      <option value="Agriculture, Forestry and Fishing">Agriculture, Forestry and Fishing</option>
-      <option value="Mining">Mining</option>
-      <option value="Manufacturing">Manufacturing</option>
-      <option value="Electricity, Gas, Water And Waste Services">Electricity, Gas, Water And Waste Services</option>
-      <option value="Construction">Construction</option>
-      <option value="Wholesale Trade">Wholesale Trade</option>
-      <option value="Retail Trade">Retail Trade</option>
-      <option value="Accommodation and Food Services">Accommodation and Food Services</option>
-      <option value="Transport, Postal and Warehousing">Transport, Postal and Warehousing</option>
-      <option value="Information Media and Telecommunications">Information Media and Telecommunications</option>
-      <option value="Financial and Insurance Services">Financial and Insurance Services</option>
-      <option value="Rental, Hiring And Real Estate Services">Rental, Hiring And Real Estate Services</option>
-      <option value="Professional, Scientific And Technical Services">Professional, Scientific And Technical Services</option>
-      <option value="Administrative and Support Services">Administrative and Support Services</option>
-      <option value="Public Administration and Safety">Public Administration and Safety</option>
-      <option value="Education and Training">Education and Training</option>
-      <option value="Health Care and Social Assistance">Health Care and Social Assistance</option>
-      <option value="Arts and Recreation Services">Arts and Recreation Services</option>
-      <option value="Other Services">Other Services</option>
-    </select><br>
+<label for="state">State/Province</label><input  id="state" maxlength="20" name="state" size="20" type="text" /><br>
 
-    <!-- Keep your original submit; if any environment scripts call form.submit()
-         and something shadows it, switch to <button type="submit">Submit</button> -->
-    <input type="submit" name="submit">
-  </form>
+<label for="phone">Phone</label><input  id="phone" maxlength="40" name="phone" size="20" type="text" /><br>
+
+Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"><option value="">--None--</option><option value="Reoccurring">Reoccurring</option>
+<option value="Tender">Tender</option>
+</select><br>
+
+<input type="submit" name="submit">
+
+</form>
 
   <!-- Visual-only pill: inert, will not intercept clicks -->
   <div class="chat-pill" aria-hidden="true">
