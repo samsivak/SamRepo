@@ -1249,7 +1249,7 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
 }
 </style>
 
-  <button id="launchBtn" class="btn" aria-live="polite" aria-busy="false">
+<!--  <button id="launchBtn" class="btn" aria-live="polite" aria-busy="false">
     <span class="icon" aria-hidden="true">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <path d="M12 3a9 9 0 0 0-9 9v3a2 2 0 0 0 2 2h1v-5a6 6 0 0 1 6-6h0a6 6 0 0 1 6 6v5h1a2 2 0 0 0 2-2v-3a9 9 0 0 0-9-9z"/>
@@ -1258,7 +1258,34 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
     </span>
     <span class="label">Launch Customer Service Bot</span>
     <span class="spinner" aria-hidden="true"></span>
-  </button>
+  </button> -->
+
+	
+<button id="launchBtn" class="chat-pill" aria-live="polite" aria-busy="false" type="button">
+  <span class="chat-pill__blob" aria-hidden="true"></span>
+
+  <span class="chat-pill__icon" aria-hidden="true">
+    <!-- chat bubble icon -->
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 16V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-5 4v-4z"/>
+      <circle cx="9" cy="10" r="1.2"/>
+      <circle cx="13" cy="10" r="1.2"/>
+      <circle cx="17" cy="10" r="1.2"/>
+    </svg>
+  </span>
+
+  <span class="chat-pill__text">
+    <span class="chat-pill__title">Live Chat</span>
+    <span class="chat-pill__status">
+      <span class="chat-pill__dot" aria-hidden="true"></span>
+      <span class="chat-pill__label">Available</span>
+    </span>
+  </span>
+
+  <!-- inline spinner: appears when .is-loading is added to the button -->
+  <span class="chat-pill__spinner" aria-hidden="true"></span>
+</button>
 
   <div id="status" class="status">Chat widget is present on the page.</div>
   <button id="fab" class="fab" aria-label="Customer Service Bot" aria-live="polite" aria-busy="false">
