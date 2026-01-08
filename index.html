@@ -1246,23 +1246,136 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
 }
 </style>
 
-<script>
-// Attach click event to Live Chat pill
-document.addEventListener('DOMContentLoaded', function() {
-  const chatPill = document.querySelector('.chat-pill');
-  const spinner = document.getElementById('loading-spinner');
+<h1>Load Salesforce Embedded Messaging (UAT)</h1>
+  <p class="lead">Click the button to load the Embedded Messaging script and initialize the bot.</p>
 
-  if(chatPill && spinner){
-    chatPill.addEventListener('click', function() {
-      spinner.style.display = 'block';
-      // Simulate loading for 3 seconds (you can adjust or remove this)
-      setTimeout(() => {
-        spinner.style.display = 'none';
-      }, 3000);
-    });
-  }
-});
+  <button id="launchBtn" class="btn" aria-live="polite" aria-busy="false">
+    <span class="icon" aria-hidden="true">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3a9 9 0 0 0-9 9v3a2 2 0 0 0 2 2h1v-5a6 6 0 0 1 6-6h0a6 6 0 0 1 6 6v5h1a2 2 0 0 0 2-2v-3a9 9 0 0 0-9-9z"/>
+        <path d="M8 17v2a3 3 0 0 0 3 3h3"/>
+      </svg>
+    </span>
+    <span class="label">Launch Customer Service Bot</span>
+    <span class="spinner" aria-hidden="true"></span>
+  </button>
+
+  <div id="status" class="status">Chat widget is present on the page.</div>
+  <button id="fab" class="fab" aria-label="Customer Service Bot" aria-live="polite" aria-busy="false">
+    <svg class="bot-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <rect x="3" y="8" width="18" height="10" rx="4" ry="4"></rect>
+      <circle cx="8.5" cy="13" r="1.6"></circle>
+      <circle cx="15.5" cy="13" r="1.6"></circle>
+      <path d="M12 4v3"></path>
+    </svg>
+    <span class="spinner" aria-hidden="true"></span>
+  </button>
+
+  <script>
+    // --- Your exact Salesforce init ---
+    function initEmbeddedMessaging() {
+      try {
+        embeddedservice_bootstrap.settings.language = 'en_US';
+        embeddedservice_bootstrap.init(
+          '00D9p000004KUXV',
+          'Messaging_Routing_Channel',
+          'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWMessagingRoutingChan1763462090439',
+          { scrt2URL: 'https://teamglobalexp--tollperf.sandbox.my.salesforce-scrt.com' }
+        );
+      } catch (err) {
+        console.error('Error loading Embedded Messaging: ', err);
+      }
+    }
+
+    // --- Load bootstrap once ---
+    const BOOTSTRAP_SRC = 'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWMessagingRoutingChan1763462090439/assets/js/bootstrap.min.js';
+    let bootstrapLoadPromise = null;
+
+    function loadEmbeddedBootstrapOnce() {
+      if (bootstrapLoadPromise) return bootstrapLoadPromise;
+
+      bootstrapLoadPromise = new Promise((resolve, reject) => {
+        const existing = document.querySelector(`script[src="${BOOTSTRAP_SRC}"]`);
+        if (existing) {
+          existing.addEventListener('load', () => resolve());
+          existing.addEventListener('error', (e) => reject(e));
+          if (existing.dataset.loaded === 'true') resolve();
+          return;
+        }
+
+        const s = document.createElement('script');
+        s.type = 'text/javascript';
+        s.src = BOOTSTRAP_SRC;
+        s.async = true;
+        s.onload = () => { s.dataset.loaded = 'true'; resolve(); };
+        s.onerror = (e) => reject(e);
+        document.head.appendChild(s);
+      }).then(() => {
+        initEmbeddedMessaging();
+      });
+
+      return bootstrapLoadPromise;
+    }
+
+    const launchBtn = document.getElementById('launchBtn');
+    const fab = document.getElementById('fab');
+    const statusEl = document.getElementById('status');
+
+    function setLoadingUI(isLoading) {
+      // Show bottom-right icon only after the first click
+      if (!fab.classList.contains('visible')) {
+        fab.classList.add('visible');   // becomes visible only now
+      }
+
+      // Button
+      launchBtn.classList.toggle('loading', isLoading);
+      launchBtn.setAttribute('aria-busy', String(isLoading));
+      launchBtn.disabled = isLoading;
+
+      // Bottom-right indicator
+      fab.classList.toggle('loading', isLoading);   // spinner visibility
+      fab.classList.toggle('idle', !isLoading);     // idle bot icon after load
+      fab.setAttribute('aria-busy', String(isLoading));
+
+      statusEl.textContent = isLoading ? 'Initializing bot…' : 'Bot is ready. You can start chatting now.';
+    }
+
+    async function startBotLoad(from = 'button') {
+      setLoadingUI(true);   // show spinners + reveal fab
+      try {
+        await loadEmbeddedBootstrapOnce();
+        // If you need to programmatically open the chat after init, call that here.
+      } catch (e) {
+        console.error(e);
+        statusEl.textContent = 'Failed to initialize the bot. Please try again.';
+      } finally {
+        setLoadingUI(false); // stop spinners, show idle bot icon
+      }
+    }
+
+    launchBtn.addEventListener('click', () => startBotLoad('button'));
+    fab.addEventListener('click', () => startBotLoad('fab'));
+  </script>
+
+	<script type='text/javascript'>
+	function initEmbeddedMessaging() {
+		try {
+			embeddedservice_bootstrap.settings.language = 'en_US'; // For example, enter 'en' or 'en-US'
+
+			embeddedservice_bootstrap.init(
+				'00DAD000008PLr4',
+				'Messaging_Routing_Channel',
+				'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770',
+				{
+					scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com'
+				}
+			);
+		} catch (err) {
+			console.error('Error loading Embedded Messaging: ', err);
+		}
+	};
 </script>
+<script type='text/javascript' src='https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
 	
 </body>
 </html>
