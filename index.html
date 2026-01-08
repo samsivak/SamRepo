@@ -1138,23 +1138,6 @@
     form label { display:inline-block; width:180px; margin:6px 0; font-weight:600; }
     form input, form select { margin:6px 0; }
     form br { line-height: 1.2; }
-
-    /* Bottom-right Live Chat pill (visual only; no JS, inert by design) */
-
-    .chat-pill {
-      position: fixed; right: 16px; bottom: 16px; z-index: 2000;
-      display: inline-flex; align-items: center; gap: 10px;
-      background: #0c140c; color: #fff;
-      border: 2px solid #cfd8dc; border-radius: 18px 28px 28px 18px;
-      padding: 10px 14px; box-shadow: 0 12px 28px rgba(0,0,0,.22);
-      pointer-events: none; user-select: none; cursor: default;
-      font-family: Segoe UI, system-ui, -apple-system, Roboto, Helvetica, Arial;
-    }
-    .chat-pill__icon { width:24px; height:24px; stroke:#fff; fill:none; }
-    .chat-pill__text{ display:flex; flex-direction:column; line-height:1.1; }
-    .chat-pill__line1{ font-weight:800; font-size:.98rem; color:#fff; }
-    .chat-pill__line2{ display:flex; align-items:center; gap:6px; font-weight:600; font-size:.86rem; color:#d7f7d7; }
-    .chat-pill__dot{ width:8px; height:8px; border-radius:50%; background:#2bd24f; box-shadow:0 0 0 2px rgba(43,210,79,.25); }
   </style>
 </head>
 <body>
@@ -1206,7 +1189,7 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
 
 </form>
 
-<h1>Load Salesforce Embedded Messaging</h1>
+	 <h1>Load Salesforce Embedded Messaging</h1>
   <p>Click the button to load the Embedded Messaging script and initialize the channel.</p>
 
   <button id="loadMessagingBtn" type="button">Launch Messaging</button>
@@ -1282,118 +1265,6 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
 
     document.getElementById('loadMessagingBtn').addEventListener('click', loadEmbeddedMessagingScript);
   </script>
-	
-<!-- Loading Spinner (Initially Hidden) -->
-<div id="loading-spinner" style="
-    display:none;
-    position:fixed;
-    top:50%;
-    left:50%;
-    transform:translate(-50%, -50%);
-    z-index:3000;
-">
-  <div style="
-      width:50px;
-      height:50px;
-      border:6px solid #ccc;
-      border-top:6px solid #2bd24f;
-      border-radius:50%;
-      animation:spin 1s linear infinite;
-  "></div>
-</div>
 
-<style>
-@keyframes spin {
-  0% { transform:rotate(0deg); }
-  100% { transform:rotate(360deg); }
-}
-</style>
-
-
-  <script>
-    // --- Your exact Salesforce init ---
-    function initEmbeddedMessaging() {
-      try {
-        embeddedservice_bootstrap.settings.language = 'en_US';
-        embeddedservice_bootstrap.init(
-          '00D9p000004KUXV',
-          'Messaging_Routing_Channel',
-          'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWMessagingRoutingChan1763462090439',
-          { scrt2URL: 'https://teamglobalexp--tollperf.sandbox.my.salesforce-scrt.com' }
-        );
-      } catch (err) {
-        console.error('Error loading Embedded Messaging: ', err);
-      }
-    }
-
-    // --- Load bootstrap once ---
-    const BOOTSTRAP_SRC = 'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWMessagingRoutingChan1763462090439/assets/js/bootstrap.min.js';
-    let bootstrapLoadPromise = null;
-
-    function loadEmbeddedBootstrapOnce() {
-      if (bootstrapLoadPromise) return bootstrapLoadPromise;
-
-      bootstrapLoadPromise = new Promise((resolve, reject) => {
-        const existing = document.querySelector(`script[src="${BOOTSTRAP_SRC}"]`);
-        if (existing) {
-          existing.addEventListener('load', () => resolve());
-          existing.addEventListener('error', (e) => reject(e));
-          if (existing.dataset.loaded === 'true') resolve();
-          return;
-        }
-
-        const s = document.createElement('script');
-        s.type = 'text/javascript';
-        s.src = BOOTSTRAP_SRC;
-        s.async = true;
-        s.onload = () => { s.dataset.loaded = 'true'; resolve(); };
-        s.onerror = (e) => reject(e);
-        document.head.appendChild(s);
-      }).then(() => {
-        initEmbeddedMessaging();
-      });
-
-      return bootstrapLoadPromise;
-    }
-
-    const launchBtn = document.getElementById('launchBtn');
-    const fab = document.getElementById('fab');
-    const statusEl = document.getElementById('status');
-
-    function setLoadingUI(isLoading) {
-      // Show bottom-right icon only after the first click
-      if (!fab.classList.contains('visible')) {
-        fab.classList.add('visible');   // becomes visible only now
-      }
-
-      // Button
-      launchBtn.classList.toggle('loading', isLoading);
-      launchBtn.setAttribute('aria-busy', String(isLoading));
-      launchBtn.disabled = isLoading;
-
-      // Bottom-right indicator
-      fab.classList.toggle('loading', isLoading);   // spinner visibility
-      fab.classList.toggle('idle', !isLoading);     // idle bot icon after load
-      fab.setAttribute('aria-busy', String(isLoading));
-
-      statusEl.textContent = isLoading ? 'Initializing bot…' : 'Bot is ready. You can start chatting now.';
-    }
-
-    async function startBotLoad(from = 'button') {
-      setLoadingUI(true);   // show spinners + reveal fab
-      try {
-        await loadEmbeddedBootstrapOnce();
-        // If you need to programmatically open the chat after init, call that here.
-      } catch (e) {
-        console.error(e);
-        statusEl.textContent = 'Failed to initialize the bot. Please try again.';
-      } finally {
-        setLoadingUI(false); // stop spinners, show idle bot icon
-      }
-    }
-
-    launchBtn.addEventListener('click', () => startBotLoad('button'));
-    fab.addEventListener('click', () => startBotLoad('fab'));
-  </script>
 </body>
 </html>
