@@ -1271,25 +1271,136 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
 <head>
 <h4>this is a messaging channel</h4>
 </head>
-	<script type='text/javascript'>
-	function initEmbeddedMessaging() {
-		try {
-			embeddedservice_bootstrap.settings.language = 'en_US'; // For example, enter 'en' or 'en-US'
+<script type="text/javascript">
+  function initEmbeddedMessaging() {
+    try {
+      embeddedservice_bootstrap.settings.language = 'en_US'; // For example, enter 'en' or 'en-US'
 
-			embeddedservice_bootstrap.init(
-				'00DAD000008PLr4',
-				'Messaging_Routing_Channel',
-				'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770',
-				{
-					scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com'
-				}
-			);
-		} catch (err) {
-			console.error('Error loading Embedded Messaging: ', err);
-		}
-	};
+      embeddedservice_bootstrap.init(
+        '00DAD000008PLr4',
+        'Messaging_Routing_Channel',
+        'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770',
+        {
+          scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com'
+        }
+      );
+    } catch (err) {
+      console.error('Error loading Embedded Messaging: ', err);
+    }
+  }
+
+  // --- Linkify helper: turn URLs in text into <a> tags ---
+  function linkifyTextNode(node) {
+    const urlRegex = /(https?:\/\/[^\s<>"']+)/g; // basic URL matcher
+    const textNode(text.slice(lastIndex, offset)));    const text = node.nodeValue;
+      }
+      // the URL itself -> anchor
+      const a = document.createElement('a');
+      a.href = match;
+      a.textContent = match;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.className = 'esm-linkified';
+      frag.appendChild(a);
+
+      lastIndex = offset + match.length;
+      return match;
+    });
+
+    // any trailing text
+    if (lastIndex < text.length) {
+      frag.appendChild(document.createTextNode(text.slice(lastIndex)));
+    }
+
+    // replace the text node
+    node.parentNode.replaceChild(frag, node);
+  }
+
+  function walkAndLinkify(root) {
+    // Only process text nodes and avoid re-processing anchors
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode: (n) => {
+        // skip empty/whitespace-only nodes
+        if (!n.nodeValue || !n.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+        // avoid text inside <a> (if already linkified)
+        if (n.parentNode && n.parentNode.nodeName.toLowerCase() === 'a') {
+          return NodeFilter.FILTER_REJECT;
+        }
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+    let node;
+    while ((node = walker.nextNode())) {
+      linkifyTextNode(node);
+    }
+  }
+
+  function startLinkifyObserver() {
+    // The embedded messaging container lives in the page; query it safely.
+    // Root container often has id: "embedded-messaging" or class names under the injected shadow.
+    // We will target the public DOM nodes rendered by the widget.
+    const containerSelector = '#embedded-messaging, .embeddedMessaging'; // fallback selectors
+    const tryStart = () => {
+      const root = document.querySelector(containerSelector) || document.body;
+      if (!root) return;
+
+      // Initial pass (in case the "no agent" message is already present)
+      walkAndLinkify(root);
+
+      // Watch for future messages
+      const observer = new MutationObserver((mutations) => {
+        for (const m of mutations) {
+          m.addedNodes.forEach((node) => {
+            if (node.nodeType === Node.ELEMENT_NODE) {
+              walkAndLinkify(node);
+            } else if (node.nodeType === Node.TEXT_NODE) {
+              linkifyTextNode(node);
+            }
+          });
+        }
+      });
+
+      observer.observe(root, {
+        childList: true,
+        subtree: true
+      });
+    };
+
+    // Retry a few times while the widget bootstraps
+    let attempts = 0;
+    const maxAttempts = 20;
+    const interval = setInterval(() => {
+      attempts++;
+      tryStart();
+      if (attempts >= maxAttempts) clearInterval(interval);
+    }, 500);
+  }
+
+  // Start the observer after the bootstrap script loads and init is called
+  window.addEventListener('load', () => {
+    // Give the widget a moment to render
+    setTimeout(startLinkifyObserver, 1500);
+  });
 </script>
-<script type='text/javascript' src='https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
+
+<!-- Optional: CSS to make links appear clearly as hyperlinks -->
+<style>
+  .esm-linkified {
+    color: #0b69ff;
+    text-decoration: underline;
+    word-break: break-all; /* in case the URL is long */
+  }
+</style>
+
+	<script type='text/javascript' src='https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
+
+    if (!urlRegex.test(text)) return;
+
+    const frag = document.createDocumentFragment();
+    let lastIndex = 0;
+    text.replace(urlRegex, (match, _p1, offset) => {
+      // text before the URL
+      if (offset > lastIndex) {
 
 	  </body>
 	  </html>
