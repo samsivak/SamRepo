@@ -1266,141 +1266,164 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<h4>this is a messaging channel</h4>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Enhanced Messaging – Linkify URLs</title>
+  <style>
+    /* Optional styling for linkified anchors (inside the widget, if same-origin) */
+    .esm-linkified {
+      color: #0b69ff;
+      text-decoration: underline;
+      word-break: break-word;
+    }
+  </style>
 </head>
-<script type="text/javascript">
-  function initEmbeddedMessaging() {
-    try {
-      embeddedservice_bootstrap.settings.language = 'en_US'; // For example, enter 'en' or 'en-US'
+<body>
+  <h1>this is a messaging channel</h1>
 
-      embeddedservice_bootstrap.init(
-        '00DAD000008PLr4',
-        'Messaging_Routing_Channel',
-        'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770',
-        {
-          scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com'
-        }
-      );
-    } catch (err) {
-      console.error('Error loading Embedded Messaging: ', err);
-    }
-  }
+  <!-- Your existing bootstrap + init -->
+  <script type="text/javascript">
+    function initEmbeddedMessaging() {
+      try {
+        embeddedservice_bootstrap.settings.language = 'en_US'; // For example, enter 'en' or 'en-US'
 
-  // --- Linkify helper: turn URLs in text into <a> tags ---
-  function linkifyTextNode(node) {
-    const urlRegex = /(https?:\/\/[^\s<>"']+)/g; // basic URL matcher
-    const textNode(text.slice(lastIndex, offset)));    const text = node.nodeValue;
+        embeddedservice_bootstrap.init(
+          '00DAD000008PLr4',
+          'Messaging_Routing_Channel',
+          'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770',
+          {
+            scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com'
+          }
+        );
+      } catch (err) {
+        console.error('Error loading Embedded Messaging: ', err);
       }
-      // the URL itself -> anchor
-      const a = document.createElement('a');
-      a.href = match;
-      a.textContent = match;
-      a.target = '_blank';
-      a.rel = 'noopener';
-      a.className = 'esm-linkified';
-      frag.appendChild(a);
-
-      lastIndex = offset + match.length;
-      return match;
-    });
-
-    // any trailing text
-    if (lastIndex < text.length) {
-      frag.appendChild(document.createTextNode(text.slice(lastIndex)));
     }
+  </script>
+  <script type="text/javascript"
+    src="https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770/assets/js/bootstrap.min.js"
+    onload="inite is same-origin -->
+  <script>
+    // Basic URL matcher
+    const urlRegex = /(https?:\/\/[^\s<>"']+)/g;
 
-    // replace the text node
-    node.parentNode.replaceChild(frag, node);
-  }
+    function linkifyTextNode(node, doc) {
+      const text = node.nodeValue;
+      if (!urlRegex.test(text)) return;
 
-  function walkAndLinkify(root) {
-    // Only process text nodes and avoid re-processing anchors
-    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
-      acceptNode: (n) => {
-        // skip empty/whitespace-only nodes
-        if (!n.nodeValue || !n.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
-        // avoid text inside <a> (if already linkified)
-        if (n.parentNode && n.parentNode.nodeName.toLowerCase() === 'a') {
-          return NodeFilter.FILTER_REJECT;
+      const frag = doc.createDocumentFragment();
+      let lastIndex = 0;
+
+      text.replace(urlRegex, (match, _p1, offset) => {
+        if (offset > lastIndex) {
+          frag.appendChild(doc.createTextNode(text.slice(lastIndex, offset)));
         }
-        return NodeFilter.FILTER_ACCEPT;
+        const a = doc.createElement('a');
+        a.href = match;
+        a.textContent = match;
+        a.target = '_blank';
+        a.rel = 'noopener';
+        a.className = 'esm-linkified';
+        frag.appendChild(a);
+        lastIndex = offset + match.length;
+        return match;
+      });
+
+      if (lastIndex < text.length) {
+        frag.appendChild(doc.createTextNode(text.slice(lastIndex)));
       }
-    });
-    let node;
-    while ((node = walker.nextNode())) {
-      linkifyTextNode(node);
+
+      node.parentNode.replaceChild(frag, node);
     }
-  }
 
-  function startLinkifyObserver() {
-    // The embedded messaging container lives in the page; query it safely.
-    // Root container often has id: "embedded-messaging" or class names under the injected shadow.
-    // We will target the public DOM nodes rendered by the widget.
-    const containerSelector = '#embedded-messaging, .embeddedMessaging'; // fallback selectors
-    const tryStart = () => {
-      const root = document.querySelector(containerSelector) || document.body;
-      if (!root) return;
+    function walkAndLinkify(root, doc) {
+      const walker = doc.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+        acceptNode: (n) => {
+          if (!n.nodeValue || !n.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+          if (n.parentNode && n.parentNode.nodeName.toLowerCase() === 'a') return NodeFilter.FILTER_REJECT;
+          return NodeFilter.FILTER_ACCEPT;
+        }
+      });
+      let node;
+      while ((node = walker.nextNode())) {
+        linkifyTextNode(node, doc);
+      }
+    }
 
-      // Initial pass (in case the "no agent" message is already present)
-      walkAndLinkify(root);
+    function startIframeLinkifier() {
+      // Try to find the messaging iframe (class/id can vary per deployment)
+      const iframeSelectorCandidates = [
+        'iframe.embeddedMessagingFrame',     // common class
+        'iframe#embeddedMessagingFrame',     // common id
+        'iframe[src*="ESWMessagingRoutingChan"]'
+      ];
 
-      // Watch for future messages
+      const findIframe = () => {
+        for (const sel of iframeSelectorCandidates) {
+          const i = document.querySelector(sel);
+          if (i) return i;
+        }
+        // Fallback to any iframe that contains the ESW messaging script
+        const iframes = Array.from(document.querySelectorAll('iframe'));
+        return iframes.find(f => (f.src || '').includes('ESWMessaging'));
+      };
+
+      const iframe = findIframe();
+      if (!iframe) {
+        // Retry for a short period while the widget mounts
+        let tries = 0;
+        const t = setInterval(() => {
+          const f = findIframe();
+          tries++;
+          if (f) {
+            clearInterval(t);
+            attachToIframe(f);
+          }
+          if (tries > 20) clearInterval(t);
+        }, 500);
+        return;
+      }
+      attachToIframe(iframe);
+    }
+
+    function attachToIframe(iframe) {
+      // Guard: cross-origin iframes will throw on contentDocument access
+      let doc;
+      try {
+        doc = iframe.contentDocument || iframe.contentWindow.document;
+      } catch (e) {
+        console.warn('Embedded Messaging iframe is cross-origin; host page cannot modify its DOM. Use Approach A (configure HTML link in Salesforce).');
+        return;
+      }
+      if (!doc) return;
+
+      // Initial pass
+      walkAndLinkify(doc.body, doc);
+
+      // Observe new messages
       const observer = new MutationObserver((mutations) => {
         for (const m of mutations) {
           m.addedNodes.forEach((node) => {
             if (node.nodeType === Node.ELEMENT_NODE) {
-              walkAndLinkify(node);
+              walkAndLinkify(node, doc);
             } else if (node.nodeType === Node.TEXT_NODE) {
-              linkifyTextNode(node);
+              linkifyTextNode(node, doc);
             }
           });
         }
       });
 
-      observer.observe(root, {
-        childList: true,
-        subtree: true
-      });
-    };
+      observer.observe(doc.body, { childList: true, subtree: true });
+    }
 
-    // Retry a few times while the widget bootstraps
-    let attempts = 0;
-    const maxAttempts = 20;
-    const interval = setInterval(() => {
-      attempts++;
-      tryStart();
-      if (attempts >= maxAttempts) clearInterval(interval);
-    }, 500);
-  }
-
-  // Start the observer after the bootstrap script loads and init is called
-  window.addEventListener('load', () => {
-    // Give the widget a moment to render
-    setTimeout(startLinkifyObserver, 1500);
-  });
-</script>
-
-<!-- Optional: CSS to make links appear clearly as hyperlinks -->
-<style>
-  .esm-linkified {
-    color: #0b69ff;
-    text-decoration: underline;
-    word-break: break-all; /* in case the URL is long */
-  }
-</style>
-
-	<script type='text/javascript' src='https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
-
-    if (!urlRegex.test(text)) return;
-
-    const frag = document.createDocumentFragment();
-    let lastIndex = 0;
-    text.replace(urlRegex, (match, _p1, offset) => {
-      // text before the URL
-      if (offset > lastIndex) {
-
-	  </body>
-	  </html>
+    // Kick off after load with a slight delay
+    window.addEventListener('load', () => {
+      setTimeout(startIframeLinkifier, 1500);
+    });
+  </script>
+</body>
+</html>
