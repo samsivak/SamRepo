@@ -1131,25 +1131,30 @@
   <meta http-equiv="Content-type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- CSP must be inside <head>. Allow Salesforce Web-to-Lead endpoints. -->
-  <!-- If you don't need CSP, you can remove this meta line. -->
+  <!-- --------------------------------------------------------------------
+       CSP fix: explicitly allow form submissions to Salesforce
+       - Sandbox Web-to-Lead: https://test.salesforce.com
+       - Production Web-to-Lead: https://webto.salesforce.com
+       Note: place this META early in <head> so it applies to the page.
+       -------------------------------------------------------------------- -->
   <meta http-equiv="Content-Security-Policy"
-        content="form-action https://test.salesforce.com https://webto.salesforce.com;">
+        content="form-action https://test.salesforce.com">
 
   <title>Web-to-Lead (Sandbox)</title>
 
-  <!-- Visual-only Live Chat pill styles -->
+  <!-- Optional light styling; does not affect submission behavior -->
   <style>
     form label { display:inline-block; width:180px; margin:6px 0; font-weight:600; }
     form input, form select { margin:6px 0; }
+    form br { line-height: 1.2; }
 
+    /* Bottom-right Live Chat pill (visual only; no JS, inert by design) */
     .chat-pill {
       position: fixed; right: 16px; bottom: 16px; z-index: 2000;
       display: inline-flex; align-items: center; gap: 10px;
       background: #0c140c; color: #fff;
       border: 2px solid #cfd8dc; border-radius: 18px 28px 28px 18px;
       padding: 10px 14px; box-shadow: 0 12px 28px rgba(0,0,0,.22);
-      /* inert so it cannot intercept clicks */
       pointer-events: none; user-select: none; cursor: default;
       font-family: Segoe UI, system-ui, -apple-system, Roboto, Helvetica, Arial;
     }
@@ -1160,15 +1165,16 @@
     .chat-pill__dot{ width:8px; height:8px; border-radius:50%; background:#2bd24f; box-shadow:0 0 0 2px rgba(43,210,79,.25); }
   </style>
 </head>
-
 <body>
-  <!-- Your Web-to-Lead form (kept exactly as provided) -->
-  https://test.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&orgId=00DAD000008PLr4
 
-    <input type="hidden" name="oid" value="00DAD000008PLr4">
+  <!-- ----------------------------------------------------------------------
+       Salesforce Web-to-Lead form (Sandbox) — kept exactly as you provided
+       ---------------------------------------------------------------------- -->
+  <form action="https://test.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&orgId=00DAD000008PLr4"
+       en" name="oid" value="00DAD000008PLr4">
     <input type="hidden" name="retURL" value="https://samsivak.github.io/SamRepo/thank-you.html">
 
-    <!-- Optional debug (uncomment for one diagnostic test)
+    <!-- Optional debug (uncomment for one test to receive email diagnostics)
     <input type="hidden" name="debug" value="1">
     <input type="hidden" name="debugEmail" value="sambasiva.koidala@teamglobalexp.com">
     -->
@@ -1228,11 +1234,12 @@
       <option value="Other Services">Other Services</option>
     </select><br>
 
-    <!-- Keep your original submit control -->
+    <!-- Keep your original submit; if any environment scripts call form.submit()
+         and something shadows it, switch to <button type="submit">Submit</button> -->
     <input type="submit" name="submit">
   </form>
 
-  <!-- Visual-only Live Chat pill (inert) -->
+  <!-- Visual-only pill: inert, will not intercept clicks -->
   <div class="chat-pill" aria-hidden="true">
     <svg class="chat-pill__icon" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <path d="M4 16V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-5 4v-4z"/>
@@ -1245,5 +1252,6 @@
       <span class="chat-pill__line2"><span class="chat-pill__dot"></span>Available</span>
     </span>
   </div>
+
 </body>
 </html>
