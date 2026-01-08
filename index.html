@@ -1189,10 +1189,7 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
 
 </form>
 
-	 <h1>Load Salesforce Embedded Messaging</h1>
-  <p>Click the button to load the Embedded Messaging script and initialize the channel.</p>
-
-  <button id="loadMessagingBtn" type="button">Launch Messaging</button>
+  <button id="loadMessagingBtn" type="button">Launch Embedded Chat</button>
   <div id="status" role="status" aria-live="polite"></div>
 
   <script>
@@ -1219,23 +1216,6 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
       }
     }
 
-    let eswScriptLoaded = false;
-    let eswScriptLoading = false;
-
-    function loadEmbeddedMessagingScript() {
-      if (eswScriptLoaded) {
-        setStatus('Script already loaded. Initializing again…');
-        initEmbeddedMessaging();
-        return;
-      }
-      if (eswScriptLoading) {
-        setStatus('Script is loading… please wait.');
-        return;
-      }
-
-      eswScriptLoading = true;
-      setStatus('Loading Embedded Messaging script…');
-
       const btn = document.getElementById('loadMessagingBtn');
       if (btn) { btn.disabled = true; btn.textContent = 'Loading…'; }
 
@@ -1244,7 +1224,7 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
       script.src = 'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770/assets/js/bootstrap.min.js';
 
       script.onload = function () {
-        eswScriptLoaded = true;
+        eswScriptLoaded = true; 
         eswScriptLoading = false;
         setStatus('Script loaded. Initializing…');
         try { initEmbeddedMessaging(); }
