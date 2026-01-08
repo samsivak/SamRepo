@@ -1140,6 +1140,7 @@
     form br { line-height: 1.2; }
 
     /* Bottom-right Live Chat pill (visual only; no JS, inert by design) */
+
     .chat-pill {
       position: fixed; right: 16px; bottom: 16px; z-index: 2000;
       display: inline-flex; align-items: center; gap: 10px;
@@ -1205,19 +1206,21 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
 
 </form>
 
-  <!-- Visual-only pill: inert, will not intercept clicks -->
-  <div class="chat-pill" aria-hidden="true">
-    <svg class="chat-pill__icon" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M4 16V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-5 4v-4z"/>
-      <circle cx="9" cy="10" r="1.2"/>
-      <circle cx="13" cy="10" r="1.2"/>
-      <circle cx="17" cy="10" r="1.2"/>
-    </svg>
-    <span class="chat-pill__text">
-      <span class="chat-pill__line1">Live Chat</span>
-      <span class="chat-pill__line2"><span class="chat-pill__dot"></span>Available</span>
-    </span>
-  </div>
+
+<button class="chat-pill"
+        type="button"
+        aria-label="Open Live Chat">
+  <svg class="chat-pill__icon" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M4 16V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-5 4v-4z"/>
+    <circle cx="9" cy="10" r="1.2"/>
+    <circle cx="13" cy="10" r="1.2"/>
+    <circle cx="17" cy="10" r="1.2"/>
+  </svg>
+  <span class="chat-pill__text">
+    <span class="chat-pill__line1">Live Chat</span>
+    <span class="chat-pill__line2"><span class="chat-pill__dot"></span>Available</span>
+  </span>
+</button>
 
 	
 <!-- Loading Spinner (Initially Hidden) -->
@@ -1245,9 +1248,6 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
   100% { transform:rotate(360deg); }
 }
 </style>
-
-<h1>Load Salesforce Embedded Messaging (UAT)</h1>
-  <p class="lead">Click the button to load the Embedded Messaging script and initialize the bot.</p>
 
   <button id="launchBtn" class="btn" aria-live="polite" aria-busy="false">
     <span class="icon" aria-hidden="true">
