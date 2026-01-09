@@ -1414,159 +1414,227 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Messaging for In‑App & Web — Availability</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <style>
-    body { font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; margin: 2rem; }
-    .row { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
-    #chatStatusBadge {
-      display: inline-block; padding: 0.35rem 0.65rem; border-radius: 999px; font-weight: 600;
-      background: #eee; color: #333; min-width: 90px; text-align: center;
+    label {
+      font-size: 17px;
+      font-family: 'GlobalSans-SemiBold', sans-serif;
+      color: #143200;
+      display: inline-block;
+      margin-top: 10px;
     }
-    #chatStatusBadge.is-online { background: #e6ffed; color: #0a7c2e; border: 1px solid #85d79c; }
-    #chatStatusBadge.is-offline { background: #fff5f5; color: #a12020; border: 1px solid #f0b1b1; }
-    #log { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.9rem; color: #444; }
-    #log p { margin: 0.25rem 0; }
-    .controls { margin-top: 1rem; }
-    button { padding: 0.6rem 1rem; border: 1px solid #0b5ed7; color: #fff; background: #0d6efd; border-radius: 6px; cursor: pointer; }
-    button.secondary { background: #6c757d; border-color: #6c757d; }
-    button:disabled { opacity: 0.6; cursor: not-allowed; }
+    select, input[type="text"], input[type="email"] {
+      font-size: 17px;
+      font-family: 'GlobalSans-SemiBold', sans-serif;
+      color: #143200;
+      width: 300px;
+    }
+    .submit-btn {
+      background-color: #143200;
+      color: #CBFF55;
+      border-radius: 50px;
+      border: none;
+      padding: 10px 20px;
+      font-family: 'GlobalSans-SemiBold', sans-serif;
+      font-size: 18px;
+      cursor: pointer;
+      margin-top: 16px;
+    }
+    body { margin: 24px; }
+
+    /* Offline banner shown when button is hidden (after-hours or no agents) */
+    #messagingStatusBanner {
+      display: none; /* toggled via JS */
+      position: fixed;
+      bottom: 35px;
+      right: 35px;
+      max-width: 460px;
+      background: #143200;
+      color: #CBFF55;
+      border-radius: 12px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+      padding: 14px 16px;
+      font-family: 'GlobalSans-SemiBold', sans-serif;
+      z-index: 9999;
+    }
+    #messagingStatusBanner a {
+      color: #CBFF55;
+      text-decoration: underline;
+    }
+    #messagingStatusBanner .title {
+      font-size: 16px;
+      margin-bottom: 6px;
+    }
+    #messagingStatusBanner .desc {
+      font-size: 14px;
+      line-height: 1.4;
+    }
   </style>
 </head>
 <body>
 
-  <h1>Messaging for In‑App and Web — Availability</h1>
-  <p>Click the button to initialize Enhanced Web Chat and read Online/Offline from Salesforce business hours.</p>
+  <!-- ✅ Simplified Web-to-Lead Form (Sandbox) -->
+  https://test.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&amp;orgId=00DAD000008PLr4
+    <input type="hidden" name="oid" value="00DAD000008PLr4">
+    <input type="hidden" name="retURL" value="https://samsivak.github.io/SamRepo/thank-you.html">
 
-  <div class="row">
-    <!-- We leave this ENABLED; code internally handles retries if bootstrap isn't ready yet -->
-    <button id="initBtn" type="button">Check Chat Availability</button>
-    <span id="chatStatusBadge" aria-live="polite" title="Chat availability">Waiting…</span>
+    <!-- Uncomment to debug submissions -->
+    <!-- <input type="hidden" name="debug" value="1">
+    <input type="hidden" name="debugEmail" value="sambasiva.koidala@teamglobalexp.com"> -->
+
+    <label for="first_name">First Name</label><br>
+    <input id="first_name" maxlength="40" name="first_name" size="20" type="text"><br>
+
+    <label for="last_name">Last Name</label><br>
+    <input id="last_name" maxlength="80" name="last_name" size="20" type="text"><br>
+
+    <label for="email">Email</label><br>
+    <input id="email" maxlength="80" name="email" size="20" type="email"><br>
+
+    <label for="company">Company</label><br>
+    <input id="company" maxlength="40" name="company" size="20" type="text"><br>
+
+    <label for="city">City</label><br>
+    <input id="city" maxlength="40" name="city" size="20" type="text"><br>
+
+    <label for="state">State/Province</label><br>
+    <input id="state" maxlength="20" name="state" size="20" type="text"><br>
+
+    <label for="phone">Phone</label><br>
+    <input id="phone" maxlength="40" name="phone" size="20" type="text"><br>
+
+    <label for="00N2P000000O4xt">Lead Type</label><br>
+    <select id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type">
+      <option value="">--None--</option>
+      <option value="Reoccurring">Reoccurring</option>
+      <option value="Tender">Tender</option>
+    </select><br>
+
+    <button type="submit" class="submit-btn">Submit</button>
+  </form>
+
+  <!-- 🔔 Branded offline banner (shown when button is hidden) -->
+  <div id="messagingStatusBanner" aria-live="polite" role="status">
+    <div class="title">Agents are not available</div>
+    <div class="desc">
+      Please visit the website:
+      https://teamglobalexp.com/help-supporthttps://teamglobalexp.com/help-support</a>
+    </div>
   </div>
 
-  <div class="controls">
-    <!-- Launch Chat only when online -->
-    <button id="launchBtn" type="button" class="secondary" disabled>Launch Chat</button>
-  </div>
+  <!-- ✅ Enhanced Messaging for Web (Sandbox) -->
+  <script type="text/javascript">
+    // ---------- CONFIG: Optional advanced agent-availability check ----------
+    // Provide a secure endpoint that returns JSON like: { "available": true }
+    // Suggested: Apex REST or Experience Cloud page that internally uses
+    // Omni-Channel "Check Availability for Routing" (Flow core action) to compute.  // See docs.  [5](https://www.apexhours.com/omnichannel-check-agent-availability-core-action-for-smarter-case-routing/)
+    const AVAILABILITY_CHECK_ENABLED = true;
+    const AVAILABILITY_CHECK_URL = 'https://YOUR_DOMAIN.example.com/api/agent-availability?channel=Messaging_Routing_Channel';
+    const AVAILABILITY_CHECK_TIMEOUT_MS = 4000;
 
-  <h2>Event Log</h2>
-  <div id="log" aria-live="polite" aria-atomic="false"></div>
-
-  <!-- Optional: target container for the button/widget -->
-  <div id="embeddedMessagingContainer" hidden></div>
-
-  <!-- 1) Load the Enhanced Web Chat bootstrap first -->
-  <script
-    type="text/javascript"
-    src="https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770/assets/js/bootstrap.min.js"
-    onload="console.log('Messaging bootstrap loaded')"
-   r ---
-    function log(msg) {
-      const el = document.getElementById('log');
-      const p = document.createElement('p');
-      p.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
-      el.appendChild(p);
-      el.scrollTop = el.scrollHeight;
+    function showOfflineBanner() {
+      const banner = document.getElementById('messagingStatusBanner');
+      if (banner) banner.style.display = 'block';
     }
-
-    // --- Availability UI ---
-    function setAvailability(status /* 'online' | 'offline' */) {
-      const badge = document.getElementById('chatStatusBadge');
-      if (badge) {
-        badge.textContent = status === 'online' ? 'Online' : 'Offline';
-        badge.classList.toggle('is-online', status === 'online');
-        badge.classList.toggle('is-offline', status === 'offline');
-      }
-      document.getElementById('launchBtn').disabled = (status !== 'online');
-      window.dispatchEvent(new CustomEvent('miw-availability', { detail: { status } }));
-      log(`Availability set to: ${status.toUpperCase()}`);
+    function hideOfflineBanner() {
+      const banner = document.getElementById('messagingStatusBanner');
+      if (banner) banner.style.display = 'none';
     }
-
-    // --- Enhanced Web Chat events: register BEFORE init ---
-    window.addEventListener('onEmbeddedMessagingBusinessHoursStarted', () => {
-      log('Event: onEmbeddedMessagingBusinessHoursStarted');
-      setAvailability('online');
-    });
-
-    window.addEventListener('onEmbeddedMessagingBusinessHoursEnded', () => {
-      log('Event: onEmbeddedMessagingBusinessHoursEnded');
-      setAvailability('offline');
-    });
-
-    window.addEventListener('onEmbeddedMessagingButtonCreated', () => {
-      log('Event: onEmbeddedMessagingButtonCreated');
-      // Fallback: infer visibility to set status quickly
-      const container = document.querySelector('#embeddedMessagingContainer') || document.body;
-      const btn = container.querySelector('.embeddedMessagingButton, .embeddedServiceHelpButton, button');
-      const isVisible = btn ? !!(btn.offsetWidth || btn.offsetHeight) : false;
-      setAvailability(isVisible ? 'online' : 'offline');
-    });
-
-    // Optional: see when the client is ready
-    window.addEventListener('onEmbeddedMessagingReady', () => {
-      log('Event: onEmbeddedMessagingReady');
-    });
-
-    // --- Retry logic: attempt init even if bootstrap is a bit late ---
-    async function safeInitMessaging(maxRetries = 5, delayMs = 400) {
-      let tries = 0;
-      while (tries < maxRetries) {
-        if (window.embeddedservice_bootstrap) {
-          try {
-            embeddedservice_bootstrap.settings.language = 'en_US';
-            // If you want, pin render target:
-            // embeddedservice_bootstrap.settings.targetElement = document.querySelector('#embeddedMessagingContainer');
-
-            embeddedservice_bootstrap.init(
-              '00DAD000008PLr4', // Org Id
-              'Messaging_Routing_Channel', // ES Deployment (Developer Name)
-              'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770', // Site endpoint
-              { scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com' }
-            );
-            log('Init invoked.');
-            document.getElementById('chatStatusBadge').textContent = 'Waiting…';
-            return true;
-          } catch (err) {
-            console.error('Error calling init:', err);
-            log('Init error: ' + (err?.message || err));
-            setAvailability('offline');
-            return false;
-          }
-        }
-        tries++;
-        log(`Bootstrap not ready; retry ${tries}/${maxRetries}…`);
-        await new Promise(r => setTimeout(r, delayMs));
-      }
-      log('Bootstrap never became available. Check script URL/CSP.');
-      setAvailability('offline');
-      return false;
-    }
-
-    // --- Wire buttons ---
-    document.getElementById('initBtn').addEventListener('click', async () => {
-      document.getElementById('initBtn').disabled = true;    // prevent double-click
-      const ok = await safeInitMessaging();
-      if (!ok) {
-        // Allow user to retry if init failed
-        document.getElementById('initBtn').disabled = false;
-      }
-    });
-
-    document.getElementById('launchBtn').addEventListener('click', () => {
-      if (embeddedservice_bootstrap?.utilAPI?.launchChat) {
-        log('Launching chat…');
-        embeddedservice_bootstrap.utilAPI.launchChat()
-          .then(() => log('Chat launched.'))
-          .catch(err => log('Launch error: ' + (err?.message || err)));
+    function updateButtonVisibility(show) {
+      if (show) {
+        embeddedservice_bootstrap.utilAPI.showChatButton();   // programmatically show button  [1](https://developer.salesforce.com/docs/service/messaging-web/guide/show-hide-chat.html)
+        hideOfflineBanner();
       } else {
-        log('utilAPI.launchChat not yet available (init or events pending).');
+        embeddedservice_bootstrap.utilAPI.hideChatButton();   // programmatically hide button  [1](https://developer.salesforce.com/docs/service/messaging-web/guide/show-hide-chat.html)
+        showOfflineBanner();
+      }
+    }
+    async function checkAgentAvailabilityWithTimeout(url, ms) {
+      const controller = new AbortController();
+      const id = setTimeout(() => controller.abort(), ms);
+      try {
+        const res = await fetch(url, { method: 'GET', signal: controller.signal, credentials: 'include' });
+        clearTimeout(id);
+        if (!res.ok) throw new Error('Availability endpoint failed: ' + res.status);
+        const data = await res.json();
+        return !!data.available; // expected boolean
+      } catch (e) {
+        console.warn('Availability check failed:', e);
+        return null; // unknown -> fall back to Business Hours behavior
+      }
+    }
+
+    // ---------- INIT MESSAGING ----------
+    function initEmbeddedMessaging() {
+      try {
+        // 1) Hide chat button at load; we’ll decide later to show/hide via events or custom check.  [1](https://developer.salesforce.com/docs/service/messaging-web/guide/show-hide-chat.html)
+        embeddedservice_bootstrap.settings.hideChatButtonOnLoad = true;
+
+        // (Optional) You can also move the minimized button coordinates if needed (ref doc).  [4](https://developer.salesforce.com/docs/service/messaging-web/references/m4w-reference/settingsAPI.html)
+        // embeddedservice_bootstrap.settings.minimizedButtonCoordinates = { bottom: '35px', right: '35px' };
+
+        // Language
+        embeddedservice_bootstrap.settings.language = 'en_US';
+
+        // Initialize
+        embeddedservice_bootstrap.init(
+          '00DAD000008PLr4',                                          // Org Id (Sandbox)
+          'Messaging_Routing_Channel',                                 // Core Routing Channel Developer Name
+          'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770', // Site URL
+          { scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com' }
+        );
+      } catch (err) {
+        console.error('Error loading Embedded Messaging: ', err);
+      }
+    }
+
+    // ---------- EVENT LISTENERS ----------
+    // A) Button created -> optional server availability check to decide visibility.
+    window.addEventListener('onEmbeddedMessagingButtonCreated', async () => {
+      if (AVAILABILITY_CHECK_ENABLED && AVAILABILITY_CHECK_URL) {
+        const isAvailable = await checkAgentAvailabilityWithTimeout(AVAILABILITY_CHECK_URL, AVAILABILITY_CHECK_TIMEOUT_MS);
+        if (isAvailable === true) {
+          updateButtonVisibility(true);   // show button
+        } else if (isAvailable === false) {
+          updateButtonVisibility(false);  // hide button and show offline banner
+        } else {
+          // Unknown (endpoint down) -> let Business Hours events manage visibility
+          console.log('Availability unknown; deferring to Business Hours.');
+        }
+      }
+    });
+
+    // B) Auto toggle via Business Hours events (native support).
+    //    When Business Hours start -> show; when they end -> hide.  [2](https://developer.salesforce.com/docs/service/messaging-web/guide/event-listeners.html)
+    window.addEventListener('onEmbeddedMessagingBusinessHoursStarted', () => {
+      updateButtonVisibility(true);
+    });
+    window.addEventListener('onEmbeddedMessagingBusinessHoursEnded', () => {
+      updateButtonVisibility(false);
+    });
+
+    // C) Optional: When conversation routing failed (no agent assignment), you can hide the button again
+    //    and keep the banner visible. Fires for successful/unsuccessful routing.  [2](https://developer.salesforce.com/docs/service/messaging-web/guide/event-listeners.html)
+    window.addEventListener('onEmbeddedMessagingConversationRouted', (evt) => {
+      try {
+        const payload = evt && evt.detail ? evt.detail : {};
+        // If you inspect payload and find a failure flag, hide button and show offline banner
+        // NOTE: payload shape documented in Enhanced Chat event listeners.  [2](https://developer.salesforce.com/docs/service/messaging-web/guide/event-listeners.html)
+        // Example (pseudo): if (payload.success === false) updateButtonVisibility(false);
+      } catch (e) {
+        console.warn('Routing event handling error:', e);
       }
     });
   </script>
+
+	<script type='text/javascript' src='https://teamglobalexp--tgedev.sandbox.my.site.com/ESWCustomerServiceBot1764747826568/assets/js/bootstrap.min.js'></script>
+
 </body>
 </html>
 
