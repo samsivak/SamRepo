@@ -1410,3 +1410,262 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
   </script>
 </body>
 </html>
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Start Conversation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; }
+    .form-card {
+      border: 1px solid #ddd; border-radius: 10px; padding: 16px; max-width: 520px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .row { margin-bottom: 12px; }
+    .label { display:block; font-weight:600; margin-bottom:6px; color:#143200; }
+    .input {
+      width: 100%; font-size:16px; padding:8px 10px; border:1px solid #ccc; border-radius:6px; color:#143200;
+      font-family: 'GlobalSans-SemiBold', Arial, sans-serif;
+    }
+    .btn {
+      background-color:#143200; color:#CBFF55; border-radius:50px; border:none;
+      padding:10px 18px; font-size:16px; cursor:pointer; font-family:'GlobalSans-SemiBold', Arial, sans-serif;
+    }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .error { color:#b00020; margin-top:10px; }
+
+    #fallbackBanner {
+      display: none; /* toggled via JS */
+      position: fixed; bottom: 35px; right: 35px; max-width: 520px;
+      background: #143200; color: #CBFF55; border-radius: 12px; box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+      padding: 14px 16px; z-index: 9999; font-family: 'GlobalSans-SemiBold', Arial, sans-serif;
+    }
+    #fallbackBanner a { color: #CBFF55; text-decoration: underline; }
+    #fallbackBanner .title { font-size: 16px; margin-bottom: 6px; }
+    #fallbackBanner .desc { font-size: 14px; line-height: 1.4; white-space: pre-wrap; }
+  </style>
+</head>
+
+<body>
+  <div class="form-card" aria-labelledby="start-conv-title">
+    <h2 id="start-conv-title" style="margin-top:0;color:#143200;">Start Conversation</h2>
+
+    <div class="row">
+      <label class="label" for="firstName">First Name</label>
+      <input class="input" id="firstName" type="text" />
+    </div>
+
+    <div class="row">
+      <label class="label" for="lastName">Last Name</label>
+      <input class="input" id="lastName" type="text" />
+    </div>
+
+    <div class="row">
+      <label class="label" for="email">Email</label>
+      <input class="input" id="email" type="email" />
+    </div>
+
+    <div class="row">
+      <label class="label" for="phone">Phone</label>
+      <input class="input" id="phone" type="tel" />
+    </div>
+
+    <button id="startBtn" class="btn">Start Conversation</button>
+    <div id="error" class="error" role="alert" aria-live="polite"></div>
+  </div>
+	
+  <div id="fallbackBanner" role="status" aria-live="polite">
+    <div class="title">Message from Support</div>
+    <div id="fallbackText" class="desc">
+      Agents are not available. Please visit:
+      <a href="https://teamglobalexp.com/help-support" target="_blank" rel="upport</a>
+    </div>
+  </div>
+
+  <script>
+    const els = {
+      firstName: document.getElementById('firstName'),
+      lastName:  document.getElementById('lastName'),
+      email:     document.getElementById('email'),
+      phone:     document.getElementById('phone'),
+      startBtn:  document.getElementById('startBtn'),
+      error:     document.getElementById('error'),
+      banner:    document.getElementById('fallbackBanner'),
+      fallbackText: document.getElementById('fallbackText')
+    };
+
+    function debugLog(...args){ try { console.log('[Messaging]', ...args); } catch(e){} }
+
+    function escapeHtml(str) {
+      return (str || '').replace(/[&<>"']/g, (ch) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[ch]));
+    }
+
+    function linkifyFirstUrlOnly(text) {
+      const raw = text || '';
+      const urlRegex = /(https?:\/\/[^\s]+)/i;
+      const match = raw.match(urlRegex);
+
+      if (!match) {
+        return escapeHtml(raw);
+      }
+
+      const url = match[0];
+      const before = raw.slice(0, match.index);
+      const after = raw.slice(match.index + url.length);
+
+      const safeBefore = escapeHtml(before);
+      const safeUrl = escapeHtml(url); // href will use the raw URL; text must be escaped
+      const safeAfter = escapeHtml(after);
+
+      return `${safeBefore}${url}${safeUrl}</a>${safeAfter}`;
+    }
+
+    window.addEventListener('onEmbeddedMessagingButtonCreated', () => {
+      debugLog('Button created → SDK ready.');
+    });
+
+    window.addEventListener('onEmbeddedMessagingConversationRouted', (evt) => {
+      const detail = (evt && evt.detail) ? evt.detail : {};
+      debugLog('Routing event detail:', JSON.stringify(detail));
+      const res = extractRoutingResult(detail);
+
+      if (res.failed) {
+        try {
+          if (window.embeddedservice_bootstrap?.utilAPI?.clearSession) {
+            embeddedservice_bootstrap.utilAPI.clearSession();
+          }
+          if (window.embeddedservice_bootstrap?.utilAPI?.hideChatButton) {
+            embeddedservice_bootstrap.utilAPI.hideChatButton();
+          }
+        } catch (e) {
+          debugLog('Clear/hide widget failed:', e);
+        }
+        setFallbackHtml(res.reason);
+        showFallbackBanner(true);
+      } else {
+        showFallbackBanner(false);
+      }
+    });
+
+    window.addEventListener('onEmbeddedMessagingBusinessHoursEnded', () => {
+      try {
+        if (window.embeddedservice_bootstrap?.utilAPI?.hideChatButton) {
+          embeddedservice_bootstrap.utilAPI.hideChatButton();
+        }
+      } catch(e){}
+      setFallbackHtml('We are currently outside business hours. Please visit: https://teamglobalexp.com/help-support');
+      showFallbackBanner(true);
+    });
+    window.addEventListener('onEmbeddedMessagingBusinessHoursStarted', () => {
+      try {
+        if (window.embeddedservice_bootstrap?.utilAPI?.showChatButton) {
+          embeddedservice_bootstrap.utilAPI.showChatButton();
+        }
+      } catch(e){}
+      showFallbackBanner(false);
+    });
+
+    function extractRoutingResult(detail) {
+      const payload = detail?.payload || detail || {};
+      const success = payload?.success;
+      const reason  = payload?.reasonForNotRouting || payload?.reason || '';
+      const failed  = (success === false) || (!!reason && reason.length > 0);
+      return { failed, reason };
+    }
+
+    function showFallbackBanner(show) { els.banner.style.display = show ? 'block' : 'none'; }
+
+    function setFallbackHtml(message) {
+      const text = (message || '').trim();
+      if (text) {
+        els.fallbackText.innerHTML = linkifyFirstUrlOnly(text);
+      } else {
+        els.fallbackText.innerHTML =
+          'Agents are not available. Please visit: ' +
+          'https://teamglobalexp.com/help-supporthttps://teamglobalexp.com/help-support</a>';
+      }
+    }
+
+    function setError(msg) { els.error.textContent = msg || ''; }
+
+    function waitForMessagingReady() {
+      return new Promise((resolve) => {
+        if (window.embeddedservice_bootstrap) { resolve(); return; }
+        const listener = () => {
+          window.removeEventListener('onEmbeddedMessagingReady', listener);
+          resolve();
+        };
+        window.addEventListener('onEmbeddedMessagingReady', listener, { once: true });
+      });
+    }
+
+    async function startConversation() {
+      setError('');
+      showFallbackBanner(false);
+
+      const firstName = els.firstName.value.trim();
+      const lastName  = els.lastName.value.trim();
+      const email     = els.email.value.trim();
+      const phone     = els.phone.value.trim();
+
+      if (!firstName || !lastName || !email) {
+        setError('First Name, Last Name, and Email are required.');
+        return;
+      }
+
+      els.startBtn.disabled = true;
+
+      try {
+        await waitForMessagingReady();
+
+        embeddedservice_bootstrap.prechatAPI.setVisiblePrechatFields({
+          _firstName: { value: firstName, isEditableByEndUser: true },
+          _lastName:  { value: lastName,  isEditableByEndUser: true },
+          _email:     { value: email,     isEditableByEndUser: true },
+          Phone:      { value: phone,     isEditableByEndUser: true }   // <-- Custom Parameter (capital P)
+        });
+
+        await embeddedservice_bootstrap.utilAPI.launchChat();
+
+      } catch (e) {
+        console.error(e);
+        setError('Unable to start conversation. Please try again.');
+      } finally {
+        els.startBtn.disabled = false;
+      }
+    }
+
+    document.getElementById('startBtn').addEventListener('click', startConversation);
+  </script>
+
+  <script>
+    function initEmbeddedMessaging() {
+      try {
+        // Hide native bubble on load; we use our page Start button
+        embeddedservice_bootstrap.settings.hideChatButtonOnLoad = true;
+
+        embeddedservice_bootstrap.settings.language = 'en_US';
+
+        embeddedservice_bootstrap.init(
+          '00DAD000008PLr4',                                          // Org Id (Sandbox) → replace for PROD
+          'Messaging_Routing_Channel',                                 // Channel Developer Name
+          'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770', // Site URL
+          { scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com' }              // SCRT URL
+        );
+      } catch (err) {
+        console.error('Error loading Embedded Messaging: ', err);
+      }
+    }
+  </script>
+  <script
+    src="https://teamglobalexp--tgedev.sandbox.my.site.com/ESChan1762954054770/assets/js/bootstrap.min.js
+  </script>
+</body>
+</html>
