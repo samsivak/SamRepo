@@ -1265,6 +1265,7 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
 </html>
 
 
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -1273,6 +1274,7 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <style>
+      /* Launch button */
       #miaw-start {
         padding: 10px 16px;
         font-size: 14px;
@@ -1285,19 +1287,89 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
       #miaw-start:hover {
         background: #005fb2;
       }
+
+      /* Bottom-right spinner container (same corner as embedded chat) */
+      .miaw-spinner {
+        position: fixed;
+        right: 24px;         /* adjust to match your site spacing */
+        bottom: 24px;        /* adjust to match your site spacing */
+        z-index: 9999;       /* above page content, below the chat once it opens */
+        display: none;       /* hidden by default */
+        align-items: center;
+        gap: 8px;
+        background: rgba(0,0,0,0.06);
+        backdrop-filter: blur(2px);
+        padding: 10px 12px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+      }
+
+      /* Spinner wheel */
+      .miaw-spinner__wheel {
+        width: 24px;
+        height: 24px;
+        border: 3px solid #cfe3f8;      /* light track */
+        border-top-color: #0070d2;      /* primary accent */
+        border-radius: 50%;
+        animation: miaw-spin 0.9s linear infinite;
+      }
+
+      /* Optional text beside spinner */
+      .miaw-spinner__text {
+        font-size: 13px;
+        color: #1f2a44;
+      }
+
+      @keyframes miaw-spin {
+        to { transform: rotate(360deg); }
+      }
+
+      /* Reduce motion if the user prefers */
+      @media (prefers-reduced-motion: reduce) {
+        .miaw-spinner__wheel {
+          animation: none;
+          border-top-color: #1f2a44;
+        }
+      }
     </style>
   </head>
 
   <body>
-    <button id="miaw-start" type="button" onclick="startMessaging()"> Click to Start Customer Sales Chat </button>
+    <button id="miaw-start" type="button" onclick="startMessaging()">Click to Start Chat</button>
+
+    <!-- Bottom-right spinner -->
+    <div id="miaw-loading" class="miaw-spinner" role="status" aria-live="polite" aria-label="Loading chat">
+      <div class="miaw-spinner__wheel" aria-hidden="true"></div>
+      <div class="miaw-spinner__text">Loading chat…</div>
+    </div>
 
     <script type="text/javascript">
+      // Helpers to show/hide spinner
+      function showSpinner() {
+        var el = document.getElementById('miaw-loading');
+        if (el) el.style.display = 'flex';
+      }
+      function hideSpinner() {
+        var el = document.getElementById('miaw-loading');
+        if (el) el.style.display = 'none';
+      }
+
+      // To avoid a stuck spinner, we’ll hide it after a max wait
+      var miawSpinnerTimeout;
+      function startSpinnerTimeout(ms) {
+        clearTimeout(miawSpinnerTimeout);
+        miawSpinnerTimeout = setTimeout(hideSpinner, ms || 30000); // default 30s
+      }
+
       function initEmbeddedMessaging() {
         try {
           embeddedservice_bootstrap.settings.language = 'en_US';
 
+          // When the messaging client is ready, hide the spinner
           window.addEventListener('onEmbeddedMessagingReady', () => {
             console.log('[MIAW] Messaging client is ready');
+            hideSpinner();
+            clearTimeout(miawSpinnerTimeout);
           });
 
           embeddedservice_bootstrap.init(
@@ -1310,10 +1382,16 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
           );
         } catch (err) {
           console.error('Error loading Embedded Messaging: ', err);
+          hideSpinner();
+          clearTimeout(miawSpinnerTimeout);
         }
       }
 
       function startMessaging() {
+        // Show spinner immediately on click
+        showSpinner();
+        startSpinnerTimeout(30000); // safeguard: hide after 30s if not ready
+
         if (window.embeddedservice_bootstrap) {
           initEmbeddedMessaging();
           return;
@@ -1330,6 +1408,8 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
         };
         script.onerror = function (e) {
           console.error('[MIAW] Failed to load bootstrap.min.js from:', src, e);
+          hideSpinner();                 // stop spinner on error
+          clearTimeout(miawSpinnerTimeout);
         };
 
         document.head.appendChild(script);
