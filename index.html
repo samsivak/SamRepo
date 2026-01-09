@@ -1413,14 +1413,15 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Messaging Availability — Test Page</title>
+  <title>Messaging for In‑App & Web — Availability</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 2rem; }
+    body { font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; margin: 2rem; }
     .row { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
     #chatStatusBadge {
       display: inline-block; padding: 0.35rem 0.65rem; border-radius: 999px; font-weight: 600;
@@ -1442,38 +1443,37 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
   <p>Click the button to initialize Enhanced Web Chat and read Online/Offline from Salesforce business hours.</p>
 
   <div class="row">
-    <button id="initBtn" type="button" disabled>Check Chat Availability</button>
-    <span id="chatStatusBadge" aria-live="polite" title="Chat availability">Loading script…</span>
+    <!-- We leave this ENABLED; code internally handles retries if bootstrap isn't ready yet -->
+    <button id="initBtn" type="button">Check Chat Availability</button>
+    <span id="chatStatusBadge" aria-live="polite" title="Chat availability">Waiting…</span>
   </div>
 
   <div class="controls">
+    <!-- Launch Chat only when online -->
     <button id="launchBtn" type="button" class="secondary" disabled>Launch Chat</button>
   </div>
 
   <h2>Event Log</h2>
   <div id="log" aria-live="polite" aria-atomic="false"></div>
 
-  <!-- Optional container to target where the button renders -->
+  <!-- Optional: target container for the button/widget -->
   <div id="embeddedMessagingContainer" hidden></div>
 
-  <!-- 1) Load the Enhanced Web Chat bootstrap FIRST -->
+  <!-- 1) Load the Enhanced Web Chat bootstrap first -->
   <script
     type="text/javascript"
-   my.site.com/ESWMessagingRoutingChan1762954054770/assets/js/bootstrap.min.js
-  </script>
-
-  <!-- 2) Your integration code -->
-  <script type="text/javascript">
-    // ---- Logging helper ----
+    src="https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770/assets/js/bootstrap.min.js"
+    onload="console.log('Messaging bootstrap loaded')"
+   r ---
     function log(msg) {
-      const logEl = document.getElementById('log');
+      const el = document.getElementById('log');
       const p = document.createElement('p');
       p.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
-      logEl.appendChild(p);
-      logEl.scrollTop = logEl.scrollHeight;
+      el.appendChild(p);
+      el.scrollTop = el.scrollHeight;
     }
 
-    // ---- Availability UI ----
+    // --- Availability UI ---
     function setAvailability(status /* 'online' | 'offline' */) {
       const badge = document.getElementById('chatStatusBadge');
       if (badge) {
@@ -1482,99 +1482,80 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
         badge.classList.toggle('is-offline', status === 'offline');
       }
       document.getElementById('launchBtn').disabled = (status !== 'online');
-
       window.dispatchEvent(new CustomEvent('miw-availability', { detail: { status } }));
-      log(`Availability: ${status.toUpperCase()}`);
+      log(`Availability set to: ${status.toUpperCase()}`);
     }
 
-    // ---- Enhanced Messaging events (register BEFORE init) ----
+    // --- Enhanced Web Chat events: register BEFORE init ---
     window.addEventListener('onEmbeddedMessagingBusinessHoursStarted', () => {
-      log('Event: BusinessHoursStarted');
+      log('Event: onEmbeddedMessagingBusinessHoursStarted');
       setAvailability('online');
     });
 
     window.addEventListener('onEmbeddedMessagingBusinessHoursEnded', () => {
-      log('Event: BusinessHoursEnded');
+      log('Event: onEmbeddedMessagingBusinessHoursEnded');
       setAvailability('offline');
     });
 
     window.addEventListener('onEmbeddedMessagingButtonCreated', () => {
-      log('Event: ButtonCreated');
-      // Fallback visibility check: if hidden right after creation, treat as offline.
+      log('Event: onEmbeddedMessagingButtonCreated');
+      // Fallback: infer visibility to set status quickly
       const container = document.querySelector('#embeddedMessagingContainer') || document.body;
       const btn = container.querySelector('.embeddedMessagingButton, .embeddedServiceHelpButton, button');
       const isVisible = btn ? !!(btn.offsetWidth || btn.offsetHeight) : false;
       setAvailability(isVisible ? 'online' : 'offline');
     });
 
-    // ---- Wait until the bootstrap script actually defines embeddedservice_bootstrap ----
-    function waitForBootstrap(maxMs = 10000) {
-      return new Promise((resolve, reject) => {
-        const start = Date.now();
-        const timer = setInterval(() => {
-          if (window.embeddedservice_bootstrap) {
-            clearInterval(timer);
-            resolve();
-          } else if (Date.now() - start > maxMs) {
-            clearInterval(timer);
-            reject(new Error('Timeout waiting for embeddedservice_bootstrap'));
+    // Optional: see when the client is ready
+    window.addEventListener('onEmbeddedMessagingReady', () => {
+      log('Event: onEmbeddedMessagingReady');
+    });
+
+    // --- Retry logic: attempt init even if bootstrap is a bit late ---
+    async function safeInitMessaging(maxRetries = 5, delayMs = 400) {
+      let tries = 0;
+      while (tries < maxRetries) {
+        if (window.embeddedservice_bootstrap) {
+          try {
+            embeddedservice_bootstrap.settings.language = 'en_US';
+            // If you want, pin render target:
+            // embeddedservice_bootstrap.settings.targetElement = document.querySelector('#embeddedMessagingContainer');
+
+            embeddedservice_bootstrap.init(
+              '00DAD000008PLr4', // Org Id
+              'Messaging_Routing_Channel', // ES Deployment (Developer Name)
+              'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770', // Site endpoint
+              { scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com' }
+            );
+            log('Init invoked.');
+            document.getElementById('chatStatusBadge').textContent = 'Waiting…';
+            return true;
+          } catch (err) {
+            console.error('Error calling init:', err);
+            log('Init error: ' + (err?.message || err));
+            setAvailability('offline');
+            return false;
           }
-        }, 100);
-      });
+        }
+        tries++;
+        log(`Bootstrap not ready; retry ${tries}/${maxRetries}…`);
+        await new Promise(r => setTimeout(r, delayMs));
+      }
+      log('Bootstrap never became available. Check script URL/CSP.');
+      setAvailability('offline');
+      return false;
     }
 
-    // Enable the button only when the bootstrap is ready
-    (async function enableWhenReady() {
-      try {
-        await waitForBootstrap();
-        document.getElementById('initBtn').disabled = false;
-        document.getElementById('chatStatusBadge').textContent = 'Ready to check';
-        log('Messaging bootstrap loaded; init button enabled.');
-      } catch (e) {
-        log('Bootstrap not found. Check the script URL and CSP settings.');
-        setAvailability('offline');
-      }
-    })();
-
-    // ---- Init on click ----
+    // --- Wire buttons ---
     document.getElementById('initBtn').addEventListener('click', async () => {
-      document.getElementById('initBtn').disabled = true;
-      log('Initializing Embedded Messaging…');
-
-      try {
-        await waitForBootstrap(); // hard guard
-        embeddedservice_bootstrap.settings.language = 'en_US';
-
-        // Optional: pin the button render target
-        // embeddedservice_bootstrap.settings.targetElement =
-        //   document.querySelector('#embeddedMessagingContainer');
-
-        embeddedservice_bootstrap.init(
-          '00DAD000008PLr4', // Org Id
-          'Messaging_Routing_Channel', // ES Deployment (Developer Name)
-          'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770', // Site endpoint
-          { scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com' }
-        );
-        log('Init invoked.');
-
-        // While we wait for business-hour events, show "Waiting…"
-        document.getElementById('chatStatusBadge').textContent = 'Waiting…';
-
-        // Optionally, listen for "ready" to confirm client is up
-        window.addEventListener('onEmbeddedMessagingReady', () => {
-          log('Event: onEmbeddedMessagingReady');
-        });
-
-      } catch (err) {
-        console.error('Error loading Embedded Messaging: ', err);
-        log('Init error: ' + (err && err.message ? err.message : err));
-        setAvailability('offline');
-        // Re-enable the button to retry
+      document.getElementById('initBtn').disabled = true;    // prevent double-click
+      const ok = await safeInitMessaging();
+      if (!ok) {
+        // Allow user to retry if init failed
         document.getElementById('initBtn').disabled = false;
       }
     });
 
-    // ---- Launch chat (programmatic) ----
     document.getElementById('launchBtn').addEventListener('click', () => {
       if (embeddedservice_bootstrap?.utilAPI?.launchChat) {
         log('Launching chat…');
@@ -1582,9 +1563,10 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
           .then(() => log('Chat launched.'))
           .catch(err => log('Launch error: ' + (err?.message || err)));
       } else {
-        log('utilAPI.launchChat not available yet.');
+        log('utilAPI.launchChat not yet available (init or events pending).');
       }
     });
   </script>
 </body>
 </html>
+
