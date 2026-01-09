@@ -1410,3 +1410,174 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
   </script>
 </body>
 </html>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Salesforce Messaging Availability Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    /* Simple demo styles */
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 2rem; }
+    .row { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    #chatStatusBadge {
+      display: inline-block;
+      padding: 0.35rem 0.65rem;
+      border-radius: 999px;
+      font-weight: 600;
+      background: #eee;
+      color: #333;
+      min-width: 90px;
+      text-align: center;
+    }
+    #chatStatusBadge.is-online { background: #e6ffed; color: #0a7c2e; border: 1px solid #85d79c; }
+    #chatStatusBadge.is-offline { background: #fff5f5; color: #a12020; border: 1px solid #f0b1b1; }
+    #log { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.9rem; color: #444; }
+    #log p { margin: 0.25rem 0; }
+    .controls { margin-top: 1rem; }
+    button {
+      padding: 0.6rem 1rem; border: 1px solid #0b5ed7; color: #fff; background: #0d6efd;
+      border-radius: 6px; cursor: pointer;
+    }
+    button.secondary {
+      background: #6c757d; border-color: #6c757d;
+    }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+
+  <h1>Messaging for In‑App and Web — Availability</h1>
+  <p>This page initializes the Salesforce Enhanced Web Chat on button click and shows online/offline availability based on business hour events.</p>
+
+  <div class="row">
+    <button id="initBtn" type="button">Check Chat Availability</button>
+    <span id="chatStatusBadge" aria-live="polite" title="Chat availability">Waiting…</span>
+  </div>
+
+  <div class="controls">
+    <!-- Optional: launch chat after it is online -->
+    <button id="launchBtn" type="button" class="secondary" disabled>Launch Chat</button>
+  </div>
+
+  <h2>Event Log</h2>
+  <div id="log" aria-live="polite" aria-atomic="false"></div>
+
+  <!-- Optional: a container to help query button visibility if needed -->
+  <div id="embeddedMessagingContainer" hidden></div>
+
+  <script type="text/javascript">
+    // --- Utility: log messages to the page ---
+    function log(msg) {
+      const logEl = document.getElementById('log');
+      const p = document.createElement('p');
+      p.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+      logEl.appendChild(p);
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    // --- Utility: update UI and notify the site/app ---
+    function setAvailability(status /* 'online' | 'offline' */) {
+      const badge = document.getElementById('chatStatusBadge');
+      if (badge) {
+        badge.textContent = status === 'online' ? 'Online' : 'Offline';
+        badge.classList.toggle('is-online', status === 'online');
+        badge.classList.toggle('is-offline', status === 'offline');
+      }
+      // Enable "Launch Chat" only when online
+      document.getElementById('launchBtn').disabled = (status !== 'online');
+
+      // Fire a site-wide custom event so your app can react
+      window.dispatchEvent(new CustomEvent('miw-availability', { detail: { status } }));
+
+      // If the widget runs inside an iframe, you can also postMessage to the host page:
+      // window.parent?.postMessage({ type: 'miw-availability', status }, '*');
+
+      log(`Availability set to: ${status.toUpperCase()}`);
+    }
+
+    // --- Register Enhanced Web Chat event listeners BEFORE init ---
+    // Inside business hours -> consider "online"
+    window.addEventListener('onEmbeddedMessagingBusinessHoursStarted', () => {
+      log('Event: onEmbeddedMessagingBusinessHoursStarted');
+      setAvailability('online');
+    });
+
+    // Outside business hours -> consider "offline"
+    window.addEventListener('onEmbeddedMessagingBusinessHoursEnded', () => {
+      log('Event: onEmbeddedMessagingBusinessHoursEnded');
+      setAvailability('offline');
+    });
+
+    // Button created -> may be hidden if outside business hours; infer visibility as a fallback.
+    window.addEventListener('onEmbeddedMessagingButtonCreated', () => {
+      log('Event: onEmbeddedMessagingButtonCreated');
+      // Try to detect if the button is visible; if hidden, treat as offline.
+      const container = document.querySelector('#embeddedMessagingContainer') || document.body;
+      const btn = container.querySelector('.embeddedMessagingButton, .embeddedServiceHelpButton, button');
+      const isVisible = btn ? !!(btn.offsetWidth || btn.offsetHeight) : false;
+      setAvailability(isVisible ? 'online' : 'offline');
+    });
+
+    // Optional: conversation/participant/routing events can also refine “online” definition.
+    // See Enhanced Web Chat event docs.
+    // window.addEventListener('onEmbeddedMessagingConversationParticipantChanged', (e) => { ... });
+
+    // --- Initialize Messaging on button click ---
+    const initBtn = document.getElementById('initBtn');
+    initBtn.addEventListener('click', () => {
+      // Prevent multiple inits
+      initBtn.disabled = true;
+      log('Initializing Embedded Messaging…');
+
+      try {
+        // Language config
+        embeddedservice_bootstrap.settings.language = 'en_US';
+
+        // If you want to control where the button renders, set targetElement
+        // embeddedservice_bootstrap.settings.targetElement =
+        //   document.body.querySelector('#embeddedMessagingContainer');
+
+        // Initialize the Enhanced Web Chat client (Messaging for In‑App and Web)
+        embeddedservice_bootstrap.init(
+          '00DAD000008PLr4', // Org Id
+          'Messaging_Routing_Channel', // Embedded Service Deployment (Developer Name)
+          'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770', // Site endpoint
+          { scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com' }
+        );
+
+        log('Init called successfully.');
+      } catch (err) {
+        console.error('Error loading Embedded Messaging: ', err);
+        log('Init error: ' + (err && err.message ? err.message : err));
+        // If init fails, reflect that as offline
+        setAvailability('offline');
+      }
+    });
+
+    // --- Launch chat programmatically when online ---
+    const launchBtn = document.getElementById('launchBtn');
+    launchBtn.addEventListener('click', () => {
+      if (launchBtn.disabled) return;
+
+      log('Attempting to launch chat…');
+      // Enhanced Messaging provides a util API to open the chat window.
+      // If the button is hidden but within business hours, launchChat still opens the client.
+      if (embeddedservice_bootstrap?.utilAPI?.launchChat) {
+        embeddedservice_bootstrap.utilAPI.launchChat()
+          .then(() => log('Chat launched.'))
+          .catch(err => log('Launch error: ' + (err && err.message ? err.message : err)));
+      } else {
+        log('utilAPI.launchChat not available yet. Has init finished and events fired?');
+      }
+    });
+  </script>
+
+  <!-- Load the Enhanced Web Chat bootstrap (Messaging). We do NOT auto-init; we init on button click. -->
+  <script/teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770/assets/js/bootstrap.min.js
+  </script>
+</body>
+</html>
