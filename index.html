@@ -1440,7 +1440,7 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
     .error { color:#b00020; margin-top:10px; }
 
     #fallbackBanner {
-      display: none; /* toggled via JS */
+      display: none;
       position: fixed; bottom: 35px; right: 35px; max-width: 520px;
       background: #143200; color: #CBFF55; border-radius: 12px; box-shadow: 0 6px 16px rgba(0,0,0,0.2);
       padding: 14px 16px; z-index: 9999; font-family: 'GlobalSans-SemiBold', Arial, sans-serif;
@@ -1448,6 +1448,14 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
     #fallbackBanner a { color: #CBFF55; text-decoration: underline; }
     #fallbackBanner .title { font-size: 16px; margin-bottom: 6px; }
     #fallbackBanner .desc { font-size: 14px; line-height: 1.4; white-space: pre-wrap; }
+
+    /* Debug toast */
+    #debugStatus {
+      position: fixed; left: 24px; bottom: 24px; background: #fffbe6; color:#111;
+      border: 1px solid #ffe58f; padding: 10px 12px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,.1);
+      font-size: 13px; display:none; z-index: 99999;
+    }
+    #debugStatus strong { color:#ad6800; }
   </style>
 </head>
 
@@ -1478,14 +1486,17 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
     <button id="startBtn" class="btn">Start Conversation</button>
     <div id="error" class="error" role="alert" aria-live="polite"></div>
   </div>
-	
+
   <div id="fallbackBanner" role="status" aria-live="polite">
     <div class="title">Message from Support</div>
     <div id="fallbackText" class="desc">
       Agents are not available. Please visit:
-      <a href="https://teamglobalexp.com/help-support" target="_blank" rel="upport</a>
+      https://teamglobalexp.com/help-supporthttps://teamglobalexp.com/help-support</a>
     </div>
   </div>
+
+  <!-- Debug toast -->
+  <div id="debugStatus"></div>
 
   <script>
     const els = {
@@ -1496,80 +1507,55 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
       startBtn:  document.getElementById('startBtn'),
       error:     document.getElementById('error'),
       banner:    document.getElementById('fallbackBanner'),
-      fallbackText: document.getElementById('fallbackText')
+      fallbackText: document.getElementById('fallbackText'),
+      debug:     document.getElementById('debugStatus')
     };
-
     function debugLog(...args){ try { console.log('[Messaging]', ...args); } catch(e){} }
+    function showDebug(msg){ els.debug.innerHTML = msg; els.debug.style.display = 'block'; }
+    function hideDebug(){ els.debug.style.display = 'none'; }
 
     function escapeHtml(str) {
-      return (str || '').replace(/[&<>"']/g, (ch) => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-      }[ch]));
+      return (str || '').replace(/[&<>"']/g, (ch) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
     }
-
     function linkifyFirstUrlOnly(text) {
       const raw = text || '';
       const urlRegex = /(https?:\/\/[^\s]+)/i;
       const match = raw.match(urlRegex);
-
-      if (!match) {
-        return escapeHtml(raw);
-      }
-
+      if (!match) return escapeHtml(raw);
       const url = match[0];
       const before = raw.slice(0, match.index);
       const after = raw.slice(match.index + url.length);
-
-      const safeBefore = escapeHtml(before);
-      const safeUrl = escapeHtml(url); // href will use the raw URL; text must be escaped
-      const safeAfter = escapeHtml(after);
-
-      return `${safeBefore}${url}${safeUrl}</a>${safeAfter}`;
+      return `${escapeHtml(before)}${url}${escapeHtml(url)}</a>${escapeHtml(after)}`;
     }
 
+    window.addEventListener('onEmbeddedMessagingReady', () => {
+      debugLog('onEmbeddedMessagingReady fired.');
+      hideDebug();
+      // Make sure the button is visible so launch isn’t blocked by visibility
+      try {
+        embeddedservice_bootstrap.utilAPI.showChatButton && embeddedservice_bootstrap.utilAPI.showChatButton();
+      } catch(e){}
+    });
+
     window.addEventListener('onEmbeddedMessagingButtonCreated', () => {
-      debugLog('Button created → SDK ready.');
+      debugLog('Button created → SDK ready for utilAPI.');
     });
 
     window.addEventListener('onEmbeddedMessagingConversationRouted', (evt) => {
       const detail = (evt && evt.detail) ? evt.detail : {};
       debugLog('Routing event detail:', JSON.stringify(detail));
-      const res = extractRoutingResult(detail);
+      const { failed, reason } = extractRoutingResult(detail);
 
-      if (res.failed) {
+      if (failed) {
         try {
-          if (window.embeddedservice_bootstrap?.utilAPI?.clearSession) {
-            embeddedservice_bootstrap.utilAPI.clearSession();
-          }
-          if (window.embeddedservice_bootstrap?.utilAPI?.hideChatButton) {
-            embeddedservice_bootstrap.utilAPI.hideChatButton();
-          }
-        } catch (e) {
-          debugLog('Clear/hide widget failed:', e);
-        }
-        setFallbackHtml(res.reason);
+          embeddedservice_bootstrap.utilAPI.clearSession && embeddedservice_bootstrap.utilAPI.clearSession();
+          embeddedservice_bootstrap.utilAPI.hideChatButton && embeddedservice_bootstrap.utilAPI.hideChatButton();
+        } catch (e) { debugLog('Clear/hide widget failed:', e); }
+        setFallbackHtml(reason);
         showFallbackBanner(true);
       } else {
         showFallbackBanner(false);
       }
-    });
-
-    window.addEventListener('onEmbeddedMessagingBusinessHoursEnded', () => {
-      try {
-        if (window.embeddedservice_bootstrap?.utilAPI?.hideChatButton) {
-          embeddedservice_bootstrap.utilAPI.hideChatButton();
-        }
-      } catch(e){}
-      setFallbackHtml('We are currently outside business hours. Please visit: https://teamglobalexp.com/help-support');
-      showFallbackBanner(true);
-    });
-    window.addEventListener('onEmbeddedMessagingBusinessHoursStarted', () => {
-      try {
-        if (window.embeddedservice_bootstrap?.utilAPI?.showChatButton) {
-          embeddedservice_bootstrap.utilAPI.showChatButton();
-        }
-      } catch(e){}
-      showFallbackBanner(false);
     });
 
     function extractRoutingResult(detail) {
@@ -1579,29 +1565,29 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
       const failed  = (success === false) || (!!reason && reason.length > 0);
       return { failed, reason };
     }
-
-    function showFallbackBanner(show) { els.banner.style.display = show ? 'block' : 'none'; }
-
-    function setFallbackHtml(message) {
+    function showFallbackBanner(show){ els.banner.style.display = show ? 'block' : 'none'; }
+    function setFallbackHtml(message){
       const text = (message || '').trim();
-      if (text) {
-        els.fallbackText.innerHTML = linkifyFirstUrlOnly(text);
-      } else {
-        els.fallbackText.innerHTML =
-          'Agents are not available. Please visit: ' +
-          'https://teamglobalexp.com/help-supporthttps://teamglobalexp.com/help-support</a>';
-      }
+      els.fallbackText.innerHTML = text ? linkifyFirstUrlOnly(text) :
+        'Agents are not available. Please visit: https://teamglobalexp.com/help-supporthttps://teamglobalexp.com/help-support</a>';
     }
+    function setError(msg){ els.error.textContent = msg || ''; }
 
-    function setError(msg) { els.error.textContent = msg || ''; }
+    // If SDK isn’t ready within 3s, show a toast
+    (function sdkReadinessGuard(){
+      setTimeout(() => {
+        if (!window.embeddedservice_bootstrap) {
+          showDebug('<strong>Messaging SDK not ready.</strong><br/>Check the Snippet URLs, CSP, and HTTPS. See browser Console for details.');
+          debugLog('SDK not found after timeout. Verify snippet values & CSP.');
+        }
+      }, 3000);
+    })();
 
     function waitForMessagingReady() {
-      return new Promise((resolve) => {
+      return new Promise((resolve, reject) => {
         if (window.embeddedservice_bootstrap) { resolve(); return; }
-        const listener = () => {
-          window.removeEventListener('onEmbeddedMessagingReady', listener);
-          resolve();
-        };
+        const timer = setTimeout(() => reject(new Error('SDK not ready (timeout).')), 8000);
+        const listener = () => { clearTimeout(timer); window.removeEventListener('onEmbeddedMessagingReady', listener); resolve(); };
         window.addEventListener('onEmbeddedMessagingReady', listener, { once: true });
       });
     }
@@ -1623,20 +1609,26 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
       els.startBtn.disabled = true;
 
       try {
+        debugLog('Start clicked. Waiting for SDK ready...');
         await waitForMessagingReady();
+        debugLog('SDK ready. Setting pre-chat fields…');
 
+        // Use your Channel Variable Names exactly
         embeddedservice_bootstrap.prechatAPI.setVisiblePrechatFields({
           _firstName: { value: firstName, isEditableByEndUser: true },
           _lastName:  { value: lastName,  isEditableByEndUser: true },
           _email:     { value: email,     isEditableByEndUser: true },
-          Phone:      { value: phone,     isEditableByEndUser: true }   // <-- Custom Parameter (capital P)
+          Phone:      { value: phone,     isEditableByEndUser: true }   // Custom Parameter (capital P)
         });
 
+        debugLog('Launching chat…');
         await embeddedservice_bootstrap.utilAPI.launchChat();
+        debugLog('Launch called successfully.');
 
       } catch (e) {
         console.error(e);
-        setError('Unable to start conversation. Please try again.');
+        setError('Unable to start conversation. Please check Console for details.');
+        showDebug('<strong>Launch failed.</strong><br/>Open DevTools → Console and share the logs here.');
       } finally {
         els.startBtn.disabled = false;
       }
@@ -1645,27 +1637,29 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
     document.getElementById('startBtn').addEventListener('click', startConversation);
   </script>
 
+  <!-- ======= Embedded Messaging bootstrap (replace with your values) ======= -->
   <script>
     function initEmbeddedMessaging() {
       try {
-        // Hide native bubble on load; we use our page Start button
+        // Hide native bubble on load; we’ll show it once SDK is ready
         embeddedservice_bootstrap.settings.hideChatButtonOnLoad = true;
-
         embeddedservice_bootstrap.settings.language = 'en_US';
 
+        // IMPORTANT: These must be correct and accessible over HTTPS
         embeddedservice_bootstrap.init(
           '00DAD000008PLr4',                                          // Org Id (Sandbox) → replace for PROD
           'Messaging_Routing_Channel',                                 // Channel Developer Name
           'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770', // Site URL
           { scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com' }              // SCRT URL
         );
+        debugLog('initEmbeddedMessaging() called.');
       } catch (err) {
         console.error('Error loading Embedded Messaging: ', err);
+        showDebug('<strong>Init error.</strong><br/>Check Org Id, Channel Dev Name, Site URL, SCRT URL.');
       }
     }
   </script>
-  <script
-    src="https://teamglobalexp--tgedev.sandbox.my.site.com/ESChan1762954054770/assets/js/bootstrap.min.js
+  https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770/assets/js/bootstrap.min.js
   </script>
 </body>
 </html>
