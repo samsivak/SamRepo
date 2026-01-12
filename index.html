@@ -1860,7 +1860,6 @@ and the
     }
   </script>-->
 
-	
 
 <script type="text/javascript">
   function showSpinner() {
@@ -1882,7 +1881,7 @@ and the
     try {
       embeddedservice_bootstrap.settings.language = 'en_US';
 
-      // When messaging client is ready, stop the spinner.
+      // Stop spinner when client is ready
       window.addEventListener('onEmbeddedMessagingReady', () => {
         console.log('[MIAW] Messaging client is ready');
         hideSpinner();
@@ -1899,31 +1898,47 @@ and the
       );
     } catch (err) {
       console.error('Error loading Embedded Messaging: ', err);
-      // Keep the button hidden no matter what
+      // Keep button hidden no matter what
       hideSpinner();
       clearTimeout(miawSpinnerTimeout);
     }
   }
 
-  function startMessaging() {
-    // 🔒 Hide the Live Chat button immediately and keep it hidden until page refresh
+  function startMessaging(event) {
+    // Prevent any default behavior or event bubbling issues
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    // 🔒 Remove the Live Chat button node from the DOM immediately.
     const btn = document.getElementById('miaw-start');
     if (btn) {
-      btn.style.display = 'none';            // hard hide
-      btn.setAttribute('aria-hidden', 'true');
-      btn.disabled = true;                   // prevent further events
+      try {
+        // Most robust: remove the element from the DOM entirely
+        btn.parentNode && btn.parentNode.removeChild(btn);
+      } catch (e) {
+        // Fallbacks in case removeChild fails for any reason
+        btn.style.display = 'none';
+        btn.setAttribute('hidden', 'true');
+        btn.setAttribute('aria-hidden', 'true');
+        btn.disabled = true;
+        btn.style.visibility = 'hidden';
+        btn.style.opacity = '0';
+        btn.style.pointerEvents = 'none';
+      }
     }
 
     showSpinner();
     startSpinnerTimeout(30000);
 
-    // If the bootstrap is already loaded, init directly
+    // If bootstrap already present, init directly
     if (window.embeddedservice_bootstrap) {
       initEmbeddedMessaging();
       return;
     }
 
-    // Otherwise, lazy-load the bootstrap script
+    // Otherwise, lazy-load bootstrap
     const src = 'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWMessagingRoutingChan1763462090439/assets/js/bootstrap.min.js';
     const script = document.createElement('script');
     script.src = src;
@@ -1935,7 +1950,7 @@ and the
     };
     script.onerror = function (e) {
       console.error('[MIAW] Failed to load bootstrap.min.js from:', src, e);
-      // Keep the button hidden no matter what
+      // Keep button hidden no matter what
       hideSpinner();
       clearTimeout(miawSpinnerTimeout);
     };
@@ -1943,7 +1958,7 @@ and the
     document.head.appendChild(script);
   }
 
-  // Optional: bind handler via JS in addition to inline onclick (robustness)
+  // Bind via JS (in addition to your inline onclick="startMessaging()")
   const btnEl = document.getElementById('miaw-start');
   if (btnEl) {
     btnEl.addEventListener('click', startMessaging);
