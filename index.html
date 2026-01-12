@@ -1268,7 +1268,7 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
 
 
 
-<!DOCTYPE html>
+<!--<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -1335,7 +1335,6 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
 <body>
   <button id="miaw-start" type="button" onclick="startMessaging()">Click to Start Chat</button>
 
-  <!-- Spinner -->
   <div id="miaw-loading" class="miaw-spinner" role="status" aria-live="polite" aria-label="Loading chat">
     <div class="miaw-circle">
       <div class="miaw-arc"></div>
@@ -1409,5 +1408,371 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
     }
   </script>
 </body>
-</html>
+</html> -->
+
+
+<html><head><style>
+  .hidden-selected {
+    display: none;
+    /*Hide the selected option */
+    
+  }
+   label {
+    font-size: 17px;  /* Set the desired font size */
+    font-family: 'GlobalSans-SemiBold', sans-serif; /* Set the desired font */
+    color: #143200;   /* Set the desired colour */
+     
+  }
+  select {
+     font-size: 17px;  /* Set the desired font size */
+    font-family: 'GlobalSans-SemiBold', sans-serif;/* Set the desired font */
+    color: #143200;   /* Set the desired colour */
+    width: 400px;
+  }
+</style>
+<meta http-equiv="Content-type" content="text/html; charset=UTF-8">
+<script type="" src="https://www.google.com/recaptcha/api.js"></script>
+<script type="">
+ function timestamp() { var response = document.getElementById("g-recaptcha-response"); if (response == null || response.value.trim() == "") {var elems = JSON.parse(document.getElementsByName("captcha_settings")[0].value);elems["ts"] = JSON.stringify(new Date().getTime());document.getElementsByName("captcha_settings")[0].value = JSON.stringify(elems); } } setInterval(timestamp, 500); 
+</script>
+
+<!--  ----------------------------------------------------------------------  -->
+<!--  NOTE: Please add the following <FORM> element to your page.             -->
+<!--  ----------------------------------------------------------------------  -->
+
+
+<!--  ----------------------------------------------------------------------  -->
+<!--  NOTE: Please add the following <META> element to your page <HEAD>.      -->
+<!--  If necessary, please modify the charset parameter to specify the        -->
+<!--  character set of your HTML page.                                        -->
+<!--  ----------------------------------------------------------------------  -->
+
+<meta http-equiv="Content-type" content="text/html; charset=UTF-8">
+
+<!--  ----------------------------------------------------------------------  -->
+<!--  NOTE: Please add the following <FORM> element to your page.             -->
+<!--  ----------------------------------------------------------------------  -->
+
+</head><body><form action="https://test.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&amp;orgId=00D9p000004KUXV" method="POST">
+
+<!--<input type="hidden" name="captcha_settings" value="{&quot;keyname&quot;:&quot;teamglobalexpProd&quot;,&quot;fallback&quot;:&quot;true&quot;,&quot;orgId&quot;:&quot;00D9p000004KUXV&quot;,&quot;ts&quot;:&quot;1767676812826&quot;}" tabindex="-1">
+-->
+
+<input type="hidden" name="oid" value="00D9p000004KUXV">
+<input type="hidden" name="retURL" value="https://teamglobalexp.com/form-success" tabindex="-1">
+
+
+<input type="hidden" name="debug" value="0"> 
+<input type="hidden" name="debugEmail" value="priyanka.sindhu@teamglobalexp.com">                               
+
+
+<!--  ----------------------------------------------------------------------  -->
+<!--  NOTE: These fields are optional debugging elements. Please uncomment    -->
+<!--  these lines if you wish to test in debug mode.                          -->
+<!--  ----------------------------------------------------------------------  -->
+ <label for="lead_source" class="hidden-selected">Lead Source </label>
+  <select id="lead_source" name="lead_source" class="hidden-selected" tabindex="-1">
+    <option value="">--None--</option>
+    <option value="Website" selected="">Website</option>
+  </select>
+  <label for="Lead Type" class="hidden-selected">Lead Type
+  </label>
+  <select id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type" class="hidden-selected" tabindex="-1">
+    <option value="">--None--</option>
+    <option value="Reoccurring" selected="">Reoccurring</option>
+  </select>
+<label> Are you an existing Team Global Express customer? </label><br>
+ <label><input type="radio" name="customer" value="Yes" tabindex="-1"> Yes</label><br>
+  <label><input type="radio" name="customer" value="No" tabindex="-1"> No</label><br><br>
+  <label>Account Number (if applicable)</label><br><input id="accountnumber" maxlength="40" name="accountnumber" size="50" type="text" tabindex="-1"><br><br>
+  <label for="description" class="hidden-selected">Description</label><textarea id="description" name="description" class="hidden-selected" tabindex="-1"></textarea>
+ <script type="">
+        function concatenateValues() {
+            let selectedStatus = '';
+            const statusOptions = document.getElementsByName('customer');
+            for (let i = 0; i < statusOptions.length; i++) {
+                if (statusOptions[i].checked) {
+                    selectedStatus = statusOptions[i].value;
+                    break;
+                }
+            }
+
+            const accountNumberValue = document.getElementById('accountnumber').value;
+
+            let concatenatedValue = '';
+            if (selectedStatus) {
+                concatenatedValue += `Is an existing customer? ${selectedStatus}\n`;
+            }
+            if (accountNumberValue) {
+                concatenatedValue += `Account Number ${accountNumberValue}`;
+            }
+
+            document.getElementById('description').value = concatenatedValue;
+        }
+        document.getElementsByName('customer').forEach((radio) => {
+            radio.addEventListener('change', concatenateValues);
+        });
+        document.getElementById('accountnumber').addEventListener('input', concatenateValues);
+    </script>
+
+<label for="first_name">First Name<span style="color:red;">* </span></label><br><input id="first_name" maxlength="40" name="first_name" size="50" type="text" required="" tabindex="-1"><br><br>
+
+<label for="last_name">Last Name<span style="color:red;">* </span></label><br><input id="last_name" maxlength="80" name="last_name" size="50" type="text" required="" tabindex="-1"><br><br>
+
+<label for="company">Company<span style="color:red;">* </span></label><br><input id="company" maxlength="40" name="company" size="50" type="text" required="" tabindex="-1"><br><br>
+
+<label for="email">Email<span style="color:red;">* </span></label><br><input id="email" maxlength="80" name="email" size="50" type="text" required="" tabindex="-1"><br><br>
+
+<label for="phone">Phone<span style="color:red;">* </span></label><br>
+<input id="phone" maxlength="40" name="phone" size="50" type="text" required="" oninput="validatePhone(this)" tabindex="-1"><br>
+<br>
+<p id="phoneError" style="color:red;font-size:12px;"></p>
+
+<script type="">
+function validatePhone(input) {
+    const numericRegex = /^\d*$/; 
+    const phoneError = document.getElementById("phoneError");
+
+    if (!numericRegex.test(input.value)) {
+        phoneError.textContent = "Please enter numeric character only.";
+    } else {
+        phoneError.textContent = "";
+    }
+}
+</script>
+
+<label>Preferred Method of Contact</label><br> <select id="00N2P000000O4yG" name="00N2P000000O4yG" title="Preferred Method of Contact" tabindex="-1"><option value="">--None--</option><option value="Phone">Phone</option>
+<option value="Email">Email</option>
+</select><br><br>
+
+<label>State<span style="color:red;">* </span>
+  </label><br>
+  <select id="statedrop" name="statedrop" required="" tabindex="-1">
+    <option value="">--None--</option>
+    <option value="NSW">New South Wales</option>
+    <option value="VIC">Victoria</option>
+    <option value="QLD">Queensland</option>
+    <option value="SA">South Australia</option>
+    <option value="WA">West Australia</option>
+    <option value="TAS">Tasmania</option>
+    <option value="ACT">Australian Capital Territory</option>
+    <option value="NT">Northern Territory</option>
+  </select><br><br>
+<label for="state" class="hidden-selected">State</label><input id="state" maxlength="20" name="state" size="20" type="text" class="hidden-selected" tabindex="-1">
+  <script type="">
+   var selectBox = document.getElementById("statedrop");
+selectBox.onchange = function(){
+    var textbox = document.getElementById("state");
+    textbox.value = this.value;}
+</script>
+<label for="industry">Industry<span style="color:red;">* </span></label><br><select id="industry" name="industry" required="" tabindex="-1"><option value="">--None--</option><option value="Agriculture, Forestry and Fishing">Agriculture, Forestry and Fishing</option>
+<option value="Mining">Mining</option>
+<option value="Manufacturing">Manufacturing</option>
+<option value="Electricity, Gas, Water And Waste Services">Electricity, Gas, Water And Waste Services</option>
+<option value="Construction">Construction</option>
+<option value="Wholesale Trade">Wholesale Trade</option>
+<option value="Retail Trade">Retail Trade</option>
+<option value="Accommodation and Food Services">Accommodation and Food Services</option>
+<option value="Transport, Postal and Warehousing">Transport, Postal and Warehousing</option>
+<option value="Information Media and Telecommunications">Information Media and Telecommunications</option>
+<option value="Financial and Insurance Services">Financial and Insurance Services</option>
+<option value="Rental, Hiring And Real Estate Services">Rental, Hiring And Real Estate Services</option>
+<option value="Professional, Scientific And Technical Services">Professional, Scientific And Technical Services</option>
+<option value="Administrative and Support Services">Administrative and Support Services</option>
+<option value="Public Administration and Safety">Public Administration and Safety</option>
+<option value="Education and Training">Education and Training</option>
+<option value="Health Care and Social Assistance">Health Care and Social Assistance</option>
+<option value="Arts and Recreation Services">Arts and Recreation Services</option>
+<option value="Other Services">Other Services</option>
+</select><br><br>
+
+  <label>What services are you interested in?</label><br><select id="00N2P000000O4y8" multiple="multiple" name="00N2P000000O4y8" tabindex="-1" title="What services are you interested in?"><option value="eCommerce">eCommerce</option>
+<option value="Air Freight">Air Freight</option>
+<option value="Road Freight">Road Freight</option>
+<option value="Sea Freight">Sea Freight</option>
+<option value="Rail Freight">Rail Freight</option>
+<option value="Intermodal &amp; Multimodal">Intermodal &amp; Multimodal</option>
+<option value="Courier">Courier</option>
+<option value="Dangerous Goods">Dangerous Goods</option>
+<option value="Global">Global</option>
+<option value="New Zealand">New Zealand</option>
+</select><br><br>
+
+ <label>What would you like moved or delivered?</label><br><select id="00N2P000000O4yf" name="00N2P000000O4yf" tabindex="-1" title="What would you like moved or delivered?"><option value="">--None--</option><option value="Apparel, Accessories &amp; Luxury Goods">Apparel, Accessories &amp; Luxury Goods</option>
+<option value="Automotive Parts &amp; Equipment">Automotive Parts &amp; Equipment</option>
+<option value="Building Products">Building Products</option>
+<option value="Chemicals / Dangerous Goods">Chemicals / Dangerous Goods</option>
+<option value="Containers / Packaging">Containers / Packaging</option>
+<option value="Documents">Documents</option>
+<option value="Electronics / Telecommunications">Electronics / Telecommunications</option>
+<option value="Entertainment Equipment">Entertainment Equipment</option>
+<option value="Food &amp; Beverage">Food &amp; Beverage</option>
+<option value="Health Care">Health Care</option>
+<option value="Marketing, Advertising &amp; Promotional Goods">Marketing, Advertising &amp; Promotional Goods</option>
+<option value="Office Supplies">Office Supplies</option>
+<option value="Perishables">Perishables</option>
+<option value="Pets / Plants">Pets / Plants</option>
+<option value="Tobacco">Tobacco</option>
+<option value="Transport - Freight">Transport - Freight</option>
+<option value="Household/Personal Items">Household/Personal Items</option>
+</select><br><br>
+
+<label>What is your current estimated annual logistics spend?
+  </label><br>
+  <select id="revenue" name="revenue" title="Estimated Revenue (Local)" tabindex="-1">
+    <option value="">--None--</option>
+    <option value="0-250K">0-250K</option>
+    <option value="250K-1M">250K-1M</option>
+    <option value="1M+">1M+</option>
+  </select><br>
+  <label class="hidden-selected">What is your current estimated annual logistics spend?</label><input id="00N2P000000O4yb" maxlength="10" name="00N2P000000O4yb" size="20" type="text" class="hidden-selected" tabindex="-1">
+
+  <script type="">
+   var selectBox = document.getElementById("revenue");
+selectBox.onchange = function(){
+    var textbox = document.getElementById("00N2P000000O4yb");
+    textbox.value = this.value;}
+</script>
+<br><br>
+I would like to receive marketing communications, news, research, business insights and relevant industry event invitations from Team Global Express.<br>
+  <label>Opt In  </label><input id="00NOa000004TZpj" name="00NOa000004TZpj" type="checkbox" value="1" tabindex="-1"><br>
+ <br> 
+<i>I consent to my personal information being collected, used, stored, and disclosed as set out in the
+<a href="https://teamglobalexp.com/privacy-collection-notice" tabindex="-1"><u>TGE Privacy Collection Notice</u></a>
+and the
+<a href="https://teamglobalexp.com/privacy-policy" tabindex="-1"><u>TGE Privacy Policy</u></a>.
+</i>
+<br>
+<br>
+
+<!--<div class="g-recaptcha" data-sitekey="6Lfcm3MpAAAAACbCiWLEe5qHZMbONyMqdyFCAije"><div style="width: 304px; height: 78px;"><div><iframe title="reCAPTCHA" width="304" height="78" role="presentation" name="a-31v8smcq20nn" frameborder="0" scrolling="no" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation allow-modals allow-popups-to-escape-sandbox allow-storage-access-by-user-activation" src="https://www.google.com/recaptcha/api2/anchor?ar=1&amp;k=6Lfcm3MpAAAAACbCiWLEe5qHZMbONyMqdyFCAije&amp;co=aHR0cHM6Ly90Z2Vjb25uZWN0LnRlYW1nbG9iYWxleHAuY29tOjQ0Mw..&amp;hl=en&amp;v=7gg7H51Q-naNfhmCP3_R47ho&amp;size=normal&amp;anchor-ms=20000&amp;execute-ms=30000&amp;cb=xc0faaffeabh" tabindex="-1"></iframe></div><textarea id="g-recaptcha-response" name="g-recaptcha-response" class="g-recaptcha-response" style="width: 250px; height: 40px; border: 1px solid rgb(193, 193, 193); margin: 10px 25px; padding: 0px; resize: none; display: none;" tabindex="-1"></textarea></div><iframe style="display: none;" tabindex="-1"></iframe></div>
+-->
+
+<input type="submit" name="submit" style="background-color: #143200; color: #CBFF55; border-radius: 50px; border: none; padding: 10px 20px; font-family: 'GlobalSans-SemiBold', sans-serif; font-size: 18px;" tabindex="-1">
+
+
+</form>
+
+
+  
+  
+  
+<style type="text/css">
+ .embeddedServiceHelpButton .helpButton .uiButton {
+  background-color: #143200;
+  font-family: "Arial", sans-serif;
+ }
+ .embeddedServiceHelpButton .helpButton .uiButton:focus {
+  outline: 1px solid #143200;
+ }
+</style>
+ <div class="embeddedServiceHelpButton">
+        <div class="helpButton">
+            <img id="liveagent_button_online" class="chatImage" onclick="embedded_svc.utils.fireEvent('onHelpButtonClick')" style=" border: 0px none; cursor: pointer;bottom: 0px;position: fixed;right: 12px;min-width: 110px;max-width: 150px;" src="https://tgeconnect.teamglobalexp.com/documents/d/guest/online">
+            <div id="loadinglivechatdiv"></div>
+        
+            </div>
+    </div>   
+<script type="text/javascript" src="https://service.force.com/embeddedservice/5.0/esw.min.js"></script>
+<script type="text/javascript">
+ var initESW = function(gslbBaseURL) {
+  embedded_svc.settings.displayHelpButton = false; //Or false
+  embedded_svc.settings.language = ''; //For example, enter 'en' or 'en-US'
+
+  //embedded_svc.settings.defaultMinimizedText = '...'; //(Defaults to Chat with an Expert)
+  //embedded_svc.settings.disabledMinimizedText = '...'; //(Defaults to Agent Offline)
+
+  //embedded_svc.settings.loadingText = ''; //(Defaults to Loading)
+  //embedded_svc.settings.storageDomain = 'yourdomain.com'; //(Sets the domain for your deployment so that visitors can navigate subdomains during a chat session)
+
+  // Settings for Chat
+  //embedded_svc.settings.directToButtonRouting = function(prechatFormData) {
+   // Dynamically changes the button ID based on what the visitor enters in the pre-chat form.
+   // Returns a valid button ID.
+  //};
+  //embedded_svc.settings.prepopulatedPrechatFields = {}; //Sets the auto-population of pre-chat form fields
+  //embedded_svc.settings.fallbackRouting = []; //An array of button IDs, user IDs, or userId_buttonId
+  //embedded_svc.settings.offlineSupportMinimizedText = '...'; //(Defaults to Contact Us)
+  embedded_svc.settings.enabledFeatures = ['LiveAgent'];
+  embedded_svc.settings.entryFeature = 'LiveAgent';
+embedded_svc.addEventHandler("afterDestroy", function() {
+            console.log("destroy event was fired.");
+            document.getElementsByClassName("embeddedServiceHelpButton")[0].setAttribute("style", "display:block;");
+        });
+        embedded_svc.addEventHandler("onHelpButtonClick", function() {
+            console.log("component Loading...");
+            //document.getElementById("loadinglivechatdiv").innerHTML = "Loading...";
+            embedded_svc.bootstrapEmbeddedService();
+        });
+        embedded_svc.addEventHandler("onAvailability", function(data) {
+            console.log(JSON.stringify(data));
+            
+            if(data.isAgentAvailable == undefined || data.isAgentAvailable == false) {
+                document.getElementsByClassName("chatImage")[0].setAttribute("src", "https://tgeconnect.teamglobalexp.com/documents/d/guest/offline");
+                document.getElementsByClassName("chatImage")[0].setAttribute("onclick", "window.open('https://teamglobalexp.com/help-support', '_blank');");
+            }
+            else {
+                 document.getElementsByClassName("chatImage")[0].setAttribute("src", "https://tgeconnect.teamglobalexp.com/documents/d/guest/online");
+                document.getElementsByClassName("chatImage")[0].setAttribute("onclick", "embedded_svc.utils.fireEvent('onHelpButtonClick')");
+            }
+        });
+        embedded_svc.addEventHandler("onSettingsCallCompleted", function(data) {
+            if(data.isAgentAvailable == false) {
+                document.getElementsByClassName("chatImage")[0].setAttribute("src", "https://tgeconnect.teamglobalexp.com/documents/d/guest/offline");
+                document.getElementsByClassName("chatImage")[0].setAttribute("onclick", "window.open('https://teamglobalexp.com/help-support', '_blank');");
+            }
+        });
+
+
+embedded_svc.init(
+   'https://teamglobalexp--tollperf.sandbox.my.salesforce.com',
+			'https://teamglobalexp--tollperf.sandbox.my.salesforce-sites.com/',
+			gslbBaseURL,
+			'00D9p000004KUXV',
+			'Live_Chat_Walk_Up_Business',
+			{
+				baseLiveAgentContentURL: 'https://c.la12s-core1.sfdc-vwfla6.salesforceliveagent.com/content',
+				deploymentId: '5722P00000000CC',
+				buttonId: '5732P00000000Ag',
+				baseLiveAgentURL: 'https://d.la12s-core1.sfdc-vwfla6.salesforceliveagent.com/chat',
+				eswLiveAgentDevName: 'Live_Chat_Sales',
+				isOfflineSupportEnabled: false
+			}
+  );
+
+  <script type='text/javascript'>
+	function initEmbeddedMessaging() {
+		try {
+			embeddedservice_bootstrap.settings.language = 'en_US'; // For example, enter 'en' or 'en-US'
+
+			embeddedservice_bootstrap.init(
+				'00D9p000004KUXV',
+				'Messaging_Routing_Channel',
+				'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWMessagingRoutingChan1763462090439',
+				{
+					scrt2URL: 'https://teamglobalexp--tollperf.sandbox.my.salesforce-scrt.com'
+				}
+			);
+		} catch (err) {
+			console.error('Error loading Embedded Messaging: ', err);
+		}
+	};
+</script>
+<script type='text/javascript' src='https://teamglobalexp--tollperf.sandbox.my.site.com/ESWMessagingRoutingChan1763462090439/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
+
+ };
+
+ if (!window.embedded_svc) {
+  var s = document.createElement('script');
+  s.setAttribute('src', 'https://teamglobalexp--tollperf.sandbox.my.salesforce.com/embeddedservice/5.0/esw.min.js');
+  s.onload = function() {
+   initESW(null);
+  };
+  document.body.appendChild(s);
+ } else {
+  initESW('https://service.force.com');
+ }
+</script>  
+  
+</body></html>
 
