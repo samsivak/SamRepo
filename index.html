@@ -1418,15 +1418,15 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
     
   }
    label {
-    font-size: 17px;  /* Set the desired font size */
-    font-family: 'GlobalSans-SemiBold', sans-serif; /* Set the desired font */
-    color: #143200;   /* Set the desired colour */
+    font-size: 17px; 
+    font-family: 'GlobalSans-SemiBold', sans-serif;
+    color: #143200; 
      
   }
   select {
-     font-size: 17px;  /* Set the desired font size */
-    font-family: 'GlobalSans-SemiBold', sans-serif;/* Set the desired font */
-    color: #143200;   /* Set the desired colour */
+     font-size: 17px;
+    font-family: 'GlobalSans-SemiBold', sans-serif;
+    color: #143200;
     width: 400px;
   }
 </style>
@@ -1439,10 +1439,10 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
   align-items: center;
   gap: 10px;
   padding: 10px 20px;
-  background-color: #0b1d0b; /* Dark green/black */
+  background-color: #0b1d0b;
   color: #fff;
-  border: 2px solid #b8aaff; /* Light purple border */
-  border-radius: 30px; /* Pill shape */
+  border: 2px solid #b8aaff;
+  border-radius: 30px;
   font-family: 'GlobalSans-SemiBold', sans-serif;
   font-size: 16px;
   cursor: pointer;
@@ -1451,7 +1451,7 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
 
 /* Hover effect */
 #miaw-start:hover {
-  background-color: #143200; /* Slightly lighter green */
+  background-color: #143200;
 }
 
 /* Icon inside button */
@@ -1488,7 +1488,7 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
   content: '';
   width: 8px;
   height: 8px;
-  background-color: #00ff00; /* Green dot */
+  background-color: #00ff00;
   border-radius: 50%;
   display: inline-block;
 }
@@ -1502,14 +1502,14 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
       right: 24px;
       bottom: 24px;
       z-index: 9999;
-      display: none; /* hidden by default */
+      display: none;
     }
 
     /* Lime green circle */
     .miaw-circle {
       width: 56px;
       height: 56px;
-      background-color: #c6ff4d; /* lime green */
+      background-color: #c6ff4d;
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -1522,7 +1522,7 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
       width: 28px;
       height: 28px;
       border: 3px solid transparent;
-      border-top-color: #1a1a1a; /* dark arc color */
+      border-top-color: #1a1a1a;
       border-radius: 50%;
       animation: spin 1s linear infinite;
     }
@@ -1542,74 +1542,7 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
   display: none !important;
 }
 
-	
-:root {
-  --pill-bg: #0c1a0c;           /* deep green/black like your design */
-  --pill-text: #ffffff;
-  --pill-outline: #b9a7ff;      /* soft purple glow */
-}
-
-/* Base pill styling for your existing button */
-#miaw-start {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 16px 10px 44px; /* make room for the icon */
-  border: 0;
-  border-radius: 999px;
-  background: var(--pill-bg);
-  color: var(--pill-text);
-  box-shadow: 0 0 0 3px var(--pill-outline);
-  font-weight: 700;
-  font-size: 15px;
-  line-height: 1.1;
-  cursor: pointer;
-  transition: transform 120ms ease, filter 120ms ease, box-shadow 120ms ease;
-}
-
-/* Hover/active */
-#miaw-start:hover {
-  transform: translateY(-1px);
-  filter: brightness(1.06);
-}
-#miaw-start:active {
-  transform: translateY(0);
-  filter: brightness(0.98);
-}
-
-/* Accessible focus ring */
-#miaw-start:focus-visible {
-  outline: none;
-  box-shadow:
-    0 0 0 3px var(--pill-outline),
-    0 0 0 6px rgba(185, 167, 255, 0.35);
-}
-
-/* Optional disabled state */
-#miaw-start[disabled] {
-  opacity: 0.6;
-  cursor: not-allowed;
-  filter: none;
-}
-
-/* Add chat bubble + ellipsis icon on the left via ::before */
-#miaw-start::before {
-  content: "";
-  position: absolute;
-  left: 16px;
-  top: 50%;
-  width: 20px;
-  height: 20px;
-  transform: translateY(-50%);
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
-
-  /* Base64-encoded white SVG icon (single color) */
-  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjIiIGQ9Ik00IDVoMTZhMSAxIDAgMCAxIDEgMXYxMGEgMSAxIDAgMCAxLTEgMUg5bC01IDRWNmExIDEgMCAwIDEgMS0xeiIvPjxjaXJjbGUgY3g9IjEwIiBjeT0iMTEiIHI9IjEuNiIgZmlsbD0iI2ZmZiIvPjxjaXJjbGUgY3g9IjE0IiBjeT0iMTEiIHI9IjEuNiIgZmlsbD0iI2ZmZiIvPjxjaXJjbGUgY3g9IjE4IiBjeT0iMTEiIHI9IjEuNiIgZmlsbD0iI2ZmZiIvPC9zdmc+");
-}
-	</style>
+</style>
 
 <meta charset="utf-8" />
 <title>UAT Embedded Messaging Launcher</title>
@@ -1832,6 +1765,7 @@ and the
 <input type="submit" name="submit" style="background-color: #143200; color: #CBFF55; border-radius: 50px; border: none; padding: 10px 20px; font-family: 'GlobalSans-SemiBold', sans-serif; font-size: 18px;" tabindex="-1">
 
 </form> 
+	
 	<button id="miaw-start" type="button" onclick="startMessaging()"> Live Chat </button>
 	
 	 <div id="miaw-loading" class="miaw-spinner" role="status" aria-live="polite" aria-label="Loading chat">
@@ -1841,12 +1775,10 @@ and the
   </div>
 
 <script type="text/javascript">
-  // Utility: hard-hide the button and schedule removal
   function hideChatButtonHard() {
     const btn = document.getElementById('miaw-start');
     if (!btn) return;
 
-    // Apply multiple immediate style changes (defensive)
     btn.style.display = 'none';
     btn.style.visibility = 'hidden';
     btn.style.opacity = '0';
@@ -1855,7 +1787,6 @@ and the
     btn.setAttribute('aria-hidden', 'true');
     btn.disabled = true;
 
-    // Inject a global CSS rule to keep it hidden even if scripts try to mutate styles
     const css = document.createElement('style');
     css.id = 'miaw-hide-rule';
     css.textContent = `
@@ -1863,20 +1794,17 @@ and the
     `;
     document.head.appendChild(css);
 
-    // Remove from DOM on the next frame (strongest)
     requestAnimationFrame(() => {
       if (btn && btn.parentNode) {
         try {
           btn.parentNode.removeChild(btn);
         } catch (e) {
-          // Fallbacks already applied via styles/attributes
           console.warn('Fallback hide applied; removal failed:', e);
         }
       }
     });
   }
 
-  // Spinner helpers (keep your original behavior)
   function showSpinner() {
     const el = document.getElementById('miaw-loading');
     if (el) el.style.display = 'block';
@@ -1896,7 +1824,6 @@ and the
     try {
       embeddedservice_bootstrap.settings.language = 'en_US';
 
-      // Stop spinner when client is ready
       window.addEventListener('onEmbeddedMessagingReady', () => {
         console.log('[MIAW] Messaging client is ready');
         hideSpinner();
@@ -1911,30 +1838,24 @@ and the
       );
     } catch (err) {
       console.error('Error loading Embedded Messaging: ', err);
-      // Keep the button hidden no matter what
       hideSpinner();
       clearTimeout(miawSpinnerTimeout);
     }
   }
 
   function startMessaging(event) {
-    // Prevent any default behavior bubbling from the button
     if (event) { event.preventDefault(); event.stopPropagation(); }
 
-    // 🔒 Hide/remove the button immediately & permanently until refresh
     hideChatButtonHard();
 
-    // Continue with your normal flow
     showSpinner();
     startSpinnerTimeout(30000);
 
-    // If bootstrap already present, init directly
     if (window.embeddedservice_bootstrap) {
       initEmbeddedMessaging();
       return;
     }
 
-    // Otherwise, lazy-load bootstrap
     const src = 'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWMessagingRoutingChan1763462090439/assets/js/bootstrap.min.js';
     const script = document.createElement('script');
     script.src = src;
@@ -1946,7 +1867,6 @@ and the
     };
     script.onerror = function (e) {
       console.error('[MIAW] Failed to load bootstrap.min.js from:', src, e);
-      // Button remains hidden per requirement
       hideSpinner();
       clearTimeout(miawSpinnerTimeout);
     };
@@ -1954,18 +1874,15 @@ and the
     document.head.appendChild(script);
   }
 
-  // Bind via JS (in addition to your inline onclick="startMessaging()")
   (function bindButton() {
     const btnEl = document.getElementById('miaw-start');
     if (btnEl) {
-      // Defensive: remove any existing listeners to avoid duplicate calls
       btnEl.replaceWith(btnEl.cloneNode(true));
       const freshBtn = document.getElementById('miaw-start');
-      freshBtn.addEventListener('click', startMessaging, { once: true }); // ensure it runs once
+      freshBtn.addEventListener('click', startMessaging, { once: true });
     }
   })();
 
-  // Debug helper: log if there are multiple elements that look like the button
   window.addEventListener('load', () => {
     const btns = document.querySelectorAll('#miaw-start');
     if (btns.length > 1) {
