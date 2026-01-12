@@ -1430,7 +1430,7 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
     width: 400px;
   }
 </style>
-<style>
+<!--<style>
 #miaw-start {
   position: fixed;
   right: 12px;
@@ -1542,7 +1542,112 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
   display: none !important;
 }
 
+	</style> -->
+	<style>
+#miaw-start {
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  background-color: #0b1d0b; /* Dark green/black */
+  color: #fff;
+  flex-direction: column;  border: 2px solid #b8aaff; /* Light purple border */
+  line-height: 1.2;
+}
+
+#miaw-start .chat-text .title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+}
+
+#miaw-start .chat-text .status {
+  font-size: 14px;
+  color: #ccc;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+#miaw-start .chat-text .status::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background-color: #00ff00; /* Green dot */
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* Spinner styles */
+.miaw-spinner {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 1100; /* above the button */
+  display: none; /* hidden by default */
+}
+
+.miaw-circle {
+  width: 56px;
+  height: 56px;
+  background-color: #c6ff4d; /* lime green */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.miaw-arc {
+  width: 28px;
+  height: 28px;
+  border: 3px solid transparent;
+  border-top-color: #1a1a1a; /* dark arc color */
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .miaw-arc {
+    animation: none;
+  }
+}
+
+/* Hide utility */
+.hidden {
+  display: none !important;
+}
+
+  border-radius: 30px; /* Pill shape */
+  font-family: 'GlobalSans-SemiBold', sans-serif;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  z-index: 1000; /* stay above page content */
+}
+
+/* Single hover rule — pick the one you want */
+#miaw-start:hover {
+  background-color: #143200; /* Slightly lighter green */
+}
+
+#miaw-start .chat-icon {
+  width: 20px;
+  height: 20px;
+}
+
+#miaw-start .chat-text {
+  display: flex;
+
 	</style>
+
 <meta charset="utf-8" />
 <title>UAT Embedded Messaging Launcher</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -1764,8 +1869,22 @@ and the
 <input type="submit" name="submit" style="background-color: #143200; color: #CBFF55; border-radius: 50px; border: none; padding: 10px 20px; font-family: 'GlobalSans-SemiBold', sans-serif; font-size: 18px;" tabindex="-1">
 
 </form> 
+	
+<button id="miaw-start" type="button" onclick="startMessaging()">
+  ...
+  <span class="chat-text">
+    <span class="title">Live Chat</span>
+    <span class="status">Online</span>
+  </span>
+</button>
 
-	<button id="miaw-start" type="button" onclick="startMessaging()"> Live Chat </button>
+<div id="miaw-loading" class="miaw-spinner" role="status" aria-live="polite" aria-label="Loading chat">
+  <div class="miaw-circle">
+    <div class="miaw-arc"></div>
+  </div>
+</div>
+
+	<!--<button id="miaw-start" type="button" onclick="startMessaging()"> Live Chat </button>
 	
 	 <div id="miaw-loading" class="miaw-spinner" role="status" aria-live="polite" aria-label="Loading chat">
     <div class="miaw-circle">
@@ -1843,6 +1962,88 @@ and the
 
       document.head.appendChild(script);
     }
-  </script>
+  </script> -->
+
+	
+<script type="text/javascript">
+  function showSpinner() {
+    const spinner = document.getElementById('miaw-loading');
+    if (spinner) spinner.style.display = 'block';
+  }
+  function hideSpinner() {
+    const spinner = document.getElementById('miaw-loading');
+    if (spinner) spinner.style.display = 'none';
+  }
+
+  var miawSpinnerTimeout;
+
+  function startSpinnerTimeout(ms) {
+    clearTimeout(miawSpinnerTimeout);
+    miawSpinnerTimeout = setTimeout(hideSpinner, ms || 30000);
+  }
+
+  function initEmbeddedMessaging() {
+    try {
+      embeddedservice_bootstrap.settings.language = 'en_US';
+
+      // When messaging is ready, hide spinner
+      window.addEventListener('onEmbeddedMessagingReady', () => {
+        console.log('[MIAW] Messaging client is ready');
+        hideSpinner();
+        clearTimeout(miawSpinnerTimeout);
+        // Optional: keep the button hidden, or show it again:
+        // document.getElementById('miaw-start')?.classList.remove('hidden');
+      });
+
+      embeddedservice_bootstrap.init(
+        '00D9p000004KUXV',
+        'Messaging_Routing_Channel',
+        'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWMessagingRoutingChan1763462090439',
+        { scrt2URL: 'https://teamglobalexp--tollperf.sandbox.my.salesforce-scrt.com' }
+      );
+    } catch (err) {
+      console.error('Error loading Embedded Messaging: ', err);
+      hideSpinner();
+      clearTimeout(miawSpinnerTimeout);
+      // If it fails, allow user to try again by showing the button back
+      document.getElementById('miaw-start')?.classList.remove('hidden');
+    }
+  }
+
+  function startMessaging() {
+    // Hide the Live Chat button itself
+    const startBtn = document.getElementById('miaw-start');
+    startBtn?.classList.add('hidden');
+
+    // Show the spinner
+    showSpinner();
+    startSpinnerTimeout(30000);
+
+    // Load or init the embedded messaging
+    if (window.embeddedservice_bootstrap) {
+      initEmbeddedMessaging();
+      return;
+    }
+
+    var src = 'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWMessagingRoutingChan1763462090439/assets/js/bootstrap.min.js';
+    var script = document.createElement('script');
+    script.src = src;
+    script.type = 'text/javascript';
+
+    script.onload = function () {
+      console.log('[MIAW] bootstrap.min.js loaded');
+      initEmbeddedMessaging();
+    };
+    script.onerror = function (e) {
+      console.error('[MIAW] Failed to load bootstrap.min.js from:', src, e);
+      hideSpinner();
+      clearTimeout(miawSpinnerTimeout);
+      // Restore button so user can retry
+      startBtn?.classList.remove('hidden');
+    };
+
+    document.head.appendChild(script);
+  }
+</script>
     
 </body></html>
