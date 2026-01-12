@@ -1788,7 +1788,7 @@ and the
     </div>
   </div>
 
-<script type="text/javascript">
+<!--<script type="text/javascript">
 	
   document.getElementById('miaw-start').addEventListener('click', function() {
     document.getElementById('chatWidget').classList.add('hidden');
@@ -1858,6 +1858,96 @@ and the
 
       document.head.appendChild(script);
     }
-  </script>
+  </script>-->
+
+	
+
+<script type="text/javascript">
+  function showSpinner() {
+    const el = document.getElementById('miaw-loading');
+    if (el) el.style.display = 'block';
+  }
+  function hideSpinner() {
+    const el = document.getElementById('miaw-loading');
+    if (el) el.style.display = 'none';
+  }
+
+  let miawSpinnerTimeout;
+  function startSpinnerTimeout(ms) {
+    clearTimeout(miawSpinnerTimeout);
+    miawSpinnerTimeout = setTimeout(hideSpinner, ms || 30000);
+  }
+
+  function initEmbeddedMessaging() {
+    try {
+      embeddedservice_bootstrap.settings.language = 'en_US';
+
+      // When messaging client is ready, stop the spinner.
+      window.addEventListener('onEmbeddedMessagingReady', () => {
+        console.log('[MIAW] Messaging client is ready');
+        hideSpinner();
+        clearTimeout(miawSpinnerTimeout);
+      });
+
+      embeddedservice_bootstrap.init(
+        '00D9p000004KUXV',
+        'Messaging_Routing_Channel',
+        'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWMessagingRoutingChan1763462090439',
+        {
+          scrt2URL: 'https://teamglobalexp--tollperf.sandbox.my.salesforce-scrt.com'
+        }
+      );
+    } catch (err) {
+      console.error('Error loading Embedded Messaging: ', err);
+      // Keep the button hidden no matter what
+      hideSpinner();
+      clearTimeout(miawSpinnerTimeout);
+    }
+  }
+
+  function startMessaging() {
+    // 🔒 Hide the Live Chat button immediately and keep it hidden until page refresh
+    const btn = document.getElementById('miaw-start');
+    if (btn) {
+      btn.style.display = 'none';            // hard hide
+      btn.setAttribute('aria-hidden', 'true');
+      btn.disabled = true;                   // prevent further events
+    }
+
+    showSpinner();
+    startSpinnerTimeout(30000);
+
+    // If the bootstrap is already loaded, init directly
+    if (window.embeddedservice_bootstrap) {
+      initEmbeddedMessaging();
+      return;
+    }
+
+    // Otherwise, lazy-load the bootstrap script
+    const src = 'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWMessagingRoutingChan1763462090439/assets/js/bootstrap.min.js';
+    const script = document.createElement('script');
+    script.src = src;
+    script.type = 'text/javascript';
+
+    script.onload = function () {
+      console.log('[MIAW] bootstrap.min.js loaded');
+      initEmbeddedMessaging();
+    };
+    script.onerror = function (e) {
+      console.error('[MIAW] Failed to load bootstrap.min.js from:', src, e);
+      // Keep the button hidden no matter what
+      hideSpinner();
+      clearTimeout(miawSpinnerTimeout);
+    };
+
+    document.head.appendChild(script);
+  }
+
+  // Optional: bind handler via JS in addition to inline onclick (robustness)
+  const btnEl = document.getElementById('miaw-start');
+  if (btnEl) {
+    btnEl.addEventListener('click', startMessaging);
+  }
+</script>
     
 </body></html>
