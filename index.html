@@ -1542,6 +1542,87 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
   display: none !important;
 }
 
+	
+:root {
+  --pill-bg: #0c1a0c;           /* deep green/black like the screenshot */
+  --pill-text: #ffffff;
+  --pill-outline: #b9a7ff;      /* soft purple glow */
+}
+
+/* Base pill styling for the existing button */
+#miaw-start {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px 10px 44px; /* extra left padding to make room for the icon */
+  border: 0;
+  border-radius: 999px;
+  background: var(--pill-bg);
+  color: var(--pill-text);
+  box-shadow: 0 0 0 3px var(--pill-outline); /* outer purple ring */
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.1;
+  cursor: pointer;
+  transition: transform 120ms ease, filter 120ms ease, box-shadow 120ms ease;
+}
+
+/* Hover/active effects */
+#miaw-start:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.06);
+}
+
+#miaw-start:active {
+  transform: translateY(0);
+  filter: brightness(0.98);
+}
+
+/* Accessible focus ring */
+#miaw-start:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 3px var(--pill-outline),
+    0 0 0 6px rgba(185, 167, 255, 0.35);
+}
+
+/* Optional disabled state */
+#miaw-start[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+  filter: none;
+}
+
+/* Inject the chat bubble + ellipsis icon on the left via ::before */
+#miaw-start::before {
+  content: "";
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  width: 20px;
+  height: 20px;
+  transform: translateY(-50%);
+  background: currentColor; /* uses button text color (white) */
+
+  /* Use mask to render inline SVG as a single-color icon */
+  -webkit-mask: url('data:image/svg+xml;utf8,\
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">\
+  <path fill="none" stroke="white" stroke-width="2" d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9l-5 4V6a1 1 0 0 1 1-1z"/>\
+  <circle cx="10" cy="11" r="1.6" fill="white"/>\
+  <circle cx="14" cy="11" r="1.6" fill="white"/>\
+  <circle cx="18" cy="11" r="1.6" fill="white"/>\
+</svg>') center / contain no-repeat;
+          mask: url('data:image/svg+xml;utf8,\
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">\
+  <path fill="none" stroke="white" stroke-width="2" d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9l-5 4V6a1 1 0 0 1 1-1z"/>\
+  <circle cx="10" cy="11" r="1.6" fill="white"/>\
+  <circle cx="14" cy="11" r="1.6" fill="white"/>\
+  <circle cx="18" cy="11" r="1.6" fill="white"/>\
+</svg>') center / contain no-repeat;
+}
+
+
 	</style>
 
 <meta charset="utf-8" />
@@ -1773,79 +1854,6 @@ and the
     </div>
   </div>
 
-<!--<script type="text/javascript">
-	
-  document.getElementById('miaw-start').addEventListener('click', function() {
-    document.getElementById('chatWidget').classList.add('hidden');
-  });
-
-    function showSpinner() {
-      document.getElementById('miaw-loading').style.display = 'block';
-    }
-    function hideSpinner() {
-      document.getElementById('miaw-loading').style.display = 'none';
-    }
-
-    var miawSpinnerTimeout;
-    function startSpinnerTimeout(ms) {
-      clearTimeout(miawSpinnerTimeout);
-      miawSpinnerTimeout = setTimeout(hideSpinner, ms || 30000);
-    }
-
-    function initEmbeddedMessaging() {
-      try {
-        embeddedservice_bootstrap.settings.language = 'en_US';
-
-        window.addEventListener('onEmbeddedMessagingReady', () => {
-          console.log('[MIAW] Messaging client is ready');
-          hideSpinner();
-          clearTimeout(miawSpinnerTimeout);
-        });
-
-        embeddedservice_bootstrap.init(
-          '00D9p000004KUXV',
-          'Messaging_Routing_Channel',
-          'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWMessagingRoutingChan1763462090439',
-          {
-            scrt2URL: 'https://teamglobalexp--tollperf.sandbox.my.salesforce-scrt.com'
-          }
-        );
-      } catch (err) {
-        console.error('Error loading Embedded Messaging: ', err);
-        hideSpinner();
-        clearTimeout(miawSpinnerTimeout);
-      }
-    }
-
-    function startMessaging() {
-      showSpinner();
-      startSpinnerTimeout(30000);
-
-      if (window.embeddedservice_bootstrap) {
-        initEmbeddedMessaging();
-        return;
-      }
-
-      var src = 'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWMessagingRoutingChan1763462090439/assets/js/bootstrap.min.js';
-      var script = document.createElement('script');
-      script.src = src;
-      script.type = 'text/javascript';
-
-      script.onload = function () {
-        console.log('[MIAW] bootstrap.min.js loaded');
-        initEmbeddedMessaging();
-      };
-      script.onerror = function (e) {
-        console.error('[MIAW] Failed to load bootstrap.min.js from:', src, e);
-        hideSpinner();
-        clearTimeout(miawSpinnerTimeout);
-      };
-
-      document.head.appendChild(script);
-    }
-  </script> -->
-
-	
 <script type="text/javascript">
   // Utility: hard-hide the button and schedule removal
   function hideChatButtonHard() {
