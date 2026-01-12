@@ -1541,6 +1541,74 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
 .hidden {
   display: none !important;
 }
+
+	
+:root {
+  --pill-bg: #0c1a0c;           /* deep green/black like your design */
+  --pill-text: #ffffff;
+  --pill-outline: #b9a7ff;      /* soft purple glow */
+}
+
+/* Base pill styling for your existing button */
+#miaw-start {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px 10px 44px; /* make room for the icon */
+  border: 0;
+  border-radius: 999px;
+  background: var(--pill-bg);
+  color: var(--pill-text);
+  box-shadow: 0 0 0 3px var(--pill-outline);
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.1;
+  cursor: pointer;
+  transition: transform 120ms ease, filter 120ms ease, box-shadow 120ms ease;
+}
+
+/* Hover/active */
+#miaw-start:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.06);
+}
+#miaw-start:active {
+  transform: translateY(0);
+  filter: brightness(0.98);
+}
+
+/* Accessible focus ring */
+#miaw-start:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 3px var(--pill-outline),
+    0 0 0 6px rgba(185, 167, 255, 0.35);
+}
+
+/* Optional disabled state */
+#miaw-start[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+  filter: none;
+}
+
+/* Add chat bubble + ellipsis icon on the left via ::before */
+#miaw-start::before {
+  content: "";
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  width: 20px;
+  height: 20px;
+  transform: translateY(-50%);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+
+  /* Base64-encoded white SVG icon (single color) */
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjIiIGQ9Ik00IDVoMTZhMSAxIDAgMCAxIDEgMXYxMGEgMSAxIDAgMCAxLTEgMUg5bC01IDRWNmExIDEgMCAwIDEgMS0xeiIvPjxjaXJjbGUgY3g9IjEwIiBjeT0iMTEiIHI9IjEuNiIgZmlsbD0iI2ZmZiIvPjxjaXJjbGUgY3g9IjE0IiBjeT0iMTEiIHI9IjEuNiIgZmlsbD0iI2ZmZiIvPjxjaXJjbGUgY3g9IjE4IiBjeT0iMTEiIHI9IjEuNiIgZmlsbD0iI2ZmZiIvPC9zdmc+");
+}
 	</style>
 
 <meta charset="utf-8" />
