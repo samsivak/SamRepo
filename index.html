@@ -1536,6 +1536,12 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
         animation: none;
       }
     }
+	
+/* Class to hide the widget */
+.hidden {
+  display: none !important;
+}
+
 	</style>
 <meta charset="utf-8" />
 <title>UAT Embedded Messaging Launcher</title>
@@ -1768,6 +1774,11 @@ and the
   </div>
 
 <script type="text/javascript">
+	
+  document.getElementById('miaw-start').addEventListener('click', function() {
+    document.getElementById('chatWidget').classList.add('hidden');
+  });
+
     function showSpinner() {
       document.getElementById('miaw-loading').style.display = 'block';
     }
