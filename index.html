@@ -1434,25 +1434,22 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
       width: 400px;
     }
 
-    /* Spinner styles */
-    .spinner {
-      display: none;
+    /* Bottom-right button styling */
+    #miaw-start {
+      padding: 10px 16px;
+      font-size: 14px;
+      cursor: pointer;
+      background: #0070d2;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
       position: fixed;
-      right: 20px;
-      bottom: 20px;
-      width: 36px;
-      height: 36px;
-      border: 4px solid rgba(20,50,0,0.2);
-      border-top-color: #143200;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
+      right: 12px;
+      bottom: 12px; /* bottom-right */
       z-index: 9999;
     }
-    .spinner.show {
-      display: block;
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
+    #miaw-start:hover {
+      background: #005fb2;
     }
 
     .embeddedServiceHelpButton .helpButton .uiButton {
@@ -1466,13 +1463,26 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
 
   https://www.google.com/recaptcha/api.js</script>
   <script>
+    // Safe timestamp function: only runs if captcha_settings exists
     function timestamp() {
       var response = document.getElementById("g-recaptcha-response");
-      if (response == null || response.value.trim() == "") {
-        var elems = JSON.parse(document.getElementsByName("captcha_settings")[0]?.value || "{}");
-        elems["ts"] = JSON.stringify(new Date().getTime());
-        var el = document.getElementsByName("captcha_settings")[0];
-        if (el) el.value = JSON.stringify(elems);
+      // Only attempt if captcha_settings input is present
+      var captchaEl = document.getElementsByName("captcha_settings")[0];
+      if (captchaEl) {
+        try {
+          if (response == null || (typeof response.value === "string" && response.value.trim() === "")) {
+            var raw = captchaEl.value;
+            var elems = {};
+            if (raw && raw.trim() !== "") {
+              elems = JSON.parse(raw);
+            }
+            elems["ts"] = JSON.stringify(new Date().getTime());
+            captchaEl.value = JSON.stringify(elems);
+          }
+        } catch (e) {
+          // Fail-safe: do not block form submit
+          console.warn("captcha_settings timestamp update skipped:", e);
+        }
       }
     }
     setInterval(timestamp, 500);
@@ -1481,7 +1491,12 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
 
 <body>
   https://test.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&orgId=00D9p000004KUXV
-    <!-- <input type="hidden" name="captcha_settings" value='{"keyname":"teamglobalexpProd","fallback":"true","orgId":"00D9p000004KUXV","ts":"1767676812826"}' tabindex="-1"> -->
+    <!-- Keep commented, since your snippet had it commented.
+         The timestamp() now safely handles its absence. -->
+    <!--
+    <input type="hidden" name="captcha_settings" value='{"keyname":"teamglobalexpProd","fallback":"true","orgId":"00D9p000004KUXV","ts":"1767676812826"}' tabindex="-1">
+    -->
+
     <input type="hidden" name="oid" value="00D9p000004KUXV">
     <input type="hidden" name="retURL" value="https://teamglobalexp.com/form-success" tabindex="-1">
 
@@ -1591,7 +1606,7 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
     <input id="state" maxlength="20" name="state" size="20" type="text" class="hidden-selected" tabindex="-1">
     <script>
       var selectBox = document.getElementById("statedrop");
-      selectBox.onchange = function() {
+      selectBox.onchange = function(){
         var textbox = document.getElementById("state");
         textbox.value = this.value;
       }
@@ -1667,8 +1682,8 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
     <label class="hidden-selected">What is your current estimated annual logistics spend?</label>
     <input id="00N2P000000O4yb" maxlength="10" name="00N2P000000O4yb" size="20" type="text" class="hidden-selected" tabindex="-1">
     <script>
-      var revenueSelect = document.getElementById("revenue");
-      revenueSelect.onchange = function() {
+      var selectBox = document.getElementById("revenue");
+      selectBox.onchange = function(){
         var textbox = document.getElementById("00N2P000000O4yb");
         textbox.value = this.value;
       }
@@ -1681,67 +1696,24 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
     <br>
     <i>
       I consent to my personal information being collected, used, stored, and disclosed as set out in the
-      <a href="https://lexp.com/privacy-collection-notice<u>TGE Privacy Collection Notice</u></a>
+      https://teamglobalexp.com/privacy-collection-notice<u>TGE Privacy Collection Notice</u></a>
       and the
-      <a href="https://teamglobalexp.com/privacy-policy" tabindex="-1u></a>.
+      https://teamglobalexp.com/privacy-policy<u>TGE Privacy Policy</u></a>.
     </i>
     <br><br>
 
     <input type="submit" name="submit" style="background-color: #143200; color: #CBFF55; border-radius: 50px; border: none; padding: 10px 20px; font-family: 'GlobalSans-SemiBold', sans-serif; font-size: 18px;" tabindex="-1">
   </form>
 
-  <!-- Live Chat Launcher (no online/offline routing) -->
-  <div class="embeddedServiceHelpButton">
-    <div class="helpButton">
-      <!-- Spinner shown while script loads -->
-      <div id="chatSpinner" class="spinner" aria-label="Loading chat"></div>
+  <!-- Removed: Live Chat image and LiveAgent (embedded_svc) availability/routing logic -->
 
-      <!-- Static chat image; click triggers spinner + embedded messaging bootstrapping -->
-      <img
-        id="liveagent_button_online"
-        class="chatImage"
-        style="border:0; cursor:pointer; bottom:0; position:fixed; right:12px; min-width:110px; max-width:150px;"
-        srcsewhere) -->
-  https://service.force.com/embeddedservice/5.0/esw.min.js</script>
-  <script>
-    // If you still need to initialize LiveAgent for other parts, it can remain.
-    // It no longer controls the chat image or routing.
-    var initESW = function(gslbBaseURL) {
-      embedded_svc.settings.displayHelpButton = false;
-      embedded_svc.settings.language = '';
-      embedded_svc.settings.enabledFeatures = ['LiveAgent'];
-      embedded_svc.settings.entryFeature = 'LiveAgent';
+  <!-- Keep the button name and position (bottom-right) -->
+  <button id="miaw-start" type="button">
+    Click to Start Chat
+  </button>
 
-      // Removed: onAvailability, onSettingsCallCompleted, and any image swapping or routing.
-      // Removed: logic that set window.open to help-support.
-
-      embedded_svc.init(
-        'https://teamglobalexp--tollperf.sandbox.my.salesforce.com',
-        'https://teamglobalexp--tollperf.sandbox.my.salesforce-sites.com/',
-        gslbBaseURL,
-        '00D9p000004KUXV',
-        'Live_Chat_Walk_Up_Business',
-        {
-          baseLiveAgentContentURL: 'https://c.la12s-core1.sfdc-vwfla6.salesforceliveagent.com/content',
-          deploymentId: '5722P00000000CC',
-          buttonId: '5732P00000000Ag',
-          baseLiveAgentURL: 'https://d.la12s-core1.sfdc-vwfla6.salesforceliveagent.com/chat',
-          eswLiveAgentDevName: 'Live_Chat_Sales',
-          isOfflineSupportEnabled: false
-        }
-      );
-    };
-  </script>
-
-  <!-- Embedded Messaging trigger: show spinner, load script, then init -->
-  <script>
-    function showSpinner() {
-      document.getElementById('chatSpinner').classList.add('show');
-    }
-    function hideSpinner() {
-      document.getElementById('chatSpinner').classList.remove('show');
-    }
-
+  <!-- Replace button logic with provided Embedded Messaging scripts -->
+  <script type="text/javascript">
     function initEmbeddedMessaging() {
       try {
         embeddedservice_bootstrap.settings.language = 'en_US'; // For example, enter 'en' or 'en-US'
@@ -1755,50 +1727,12 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
         );
       } catch (err) {
         console.error('Error loading Embedded Messaging: ', err);
-      } finally {
-        // Hide spinner after init (or leave it to the onReady event if desired)
-        hideSpinner();
       }
     }
-
-    function startMessaging() {
-      // Always show spinner immediately on click
-      showSpinner();
-
-      // If the bootstrap is already present, just init
-      if (window.embeddedservice_bootstrap) {
-        initEmbeddedMessaging();
-        return;
-      }
-
-      // Otherwise, load the bootstrap script dynamically
-      var src = 'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWMessagingRoutingChan1763462090439/assets/js/bootstrap.min.js';
-      var script = document.createElement('script');
-      script.src = src;
-      script.type = 'text/javascript';
-
-      script.onload = function () {
-        initEmbeddedMessaging();
-      };
-      script.onerror = function (e) {
-        console.error('Failed to load bootstrap.min.js from:', src, e);
-        hideSpinner();
-      };
-
-      document.head.appendChild(script);
-    }
-
-    // Bind the image click to startMessaging (no routing to other page)
-    document.getElementById('liveagent_button_online')
-      .addEventListener('click', function() {
-        startMessaging();
-      });
   </script>
-
-  <!-- Optional: Button launcher retained if you still need it -->
-  <button id="miaw-start" type="button" style="padding:10px 16px; font-size:14px; cursor:pointer; background:#0070d2; color:#fff; border:none; border-radius:4px; position:fixed; right:12px; bottom:70px;"
-    onclick="startMessaging()">
-    Click to Start Chat
-  </button>
+  <script
+    type="text/javascript"
+    src="https://teamglobalexp--tollperf.sandbox.my.site.com/js/bootstrap.min.js
+  </script>
 </body>
 </html>
