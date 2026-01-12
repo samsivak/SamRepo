@@ -1412,14 +1412,12 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
 
 
 
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta http-equiv="Content-type" content="text/html; charset=UTF-8">
   <style>
     .hidden-selected { display: none; }
-
     label {
       font-size: 17px;
       font-family: 'GlobalSans-SemiBold', sans-serif;
@@ -1432,16 +1430,16 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
       width: 400px;
     }
 
-    /* Spinner styles */
+    /* Spinner (bottom-right, overlay) */
     #loadinglivechatdiv {
       position: fixed;
       right: 16px;
       bottom: 16px;
-      display: none; /* hidden by default */
+      display: none;
       align-items: center;
       gap: 8px;
       z-index: 9999;
-      background: rgba(255,255,255,0.92);
+      background: rgba(255,255,255,0.95);
       border-radius: 8px;
       padding: 8px 10px;
       box-shadow: 0 6px 18px rgba(0,0,0,0.15);
@@ -1462,28 +1460,44 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* Salesforce help button brand styles (existing) */
-    .embeddedServiceHelpButton .helpButton .uiButton {
-      background-color: #143200;
-      font-family: "Arial", sans-serif;
+    /* Hide any default ESW help button, we use our custom launcher */
+    .embeddedServiceHelpButton, .embeddedServiceHelpButton .helpButton {
+      display: none !important;
     }
-    .embeddedServiceHelpButton .helpButton .uiButton:focus {
-      outline: 1px solid #143200;
+
+    /* Our custom chat launcher */
+    #tgeChatLauncher {
+      position: fixed;
+      right: 12px;
+      bottom: 12px;
+      z-index: 9998;
+    }
+    #tgeChatLauncher img.chatImage {
+      border: 0;
+      cursor: pointer;
+      min-width: 110px;
+      max-width: 150px;
+    }
+    #tgeChatLauncher.loading img.chatImage {
+      opacity: 0.6;
+      pointer-events: none; /* prevent double-click while loading */
     }
   </style>
 
-  <!-- reCAPTCHA (unchanged) -->
-  https://www.google.com/recaptcha/api.js</script>
+  <!-- Google reCAPTCHA (required if org enforces verification) -->
+  <script src="https://www.google.comi.js</script>
+
+  <!-- Timestamp helper for captcha_settings -->
   <script>
     function timestamp() {
       var response = document.getElementById("g-recaptcha-response");
-      if (response == null || response.value.trim() == "") {
+      if (!response || response.value.trim() === "") {
         var elemNode = document.getElementsByName("captcha_settings")[0];
         var elems = {};
         if (elemNode && elemNode.value) {
           try { elems = JSON.parse(elemNode.value); } catch(e) {}
         }
-        elems["ts"] = JSON.stringify(new Date().getTime());
+        elems["ts"] = JSON.stringify(Date.now());
         if (elemNode) elemNode.value = JSON.stringify(elems);
       }
     }
@@ -1492,16 +1506,18 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
 </head>
 
 <body>
-  <!-- ========= WEB-TO-LEAD FORM (UNCHANGED) ========= -->
-  https://test.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&amp;orgId=00D9p000004KUXV
-
-    <!-- <input type="hidden" name="captcha_settings" value="..."> (left commented as provided) -->
-
+  <!-- ========= WEB-TO-LEAD FORM ========= -->
+  <form
+    action="https://webto.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8"
+    method="-->
     <input type="hidden" name="oid" value="00D9p000004KUXV">
     <input type="hidden" name="retURL" value="https://teamglobalexp.com/form-success" tabindex="-1">
+
+    <!-- Optional debug (set to 1 while testing; 0 for prod) -->
     <input type="hidden" name="debug" value="0">
     <input type="hidden" name="debugEmail" value="priyanka.sindhu@teamglobalexp.com">
 
+    <!-- Lead source & type (hidden) -->
     <label for="lead_source" class="hidden-selected">Lead Source</label>
     <select id="lead_source" name="lead_source" class="hidden-selected" tabindex="-1">
       <option value="">--None--</option>
@@ -1564,7 +1580,6 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
 
     <label for="phone">Phone<span style="color:red;">* </span></label><br>
     <input id="phone" maxlength="40" name="phone" size="50" type="text" required oninput="validatePhone(this)" tabindex="-1"><br>
-    <br>
     <p id="phoneError" style="color:red;font-size:12px;"></p>
     <script>
       function validatePhone(input) {
@@ -1600,10 +1615,8 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
     <label for="state" class="hidden-selected">State</label>
     <input id="state" maxlength="20" name="state" size="20" type="text" class="hidden-selected" tabindex="-1">
     <script>
-      var selectBoxState = document.getElementById("statedrop");
-      selectBoxState.onchange = function () {
-        var textbox = document.getElementById("state");
-        textbox.value = this.value;
+      document.getElementById("statedrop").onchange = function () {
+        document.getElementById("state").value = this.value;
       };
     </script>
 
@@ -1677,10 +1690,8 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
     <label class="hidden-selected">What is your current estimated annual logistics spend?</label>
     <input id="00N2P000000O4yb" maxlength="10" name="00N2P000000O4yb" size="20" type="text" class="hidden-selected" tabindex="-1">
     <script>
-      var selectBoxRevenue = document.getElementById("revenue");
-      selectBoxRevenue.onchange = function () {
-        var textbox = document.getElementById("00N2P000000O4yb");
-        textbox.value = this.value;
+      document.getElementById("revenue").onchange = function () {
+        document.getElementById("00N2P000000O4yb").value = this.value;
       };
     </script>
 
@@ -1690,29 +1701,40 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
     <input id="00NOa000004TZpj" name="00NOa000004TZpj" type="checkbox" value="1" tabindex="-1"><br><br>
     <i>
       I consent to my personal information being collected, used, stored, and disclosed as set out in the
-      https://teamglobalexp.com/privacy-collection-notice<u>TGE Privacy Collection Notice</u></a>
+      <a href="https://team.com/privacy-collection-notice<u>TGE Privacy Collection Notice</u></a>
       and the
       https://teamglobalexp.com/privacy-policy<u>TGE Privacy Policy</u></a>.
     </i>
     <br><br>
 
-    <!-- reCAPTCHA block (commented as in original) -->
+    <!-- reCAPTCHA v2 widget (re-enabled) -->
+    <input type="hidden" name="captcha_settings"
+           value='{"keyname":"teamglobalexpProd","fallback":"true","orgId":"00D9p000004KUXV","ts":""}' tabindex="-1">
+    <div class="g-recaptcha" data-sitekey="6Lfcm3MpAAAAACbCiWLEe5qHZMbONyMqdyFCAije"></div>
 
+    <br>
     <input type="submit" name="submit"
            style="background-color: #143200; color: #CBFF55; border-radius: 50px; border: none; padding: 10px 20px; font-family: 'GlobalSans-SemiBold', sans-serif; font-size: 18px;"
-           tabindex="-1">
+           value="Submit">
   </form>
   <!-- ========= END WEB-TO-LEAD FORM ========= -->
 
-  <!-- Live chat launcher container (image + spinner) -->
-  <div class="embeddedServiceHelpButton">
-    <div class="helpButton">
-      <img id="liveagent_button_online"
-           class="chatImage"
-           style="border:0; cursor:pointer; bottom:0; position:fixed; right:12px; min-width:110px; max-width:150px;"
-           <script>
+  <!-- Our custom chat launcher (no redirects, opens MIAW in-page with spinner) -->
+  <div id="tgeChatLauncher">
+    <img
+      id="liveagent_button_online"
+      class="chatImage"
+     >
+
+  <!-- Spinner container -->
+  <div id="loadinglivechatdiv" aria-live="polite" aria-busy="false"></div>
+
+  <!-- Spinner helpers -->
+  <script>
     function showChatSpinner(message) {
       const container = document.getElementById('loadinglivechatdiv');
+      const launcher = document.getElementById('tgeChatLauncher');
+      if (launcher) launcher.classList.add('loading');
       if (!container) return;
       container.innerHTML = `
         <span class="chat-loader" role="progressbar" aria-label="Loading chat"></span>
@@ -1723,6 +1745,8 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
     }
     function hideChatSpinner() {
       const container = document.getElementById('loadinglivechatdiv');
+      const launcher = document.getElementById('tgeChatLauncher');
+      if (launcher) launcher.classList.remove('loading');
       if (!container) return;
       container.style.display = 'none';
       container.innerHTML = '';
@@ -1730,7 +1754,7 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
     }
   </script>
 
-  <!-- MIAW bootstrap + starter -->
+  <!-- Embedded Messaging (MIAW) bootstrap + starter -->
   <script>
     let miawScriptLoaded = false;
     let miawInitCalled = false;
@@ -1740,10 +1764,29 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
       miawInitCalled = true;
       try {
         embeddedservice_bootstrap.settings.language = 'en_US';
+
+        /* Wait for the client to be ready, then launch chat */
         window.addEventListener('onEmbeddedMessagingReady', () => {
           console.log('[MIAW] Messaging client is ready');
-          hideChatSpinner();
+          // Open the chat window in-page
+          if (embeddedservice_bootstrap?.utilAPI?.launchChat) {
+            embeddedservice_bootstrap.utilAPI.launchChat()
+              .finally(() => hideChatSpinner());
+          } else {
+            hideChatSpinner();
+          }
         });
+
+        /* Also listen for the chat button creation event (belt & braces) */
+        window.addEventListener('onEmbeddedMessagingButtonCreated', () => {
+          if (embeddedservice_bootstrap?.utilAPI?.launchChat) {
+            embeddedservice_bootstrap.utilAPI.launchChat()
+              .finally(() => hideChatSpinner());
+          } else {
+            hideChatSpinner();
+          }
+        });
+
         embeddedservice_bootstrap.init(
           '00D9p000004KUXV',
           'Messaging_Routing_Channel',
@@ -1788,106 +1831,17 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
       }, 15000);
     }
 
-    // Make chat image clickable immediately (even before ESW loads)
+    // Make the launcher image start messaging (no redirects)
     document.addEventListener('DOMContentLoaded', function () {
-      const img = document.getElementsByClassName('chatImage')[0];
+      const img = document.getElementById('liveagent_button_online');
       if (img) {
-        img.onclick = function () { startMessaging(); };
+        img.addEventListener('click', function (e) {
+          e.preventDefault();
+          startMessaging();
+        });
       }
     });
   </script>
-
-  <!-- ESW (Live Agent) loader and event wiring -->
-  <script>
-    (function loadEswAndInit() {
-      function afterEswReady() {
-        var initESW = function (gslbBaseURL) {
-          embedded_svc.settings.displayHelpButton = false;
-          embedded_svc.settings.language = '';
-          embedded_svc.settings.enabledFeatures = ['LiveAgent'];
-          embedded_svc.settings.entryFeature = 'LiveAgent';
-
-          embedded_svc.addEventHandler("onHelpButtonClick", function () {
-            console.log("component Loading...");
-            showChatSpinner('Loading chat…');
-            startMessaging(); // route to MIAW
-          });
-
-          embedded_svc.addEventHandler("afterDestroy", function () {
-            console.log("destroy event was fired.");
-            document.getElementsByClassName("embeddedServiceHelpButton")[0]
-                    .setAttribute("style", "display:block;");
-          });
-
-          embedded_svc.addEventHandler("onAvailability", function (data) {
-            console.log(JSON.stringify(data));
-            const img = document.getElementsByClassName("chatImage")[0];
-            if (!img) return;
-
-            if (data.isAgentAvailable == undefined || data.isAgentAvailable == false) {
-              img.setAttribute("src", "https://tgeconnect.teamglobalexp.com/documents/d/guest/offline");
-              img.onclick = function () {
-                window.open('https://teamglobalexp.com/help-support', '_blank');
-              };
-            } else {
-              img.setAttribute("src", "https://tgeconnect.teamglobalexp.com/documents/d/guest/online");
-              img.onclick = function () { startMessaging(); };
-            }
-          });
-
-          embedded_svc.addEventHandler("onSettingsCallCompleted", function (data) {
-            const img = document.getElementsByClassName("chatImage")[0];
-            if (!img) return;
-            if (data.isAgentAvailable == false) {
-              img.setAttribute("src", "https://tgeconnect.teamglobalexp.com/documents/d/guest/offline");
-              img.onclick = function () {
-                window.open('https://teamglobalexp.com/help-support', '_blank');
-              };
-            }
-          });
-
-          embedded_svc.init(
-            'https://teamglobalexp--tollperf.sandbox.my.salesforce.com',
-            'https://teamglobalexp--tollperf.sandbox.my.salesforce-sites.com/',
-            gslbBaseURL,
-            '00D9p000004KUXV',
-            'Live_Chat_Walk_Up_Business',
-            {
-              baseLiveAgentContentURL: 'https://c.la12s-core1.sfdc-vwfla6.salesforceliveagent.com/content',
-              deploymentId: '5722P00000000CC',
-              buttonId: '5732P00000000Ag',
-              baseLiveAgentURL: 'https://d.la12s-core1.sfdc-vwfla6.salesforceliveagent.com/chat',
-              eswLiveAgentDevName: 'Live_Chat_Sales',
-              isOfflineSupportEnabled: false
-            }
-          );
-        };
-        initESW(null);
-      }
-
-      if (window.embedded_svc) {
-        afterEswReady();
-      } else {
-        var eswScript = document.createElement('script');
-        eswScript.src = 'https://teamglobalexp--tollperf.sandbox.my.salesforce.com/embeddedservice/5.0/esw.min.js';
-        eswScript.onload = afterEswReady;
-        eswScript.onerror = function (e) {
-          console.error('[ESW] Failed to load esw.min.js', e);
-          // Fallback CDN
-          var fallback = document.createElement('script');
-          fallback.src = 'https://service.force.com/embeddedservice/5.0/esw.min.js';
-          fallback.onload = afterEswReady;
-          fallback.onerror = function (err) {
-            console.error('[ESW] Fallback load failed', err);
-            // Even if ESW fails, keep image clickable to start MIAW
-            const img = document.getElementsByClassName("chatImage")[0];
-            if (img) img.onclick = function () { startMessaging(); };
-          };
-          document.head.appendChild(fallback);
-        };
-        document.head.appendChild(eswScript);
-      }
-    })();
-  </script>
 </body>
 </html>
+
