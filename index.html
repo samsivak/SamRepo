@@ -1492,6 +1492,50 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
   border-radius: 50%;
   display: inline-block;
 }
+	#miaw-start:hover {
+      background: #005fb2;
+    }
+
+    /* Spinner styles */
+    .miaw-spinner {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 9999;
+      display: none; /* hidden by default */
+    }
+
+    /* Lime green circle */
+    .miaw-circle {
+      width: 56px;
+      height: 56px;
+      background-color: #c6ff4d; /* lime green */
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Spinner arc */
+    .miaw-arc {
+      width: 28px;
+      height: 28px;
+      border: 3px solid transparent;
+      border-top-color: #1a1a1a; /* dark arc color */
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .miaw-arc {
+        animation: none;
+      }
+    }
 	</style>
 <meta charset="utf-8" />
 <title>UAT Embedded Messaging Launcher</title>
@@ -1716,50 +1760,77 @@ and the
 </form> 
 
 	<button id="miaw-start" type="button" onclick="startMessaging()"> Live Chat </button>
+	
+	 <div id="miaw-loading" class="miaw-spinner" role="status" aria-live="polite" aria-label="Loading chat">
+    <div class="miaw-circle">
+      <div class="miaw-arc"></div>
+    </div>
+  </div>
 
-    <script type="text/javascript">
-      function initEmbeddedMessaging() {
-        try {
-          embeddedservice_bootstrap.settings.language = 'en_US';
+<script type="text/javascript">
+    function showSpinner() {
+      document.getElementById('miaw-loading').style.display = 'block';
+    }
+    function hideSpinner() {
+      document.getElementById('miaw-loading').style.display = 'none';
+    }
 
-          window.addEventListener('onEmbeddedMessagingReady', () => {
-            console.log('[MIAW] Messaging client is ready');
-          });
+    var miawSpinnerTimeout;
+    function startSpinnerTimeout(ms) {
+      clearTimeout(miawSpinnerTimeout);
+      miawSpinnerTimeout = setTimeout(hideSpinner, ms || 30000);
+    }
 
-          embeddedservice_bootstrap.init(
-            '00D9p000004KUXV',
-            'Messaging_Routing_Channel',
-            'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWMessagingRoutingChan1763462090439',
-            {
-              scrt2URL: 'https://teamglobalexp--tollperf.sandbox.my.salesforce-scrt.com'
-            }
-          );
-        } catch (err) {
-          console.error('Error loading Embedded Messaging: ', err);
-        }
+    function initEmbeddedMessaging() {
+      try {
+        embeddedservice_bootstrap.settings.language = 'en_US';
+
+        window.addEventListener('onEmbeddedMessagingReady', () => {
+          console.log('[MIAW] Messaging client is ready');
+          hideSpinner();
+          clearTimeout(miawSpinnerTimeout);
+        });
+
+        embeddedservice_bootstrap.init(
+          '00D9p000004KUXV',
+          'Messaging_Routing_Channel',
+          'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWMessagingRoutingChan1763462090439',
+          {
+            scrt2URL: 'https://teamglobalexp--tollperf.sandbox.my.salesforce-scrt.com'
+          }
+        );
+      } catch (err) {
+        console.error('Error loading Embedded Messaging: ', err);
+        hideSpinner();
+        clearTimeout(miawSpinnerTimeout);
+      }
+    }
+
+    function startMessaging() {
+      showSpinner();
+      startSpinnerTimeout(30000);
+
+      if (window.embeddedservice_bootstrap) {
+        initEmbeddedMessaging();
+        return;
       }
 
-      function startMessaging() {
-        if (window.embeddedservice_bootstrap) {
-          initEmbeddedMessaging();
-          return;
-        }
+      var src = 'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWMessagingRoutingChan1763462090439/assets/js/bootstrap.min.js';
+      var script = document.createElement('script');
+      script.src = src;
+      script.type = 'text/javascript';
 
-        var src = 'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWMessagingRoutingChan1763462090439/assets/js/bootstrap.min.js';
-        var script = document.createElement('script');
-        script.src = src;
-        script.type = 'text/javascript';
+      script.onload = function () {
+        console.log('[MIAW] bootstrap.min.js loaded');
+        initEmbeddedMessaging();
+      };
+      script.onerror = function (e) {
+        console.error('[MIAW] Failed to load bootstrap.min.js from:', src, e);
+        hideSpinner();
+        clearTimeout(miawSpinnerTimeout);
+      };
 
-        script.onload = function () {
-          console.log('[MIAW] bootstrap.min.js loaded');
-          initEmbeddedMessaging();
-        };
-        script.onerror = function (e) {
-          console.error('[MIAW] Failed to load bootstrap.min.js from:', src, e);
-        };
-
-        document.head.appendChild(script);
-      }
-    </script>
-  
+      document.head.appendChild(script);
+    }
+  </script>
 </body></html>
