@@ -1411,363 +1411,355 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
 </html> -->
 
 
+<html><head><style>
+  .hidden-selected {
+    display: none;
+    /*Hide the selected option */
+    
+  }
+   label {
+    font-size: 17px;  /* Set the desired font size */
+    font-family: 'GlobalSans-SemiBold', sans-serif; /* Set the desired font */
+    color: #143200;   /* Set the desired colour */
+     
+  }
+  select {
+     font-size: 17px;  /* Set the desired font size */
+    font-family: 'GlobalSans-SemiBold', sans-serif;/* Set the desired font */
+    color: #143200;   /* Set the desired colour */
+    width: 400px;
+  }
+</style>
+<style>
+#miaw-start {
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  background-color: #0b1d0b; /* Dark green/black */
+  color: #fff;
+  border: 2px solid #b8aaff; /* Light purple border */
+  border-radius: 30px; /* Pill shape */
+  font-family: 'GlobalSans-SemiBold', sans-serif;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Hover effect */
+#miaw-start:hover {
+  background-color: #143200; /* Slightly lighter green */
+}
+
+/* Icon inside button */
+#miaw-start .chat-icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Text container */
+#miaw-start .chat-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+/* Primary text */
+#miaw-start .chat-text .title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+}
+
+/* Secondary text */
+#miaw-start .chat-text .status {
+  font-size: 14px;
+  color: #ccc;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Green dot */
+#miaw-start .chat-text .status::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background-color: #00ff00; /* Green dot */
+  border-radius: 50%;
+  display: inline-block;
+}
+	</style>
+<meta charset="utf-8" />
+<title>UAT Embedded Messaging Launcher</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta http-equiv="Content-type" content="text/html; charset=UTF-8">
+<script type="" src="https://www.google.com/recaptcha/api.js"></script>
+<script type="">
+ function timestamp() { var response = document.getElementById("g-recaptcha-response"); if (response == null || response.value.trim() == "") {var elems = JSON.parse(document.getElementsByName("captcha_settings")[0].value);elems["ts"] = JSON.stringify(new Date().getTime());document.getElementsByName("captcha_settings")[0].value = JSON.stringify(elems); } } setInterval(timestamp, 500); 
+</script>
+
+<!--  ----------------------------------------------------------------------  -->
+<!--  NOTE: Please add the following <FORM> element to your page.             -->
+<!--  ----------------------------------------------------------------------  -->
 
 
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8" />
-  <title>UAT Embedded Messaging Launcher</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta http-equiv="Content-type" content="text/html; charset=UTF-8">
+<!--  ----------------------------------------------------------------------  -->
+<!--  NOTE: Please add the following <META> element to your page <HEAD>.      -->
+<!--  If necessary, please modify the charset parameter to specify the        -->
+<!--  character set of your HTML page.                                        -->
+<!--  ----------------------------------------------------------------------  -->
 
-  <style>
-    .hidden-selected {
-      display: none; /* Hide the selected option */
-    }
-    label {
-      font-size: 17px;  /* Set the desired font size */
-      font-family: 'GlobalSans-SemiBold', sans-serif; /* Set the desired font */
-      color: #143200;   /* Set the desired colour */
-    }
-    select {
-      font-size: 17px;  /* Set the desired font size */
-      font-family: 'GlobalSans-SemiBold', sans-serif;/* Set the desired font */
-      color: #143200;   /* Set the desired colour */
-      width: 400px;
-    }
+<meta http-equiv="Content-type" content="text/html; charset=UTF-8">
 
-    /* Button: bottom-right */
-    #miaw-start {
-      padding: 10px 16px;
-      font-size: 14px;
-      cursor: pointer;
-      background: #0070d2;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      position: fixed;
-      right: 12px;
-      bottom: 12px;
-      z-index: 9999;
-    }
-    #miaw-start:hover {
-      background: #005fb2;
-    }
+<!--  ----------------------------------------------------------------------  -->
+<!--  NOTE: Please add the following <FORM> element to your page.             -->
+<!--  ----------------------------------------------------------------------  -->
 
-    /* Spinner */
-    #chatSpinner {
-      display: none;
-      position: fixed;
-      right: 20px;
-      bottom: 60px; /* just above the button */
-      width: 36px;
-      height: 36px;
-      border: 4px solid rgba(20, 50, 0, 0.2);
-      border-top-color: #143200;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      z-index: 10000;
-    }
-    #chatSpinner.show {
-      display: block;
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-  </style>
+</head><body><form action="https://test.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&amp;orgId=00D9p000004KUXV" method="POST">
 
-  https://www.google.com/recaptcha/api.js</script>
-  <script>
-    // Original timestamp function kept as-is from your code
-    function timestamp() {
-      var response = document.getElementById("g-recaptcha-response");
-      if (response == null || response.value.trim() == "") {
-        var elems = JSON.parse(document.getElementsByName("captcha_settings")[0].value);
-        elems["ts"] = JSON.stringify(new Date().getTime());
-        document.getElementsByName("captcha_settings")[0].value = JSON.stringify(elems);
-      }
-    }
-    setInterval(timestamp, 500);
-  </script>
-</head>
+<!--<input type="hidden" name="captcha_settings" value="{&quot;keyname&quot;:&quot;teamglobalexpProd&quot;,&quot;fallback&quot;:&quot;true&quot;,&quot;orgId&quot;:&quot;00D9p000004KUXV&quot;,&quot;ts&quot;:&quot;1767676812826&quot;}" tabindex="-1">
+-->
 
-<body>
-  https://test.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&orgId=00D9p000004KUXV
+<input type="hidden" name="oid" value="00D9p000004KUXV">
+<input type="hidden" name="retURL" value="https://teamglobalexp.com/form-success" tabindex="-1">
 
-    <!-- <input type="hidden" name="captcha_settings" value='{"keyname":"teamglobalexpProd","fallback":"true","orgId":"00D9p000004KUXV","ts":"1767676812826"}' tabindex="-1"> -->
 
-    <input type="hidden" name="oid" value="00D9p000004KUXV">
-    <input type="hidden" name="retURL" value="https://teamglobalexp.com/form-success" tabindex="-1">
+<input type="hidden" name="debug" value="0"> 
+<input type="hidden" name="debugEmail" value="priyanka.sindhu@teamglobalexp.com">                               
 
-    <input type="hidden" name="debug" value="0">
-    <input type="hidden" name="debugEmail" value="priyanka.sindhu@teamglobalexp.com">
 
-    <label for="lead_source" class="hidden-selected">Lead Source </label>
-    <select id="lead_source" name="lead_source" class="hidden-selected" tabindex="-1">
-      <option value="">--None--</option>
-      <option value="Website" selected>Website</option>
-    </select>
+<!--  ----------------------------------------------------------------------  -->
+<!--  NOTE: These fields are optional debugging elements. Please uncomment    -->
+<!--  these lines if you wish to test in debug mode.                          -->
+<!--  ----------------------------------------------------------------------  -->
+ <label for="lead_source" class="hidden-selected">Lead Source </label>
+  <select id="lead_source" name="lead_source" class="hidden-selected" tabindex="-1">
+    <option value="">--None--</option>
+    <option value="Website" selected="">Website</option>
+  </select>
+  <label for="Lead Type" class="hidden-selected">Lead Type
+  </label>
+  <select id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type" class="hidden-selected" tabindex="-1">
+    <option value="">--None--</option>
+    <option value="Reoccurring" selected="">Reoccurring</option>
+  </select>
+<label> Are you an existing Team Global Express customer? </label><br>
+ <label><input type="radio" name="customer" value="Yes" tabindex="-1"> Yes</label><br>
+  <label><input type="radio" name="customer" value="No" tabindex="-1"> No</label><br><br>
+  <label>Account Number (if applicable)</label><br><input id="accountnumber" maxlength="40" name="accountnumber" size="50" type="text" tabindex="-1"><br><br>
+  <label for="description" class="hidden-selected">Description</label><textarea id="description" name="description" class="hidden-selected" tabindex="-1"></textarea>
+ <script type="">
+        function concatenateValues() {
+            let selectedStatus = '';
+            const statusOptions = document.getElementsByName('customer');
+            for (let i = 0; i < statusOptions.length; i++) {
+                if (statusOptions[i].checked) {
+                    selectedStatus = statusOptions[i].value;
+                    break;
+                }
+            }
 
-    <label for="Lead Type" class="hidden-selected">Lead Type</label>
-    <select id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type" class="hidden-selected" tabindex="-1">
-      <option value="">--None--</option>
-      <option value="Reoccurring" selected>Reoccurring</option>
-    </select>
+            const accountNumberValue = document.getElementById('accountnumber').value;
 
-    <label> Are you an existing Team Global Express customer? </label><br>
-    <label><input type="radio" name="customer" value="Yes" tabindex="-1"> Yes</label><br>
-    <label><input type="radio" name="customer" value="No" tabindex="-1"> No</label><br><br>
+            let concatenatedValue = '';
+            if (selectedStatus) {
+                concatenatedValue += `Is an existing customer? ${selectedStatus}\n`;
+            }
+            if (accountNumberValue) {
+                concatenatedValue += `Account Number ${accountNumberValue}`;
+            }
 
-    <label>Account Number (if applicable)</label><br>
-    <input id="accountnumber" maxlength="40" name="accountnumber" size="50" type="text" tabindex="-1"><br><br>
-
-    <label for="description" class="hidden-selected">Description</label>
-    <textarea id="description" name="description" class="hidden-selected" tabindex="-1"></textarea>
-
-    <script>
-      function concatenateValues() {
-        let selectedStatus = '';
-        const statusOptions = document.getElementsByName('customer');
-        for (let i = 0; i < statusOptions.length; i++) {
-          if (statusOptions[i].checked) {
-            selectedStatus = statusOptions[i].value;
-            break;
-          }
+            document.getElementById('description').value = concatenatedValue;
         }
-
-        const accountNumberValue = document.getElementById('accountnumber').value;
-
-        let concatenatedValue = '';
-        if (selectedStatus) {
-          concatenatedValue += `Is an existing customer? ${selectedStatus}\n`;
-        }
-        if (accountNumberValue) {
-          concatenatedValue += `Account Number ${accountNumberValue}`;
-        }
-
-        document.getElementById('description').value = concatenatedValue;
-      }
-      document.getElementsByName('customer').forEach((radio) => {
-        radio.addEventListener('change', concatenateValues);
-      });
-      document.getElementById('accountnumber').addEventListener('input', concatenateValues);
+        document.getElementsByName('customer').forEach((radio) => {
+            radio.addEventListener('change', concatenateValues);
+        });
+        document.getElementById('accountnumber').addEventListener('input', concatenateValues);
     </script>
 
-    <label for="first_name">First Name<span style="color:red;">* </span></label><br>
-    <input id="first_name" maxlength="40" name="first_name" size="50" type="text" required tabindex="-1"><br><br>
+<label for="first_name">First Name<span style="color:red;">* </span></label><br><input id="first_name" maxlength="40" name="first_name" size="50" type="text" required="" tabindex="-1"><br><br>
 
-    <label for="last_name">Last Name<span style="color:red;">* </span></label><br>
-    <input id="last_name" maxlength="80" name="last_name" size="50" type="text" required tabindex="-1"><br><br>
+<label for="last_name">Last Name<span style="color:red;">* </span></label><br><input id="last_name" maxlength="80" name="last_name" size="50" type="text" required="" tabindex="-1"><br><br>
 
-    <label for="company">Company<span style="color:red;">* </span></label><br>
-    <input id="company" maxlength="40" name="company" size="50" type="text" required tabindex="-1"><br><br>
+<label for="company">Company<span style="color:red;">* </span></label><br><input id="company" maxlength="40" name="company" size="50" type="text" required="" tabindex="-1"><br><br>
 
-    <label for="email">Email<span style="color:red;">* </span></label><br>
-    <input id="email" maxlength="80" name="email" size="50" type="text" required tabindex="-1"><br><br>
+<label for="email">Email<span style="color:red;">* </span></label><br><input id="email" maxlength="80" name="email" size="50" type="text" required="" tabindex="-1"><br><br>
 
-    <label for="phone">Phone<span style="color:red;">* </span></label><br>
-    <input id="phone" maxlength="40" name="phone" size="50" type="text" required oninput="validatePhone(this)" tabindex="-1"><br>
-    <br>
-    <p id="phoneError" style="color:red;font-size:12px;"></p>
+<label for="phone">Phone<span style="color:red;">* </span></label><br>
+<input id="phone" maxlength="40" name="phone" size="50" type="text" required="" oninput="validatePhone(this)" tabindex="-1"><br>
+<br>
+<p id="phoneError" style="color:red;font-size:12px;"></p>
 
-    <script>
-      function validatePhone(input) {
-        const numericRegex = /^\d*$/; 
-        const phoneError = document.getElementById("phoneError");
+<script type="">
+function validatePhone(input) {
+    const numericRegex = /^\d*$/; 
+    const phoneError = document.getElementById("phoneError");
 
-        if (!numericRegex.test(input.value)) {
-          phoneError.textContent = "Please enter numeric character only.";
-        } else {
-          phoneError.textContent = "";
+    if (!numericRegex.test(input.value)) {
+        phoneError.textContent = "Please enter numeric character only.";
+    } else {
+        phoneError.textContent = "";
+    }
+}
+</script>
+
+<label>Preferred Method of Contact</label><br> <select id="00N2P000000O4yG" name="00N2P000000O4yG" title="Preferred Method of Contact" tabindex="-1"><option value="">--None--</option><option value="Phone">Phone</option>
+<option value="Email">Email</option>
+</select><br><br>
+
+<label>State<span style="color:red;">* </span>
+  </label><br>
+  <select id="statedrop" name="statedrop" required="" tabindex="-1">
+    <option value="">--None--</option>
+    <option value="NSW">New South Wales</option>
+    <option value="VIC">Victoria</option>
+    <option value="QLD">Queensland</option>
+    <option value="SA">South Australia</option>
+    <option value="WA">West Australia</option>
+    <option value="TAS">Tasmania</option>
+    <option value="ACT">Australian Capital Territory</option>
+    <option value="NT">Northern Territory</option>
+  </select><br><br>
+<label for="state" class="hidden-selected">State</label><input id="state" maxlength="20" name="state" size="20" type="text" class="hidden-selected" tabindex="-1">
+  <script type="">
+   var selectBox = document.getElementById("statedrop");
+selectBox.onchange = function(){
+    var textbox = document.getElementById("state");
+    textbox.value = this.value;}
+</script>
+<label for="industry">Industry<span style="color:red;">* </span></label><br><select id="industry" name="industry" required="" tabindex="-1"><option value="">--None--</option><option value="Agriculture, Forestry and Fishing">Agriculture, Forestry and Fishing</option>
+<option value="Mining">Mining</option>
+<option value="Manufacturing">Manufacturing</option>
+<option value="Electricity, Gas, Water And Waste Services">Electricity, Gas, Water And Waste Services</option>
+<option value="Construction">Construction</option>
+<option value="Wholesale Trade">Wholesale Trade</option>
+<option value="Retail Trade">Retail Trade</option>
+<option value="Accommodation and Food Services">Accommodation and Food Services</option>
+<option value="Transport, Postal and Warehousing">Transport, Postal and Warehousing</option>
+<option value="Information Media and Telecommunications">Information Media and Telecommunications</option>
+<option value="Financial and Insurance Services">Financial and Insurance Services</option>
+<option value="Rental, Hiring And Real Estate Services">Rental, Hiring And Real Estate Services</option>
+<option value="Professional, Scientific And Technical Services">Professional, Scientific And Technical Services</option>
+<option value="Administrative and Support Services">Administrative and Support Services</option>
+<option value="Public Administration and Safety">Public Administration and Safety</option>
+<option value="Education and Training">Education and Training</option>
+<option value="Health Care and Social Assistance">Health Care and Social Assistance</option>
+<option value="Arts and Recreation Services">Arts and Recreation Services</option>
+<option value="Other Services">Other Services</option>
+</select><br><br>
+
+  <label>What services are you interested in?</label><br><select id="00N2P000000O4y8" multiple="multiple" name="00N2P000000O4y8" tabindex="-1" title="What services are you interested in?"><option value="eCommerce">eCommerce</option>
+<option value="Air Freight">Air Freight</option>
+<option value="Road Freight">Road Freight</option>
+<option value="Sea Freight">Sea Freight</option>
+<option value="Rail Freight">Rail Freight</option>
+<option value="Intermodal &amp; Multimodal">Intermodal &amp; Multimodal</option>
+<option value="Courier">Courier</option>
+<option value="Dangerous Goods">Dangerous Goods</option>
+<option value="Global">Global</option>
+<option value="New Zealand">New Zealand</option>
+</select><br><br>
+
+ <label>What would you like moved or delivered?</label><br><select id="00N2P000000O4yf" name="00N2P000000O4yf" tabindex="-1" title="What would you like moved or delivered?"><option value="">--None--</option><option value="Apparel, Accessories &amp; Luxury Goods">Apparel, Accessories &amp; Luxury Goods</option>
+<option value="Automotive Parts &amp; Equipment">Automotive Parts &amp; Equipment</option>
+<option value="Building Products">Building Products</option>
+<option value="Chemicals / Dangerous Goods">Chemicals / Dangerous Goods</option>
+<option value="Containers / Packaging">Containers / Packaging</option>
+<option value="Documents">Documents</option>
+<option value="Electronics / Telecommunications">Electronics / Telecommunications</option>
+<option value="Entertainment Equipment">Entertainment Equipment</option>
+<option value="Food &amp; Beverage">Food &amp; Beverage</option>
+<option value="Health Care">Health Care</option>
+<option value="Marketing, Advertising &amp; Promotional Goods">Marketing, Advertising &amp; Promotional Goods</option>
+<option value="Office Supplies">Office Supplies</option>
+<option value="Perishables">Perishables</option>
+<option value="Pets / Plants">Pets / Plants</option>
+<option value="Tobacco">Tobacco</option>
+<option value="Transport - Freight">Transport - Freight</option>
+<option value="Household/Personal Items">Household/Personal Items</option>
+</select><br><br>
+
+<label>What is your current estimated annual logistics spend?
+  </label><br>
+  <select id="revenue" name="revenue" title="Estimated Revenue (Local)" tabindex="-1">
+    <option value="">--None--</option>
+    <option value="0-250K">0-250K</option>
+    <option value="250K-1M">250K-1M</option>
+    <option value="1M+">1M+</option>
+  </select><br>
+  <label class="hidden-selected">What is your current estimated annual logistics spend?</label><input id="00N2P000000O4yb" maxlength="10" name="00N2P000000O4yb" size="20" type="text" class="hidden-selected" tabindex="-1">
+
+  <script type="">
+   var selectBox = document.getElementById("revenue");
+selectBox.onchange = function(){
+    var textbox = document.getElementById("00N2P000000O4yb");
+    textbox.value = this.value;}
+</script>
+<br><br>
+I would like to receive marketing communications, news, research, business insights and relevant industry event invitations from Team Global Express.<br>
+  <label>Opt In  </label><input id="00NOa000004TZpj" name="00NOa000004TZpj" type="checkbox" value="1" tabindex="-1"><br>
+ <br> 
+<i>I consent to my personal information being collected, used, stored, and disclosed as set out in the
+<a href="https://teamglobalexp.com/privacy-collection-notice" tabindex="-1"><u>TGE Privacy Collection Notice</u></a>
+and the
+<a href="https://teamglobalexp.com/privacy-policy" tabindex="-1"><u>TGE Privacy Policy</u></a>.
+</i>
+<br>
+<br>
+
+<input type="submit" name="submit" style="background-color: #143200; color: #CBFF55; border-radius: 50px; border: none; padding: 10px 20px; font-family: 'GlobalSans-SemiBold', sans-serif; font-size: 18px;" tabindex="-1">
+
+</form> 
+
+	<button id="miaw-start" type="button" onclick="startMessaging()"> Live Chat </button>
+
+    <script type="text/javascript">
+      function initEmbeddedMessaging() {
+        try {
+          embeddedservice_bootstrap.settings.language = 'en_US';
+
+          window.addEventListener('onEmbeddedMessagingReady', () => {
+            console.log('[MIAW] Messaging client is ready');
+          });
+
+          embeddedservice_bootstrap.init(
+            '00D9p000004KUXV',
+            'Messaging_Routing_Channel',
+            'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWMessagingRoutingChan1763462090439',
+            {
+              scrt2URL: 'https://teamglobalexp--tollperf.sandbox.my.salesforce-scrt.com'
+            }
+          );
+        } catch (err) {
+          console.error('Error loading Embedded Messaging: ', err);
         }
       }
-    </script>
 
-    <label>Preferred Method of Contact</label><br>
-    <select id="00N2P000000O4yG" name="00N2P000000O4yG" title="Preferred Method of Contact" tabindex="-1">
-      <option value="">--None--</option>
-      <option value="Phone">Phone</option>
-      <option value="Email">Email</option>
-    </select><br><br>
+      function startMessaging() {
+        if (window.embeddedservice_bootstrap) {
+          initEmbeddedMessaging();
+          return;
+        }
 
-    <label>State<span style="color:red;">* </span></label><br>
-    <select id="statedrop" name="statedrop" required tabindex="-1">
-      <option value="">--None--</option>
-      <option value="NSW">New South Wales</option>
-      <option value="VIC">Victoria</option>
-      <option value="QLD">Queensland</option>
-      <option value="SA">South Australia</option>
-      <option value="WA">West Australia</option>
-      <option value="TAS">Tasmania</option>
-      <option value="ACT">Australian Capital Territory</option>
-      <option value="NT">Northern Territory</option>
-    </select><br><br>
+        var src = 'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWMessagingRoutingChan1763462090439/assets/js/bootstrap.min.js';
+        var script = document.createElement('script');
+        script.src = src;
+        script.type = 'text/javascript';
 
-    <label for="state" class="hidden-selected">State</label>
-    <input id="state" maxlength="20" name="state" size="20" type="text" class="hidden-selected" tabindex="-1">
-    <script>
-      var selectBox = document.getElementById("statedrop");
-      selectBox.onchange = function(){
-        var textbox = document.getElementById("state");
-        textbox.value = this.value;
+        script.onload = function () {
+          console.log('[MIAW] bootstrap.min.js loaded');
+          initEmbeddedMessaging();
+        };
+        script.onerror = function (e) {
+          console.error('[MIAW] Failed to load bootstrap.min.js from:', src, e);
+        };
+
+        document.head.appendChild(script);
       }
     </script>
-
-    <label for="industry">Industry<span style="color:red;">* </span></label><br>
-    <select id="industry" name="industry" required tabindex="-1">
-      <option value="">--None--</option>
-      <option value="Agriculture, Forestry and Fishing">Agriculture, Forestry and Fishing</option>
-      <option value="Mining">Mining</option>
-      <option value="Manufacturing">Manufacturing</option>
-      <option value="Electricity, Gas, Water And Waste Services">Electricity, Gas, Water And Waste Services</option>
-      <option value="Construction">Construction</option>
-      <option value="Wholesale Trade">Wholesale Trade</option>
-      <option value="Retail Trade">Retail Trade</option>
-      <option value="Accommodation and Food Services">Accommodation and Food Services</option>
-      <option value="Transport, Postal and Warehousing">Transport, Postal and Warehousing</option>
-      <option value="Information Media and Telecommunications">Information Media and Telecommunications</option>
-      <option value="Financial and Insurance Services">Financial and Insurance Services</option>
-      <option value="Rental, Hiring And Real Estate Services">Rental, Hiring And Real Estate Services</option>
-      <option value="Professional, Scientific And Technical Services">Professional, Scientific And Technical Services</option>
-      <option value="Administrative and Support Services">Administrative and Support Services</option>
-      <option value="Public Administration and Safety">Public Administration and Safety</option>
-      <option value="Education and Training">Education and Training</option>
-      <option value="Health Care and Social Assistance">Health Care and Social Assistance</option>
-      <option value="Arts and Recreation Services">Arts and Recreation Services</option>
-      <option value="Other Services">Other Services</option>
-    </select><br><br>
-
-    <label>What services are you interested in?</label><br>
-    <select id="00N2P000000O4y8" multiple="multiple" name="00N2P000000O4y8" tabindex="-1" title="What services are you interested in?">
-      <option value="eCommerce">eCommerce</option>
-      <option value="Air Freight">Air Freight</option>
-      <option value="Road Freight">Road Freight</option>
-      <option value="Sea Freight">Sea Freight</option>
-      <option value="Rail Freight">Rail Freight</option>
-      <option value="Intermodal &amp; Multimodal">Intermodal &amp; Multimodal</option>
-      <option value="Courier">Courier</option>
-      <option value="Dangerous Goods">Dangerous Goods</option>
-      <option value="Global">Global</option>
-      <option value="New Zealand">New Zealand</option>
-    </select><br><br>
-
-    <label>What would you like moved or delivered?</label><br>
-    <select id="00N2P000000O4yf" name="00N2P000000O4yf" tabindex="-1" title="What would you like moved or delivered?">
-      <option value="">--None--</option>
-      <option value="Apparel, Accessories &amp; Luxury Goods">Apparel, Accessories &amp; Luxury Goods</option>
-      <option value="Automotive Parts &amp; Equipment">Automotive Parts &amp; Equipment</option>
-      <option value="Building Products">Building Products</option>
-      <option value="Chemicals / Dangerous Goods">Chemicals / Dangerous Goods</option>
-      <option value="Containers / Packaging">Containers / Packaging</option>
-      <option value="Documents">Documents</option>
-      <option value="Electronics / Telecommunications">Electronics / Telecommunications</option>
-      <option value="Entertainment Equipment">Entertainment Equipment</option>
-      <option value="Food &amp; Beverage">Food &amp; Beverage</option>
-      <option value="Health Care">Health Care</option>
-      <option value="Marketing, Advertising &amp; Promotional Goods">Marketing, Advertising &amp; Promotional Goods</option>
-      <option value="Office Supplies">Office Supplies</option>
-      <option value="Perishables">Perishables</option>
-      <option value="Pets / Plants">Pets / Plants</option>
-      <option value="Tobacco">Tobacco</option>
-      <option value="Transport - Freight">Transport - Freight</option>
-      <option value="Household/Personal Items">Household/Personal Items</option>
-    </select><br><br>
-
-    <label>What is your current estimated annual logistics spend?</label><br>
-    <select id="revenue" name="revenue" title="Estimated Revenue (Local)" tabindex="-1">
-      <option value="">--None--</option>
-      <option value="0-250K">0-250K</option>
-      <option value="250K-1M">250K-1M</option>
-      <option value="1M+">1M+</option>
-    </select><br>
-    <label class="hidden-selected">What is your current estimated annual logistics spend?</label>
-    <input id="00N2P000000O4yb" maxlength="10" name="00N2P000000O4yb" size="20" type="text" class="hidden-selected" tabindex="-1">
-    <script>
-      var selectBox = document.getElementById("revenue");
-      selectBox.onchange = function(){
-        var textbox = document.getElementById("00N2P000000O4yb");
-        textbox.value = this.value;
-      }
-    </script>
-    <br><br>
-
-    I would like to receive marketing communications, news, research, business insights and relevant industry event invitations from Team Global Express.<br>
-    <label>Opt In </label><input id="00NOa000004TZpj" name="00NOa000004TZpj" type="checkbox" value="1" tabindex="-1"><br>
-    <br>
-    <i>I consent to my personal information being collected, used, stored, and disclosed as set out in the
-      https://teamglobalexp.com/privacy-collection-notice<u>TGE Privacy Collection Notice</u></a>
-      and the
-      https://teamglobalexp.com/privacy-policy<u>TGE Privacy Policy</u></a>.
-    </i>
-    <br><br>
-
-    <input type="submit" name="submit" style="background-color: #143200; color: #CBFF55; border-radius: 50px; border: none; padding: 10px 20px; font-family: 'GlobalSans-SemiBold', sans-serif; font-size: 18px;" tabindex="-1">
-  </form>
-
-  <!-- Spinner element (appears on chat button click) -->
-  <div id="chatSpinner" aria-label="Loading chat"></div>
-
-  <!-- Bottom-right button -->
-  <button id="miaw-start" type="button" onclick="startMessaging()"> Click to Start Chat </button>
-
-  <script>
-    function showSpinner() {
-      document.getElementById('chatSpinner').classList.add('show');
-    }
-    function hideSpinner() {
-      document.getElementById('chatSpinner').classList.remove('show');
-    }
-
-    // Hide spinner when the embedded messaging client is ready
-    window.addEventListener('onEmbeddedMessagingReady', () => {
-      console.log('[MIAW] Messaging client is ready');
-      hideSpinner();
-    });
-
-    function initEmbeddedMessaging() {
-      try {
-        embeddedservice_bootstrap.settings.language = 'en_US';
-        embeddedservice_bootstrap.init(
-          '00D9p000004KUXV',
-          'Messaging_Routing_Channel',
-          'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWMessagingRoutingChan1763462090439',
-          {
-            scrt2URL: 'https://teamglobalexp--tollperf.sandbox.my.salesforce-scrt.com'
-          }
-        );
-      } catch (err) {
-        console.error('Error loading Embedded Messaging: ', err);
-        hideSpinner();
-      }
-    }
-
-    function startMessaging() {
-      showSpinner();
-
-      // If bootstrap is already present, just init
-      if (window.embeddedservice_bootstrap) {
-        initEmbeddedMessaging();
-        return;
-      }
-
-      // Otherwise, load it dynamically
-      var src = 'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWMessagingRoutingChan1763462090439/assets/js/bootstrap.min.js';
-      var script = document.createElement('script');
-      script.src = src;
-      script.type = 'text/javascript';
-
-      script.onload = function () {
-        console.log('[MIAW] bootstrap.min.js loaded');
-        initEmbeddedMessaging();
-      };
-      script.onerror = function (e) {
-        console.error('[MIAW] Failed to load bootstrap.min.js from:', src, e);
-        hideSpinner();
-      };
-
-      document.head.appendChild(script);
-    }
-  </script>
-</body>
-</html>
+  
+</body></html>
