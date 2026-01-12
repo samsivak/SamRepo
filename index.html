@@ -1765,21 +1765,6 @@ and the
 <input type="submit" name="submit" style="background-color: #143200; color: #CBFF55; border-radius: 50px; border: none; padding: 10px 20px; font-family: 'GlobalSans-SemiBold', sans-serif; font-size: 18px;" tabindex="-1">
 
 </form> 
-	
-<button id="miaw-start" type="button" onclick="startMessaging()">
-  ...
-  <span class="chat-text">
-    <span class="title">Live Chat</span>
-    <span class="status">Online</span>
-  </span>
-</button>
-
-<div id="miaw-loading" class="miaw-spinner" role="status" aria-live="polite" aria-label="Loading chat">
-  <div class="miaw-circle">
-    <div class="miaw-arc"></div>
-  </div>
-</div>
-
 	<button id="miaw-start" type="button" onclick="startMessaging()"> Live Chat </button>
 	
 	 <div id="miaw-loading" class="miaw-spinner" role="status" aria-live="polite" aria-label="Loading chat">
@@ -1858,10 +1843,46 @@ and the
 
       document.head.appendChild(script);
     }
-  </script>-->
+  </script> -->
 
-
+	
 <script type="text/javascript">
+  // Utility: hard-hide the button and schedule removal
+  function hideChatButtonHard() {
+    const btn = document.getElementById('miaw-start');
+    if (!btn) return;
+
+    // Apply multiple immediate style changes (defensive)
+    btn.style.display = 'none';
+    btn.style.visibility = 'hidden';
+    btn.style.opacity = '0';
+    btn.style.pointerEvents = 'none';
+    btn.setAttribute('hidden', 'true');
+    btn.setAttribute('aria-hidden', 'true');
+    btn.disabled = true;
+
+    // Inject a global CSS rule to keep it hidden even if scripts try to mutate styles
+    const css = document.createElement('style');
+    css.id = 'miaw-hide-rule';
+    css.textContent = `
+      #miaw-start { display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important; }
+    `;
+    document.head.appendChild(css);
+
+    // Remove from DOM on the next frame (strongest)
+    requestAnimationFrame(() => {
+      if (btn && btn.parentNode) {
+        try {
+          btn.parentNode.removeChild(btn);
+        } catch (e) {
+          // Fallbacks already applied via styles/attributes
+          console.warn('Fallback hide applied; removal failed:', e);
+        }
+      }
+    });
+  }
+
+  // Spinner helpers (keep your original behavior)
   function showSpinner() {
     const el = document.getElementById('miaw-loading');
     if (el) el.style.display = 'block';
@@ -1892,43 +1913,24 @@ and the
         '00D9p000004KUXV',
         'Messaging_Routing_Channel',
         'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWMessagingRoutingChan1763462090439',
-        {
-          scrt2URL: 'https://teamglobalexp--tollperf.sandbox.my.salesforce-scrt.com'
-        }
+        { scrt2URL: 'https://teamglobalexp--tollperf.sandbox.my.salesforce-scrt.com' }
       );
     } catch (err) {
       console.error('Error loading Embedded Messaging: ', err);
-      // Keep button hidden no matter what
+      // Keep the button hidden no matter what
       hideSpinner();
       clearTimeout(miawSpinnerTimeout);
     }
   }
 
   function startMessaging(event) {
-    // Prevent any default behavior or event bubbling issues
-    if (event) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
+    // Prevent any default behavior bubbling from the button
+    if (event) { event.preventDefault(); event.stopPropagation(); }
 
-    // 🔒 Remove the Live Chat button node from the DOM immediately.
-    const btn = document.getElementById('miaw-start');
-    if (btn) {
-      try {
-        // Most robust: remove the element from the DOM entirely
-        btn.parentNode && btn.parentNode.removeChild(btn);
-      } catch (e) {
-        // Fallbacks in case removeChild fails for any reason
-        btn.style.display = 'none';
-        btn.setAttribute('hidden', 'true');
-        btn.setAttribute('aria-hidden', 'true');
-        btn.disabled = true;
-        btn.style.visibility = 'hidden';
-        btn.style.opacity = '0';
-        btn.style.pointerEvents = 'none';
-      }
-    }
+    // 🔒 Hide/remove the button immediately & permanently until refresh
+    hideChatButtonHard();
 
+    // Continue with your normal flow
     showSpinner();
     startSpinnerTimeout(30000);
 
@@ -1950,7 +1952,7 @@ and the
     };
     script.onerror = function (e) {
       console.error('[MIAW] Failed to load bootstrap.min.js from:', src, e);
-      // Keep button hidden no matter what
+      // Button remains hidden per requirement
       hideSpinner();
       clearTimeout(miawSpinnerTimeout);
     };
@@ -1959,10 +1961,23 @@ and the
   }
 
   // Bind via JS (in addition to your inline onclick="startMessaging()")
-  const btnEl = document.getElementById('miaw-start');
-  if (btnEl) {
-    btnEl.addEventListener('click', startMessaging);
-  }
+  (function bindButton() {
+    const btnEl = document.getElementById('miaw-start');
+    if (btnEl) {
+      // Defensive: remove any existing listeners to avoid duplicate calls
+      btnEl.replaceWith(btnEl.cloneNode(true));
+      const freshBtn = document.getElementById('miaw-start');
+      freshBtn.addEventListener('click', startMessaging, { once: true }); // ensure it runs once
+    }
+  })();
+
+  // Debug helper: log if there are multiple elements that look like the button
+  window.addEventListener('load', () => {
+    const btns = document.querySelectorAll('#miaw-start');
+    if (btns.length > 1) {
+      console.warn('Multiple #miaw-start buttons detected:', btns.length);
+    }
+  });
 </script>
     
 </body></html>
