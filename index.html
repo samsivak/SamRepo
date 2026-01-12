@@ -1652,7 +1652,11 @@ and the
 <input type="submit" name="submit" style="background-color: #143200; color: #CBFF55; border-radius: 50px; border: none; padding: 10px 20px; font-family: 'GlobalSans-SemiBold', sans-serif; font-size: 18px;" tabindex="-1">
 
 
-</form>  
+</form>
+
+
+  
+  
   
 <style type="text/css">
  .embeddedServiceHelpButton .helpButton .uiButton {
@@ -1737,71 +1741,38 @@ embedded_svc.init(
 			}
   );
 
-    <meta charset="utf-8" />
-    <title>UAT Embedded Messaging Launcher</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script type='text/javascript'>
+	function initEmbeddedMessaging() {
+		try {
+			embeddedservice_bootstrap.settings.language = 'en_US'; // For example, enter 'en' or 'en-US'
 
-    <style>
-      #miaw-start {
-        padding: 10px 16px;
-        font-size: 14px;
-        cursor: pointer;
-        background: #0070d2;
-        color: #fff;
-        border: none;
-        border-radius: 4px;
-      }
-      #miaw-start:hover {
-        background: #005fb2;
-      }
-    </style>
-  </head>
+			embeddedservice_bootstrap.init(
+				'00D9p000004KUXV',
+				'Messaging_Routing_Channel',
+				'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWMessagingRoutingChan1763462090439',
+				{
+					scrt2URL: 'https://teamglobalexp--tollperf.sandbox.my.salesforce-scrt.com'
+				}
+			);
+		} catch (err) {
+			console.error('Error loading Embedded Messaging: ', err);
+		}
+	};
+</script>
+<script type='text/javascript' src='https://teamglobalexp--tollperf.sandbox.my.site.com/ESWMessagingRoutingChan1763462090439/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
 
-  <body>
-    <button id="miaw-start" type="button" onclick="startMessaging()"> Click to Start Chat </button>
+ };
 
-    <script type="text/javascript">
-      function initEmbeddedMessaging() {
-        try {
-          embeddedservice_bootstrap.settings.language = 'en_US';
-
-          window.addEventListener('onEmbeddedMessagingReady', () => {
-            console.log('[MIAW] Messaging client is ready');
-          });
-
-          embeddedservice_bootstrap.init(
-            '00D9p000004KUXV',
-            'Messaging_Routing_Channel',
-            'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWMessagingRoutingChan1763462090439',
-            {
-              scrt2URL: 'https://teamglobalexp--tollperf.sandbox.my.salesforce-scrt.com'
-            }
-          );
-        } catch (err) {
-          console.error('Error loading Embedded Messaging: ', err);
-        }
-      }
-
-      function startMessaging() {
-        if (window.embeddedservice_bootstrap) {
-          initEmbeddedMessaging();
-          return;
-        }
-
-        var src = 'https://teamglobalexp--tollperf.sandbox.my.site.com/ESWMessagingRoutingChan1763462090439/assets/js/bootstrap.min.js';
-        var script = document.createElement('script');
-        script.src = src;
-        script.type = 'text/javascript';
-
-        script.onload = function () {
-          console.log('[MIAW] bootstrap.min.js loaded');
-          initEmbeddedMessaging();
-        };
-        script.onerror = function (e) {
-          console.error('[MIAW] Failed to load bootstrap.min.js from:', src, e);
-        };
-
-        document.head.appendChild(script);
-      }
-    </script>
+ if (!window.embedded_svc) {
+  var s = document.createElement('script');
+  s.setAttribute('src', 'https://teamglobalexp--tollperf.sandbox.my.salesforce.com/embeddedservice/5.0/esw.min.js');
+  s.onload = function() {
+   initESW(null);
+  };
+  document.body.appendChild(s);
+ } else {
+  initESW('https://service.force.com');
+ }
+</script>  
+  
 </body></html>
