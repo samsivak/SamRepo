@@ -1431,7 +1431,8 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
   }
 </style>
 <style>
- #miaw-start {
+	<!-- Live Chat button CSS...-->
+/** #miaw-start {
   z-index: 999;
   position: fixed;
   right: 12px;
@@ -1448,8 +1449,70 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
   font-size: 16px;
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+} **/
+
+	
+/* Base: fixed to viewport, never hidden by footer */
+#miaw-start {
+  position: fixed;           /* anchored to the viewport */
+  right: calc(12px + env(safe-area-inset-right));
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  z-index: 9999;             /* above footers/headers/modals */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  /* Touch-friendly padding; slightly larger for accessibility */
+  padding: 12px 22px;
+
+  /* Visuals */
+  background-color: #0b1d0b;
+  color: #fff;
+  border: 2px solid #b8aaff;
+  border-radius: 30px;
+  font-family: 'GlobalSans-SemiBold', sans-serif;
+  font-size: 16px;
+  cursor: pointer;
+
+  /* Shadow to separate from content/footer */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+
+  /* Prevent accidental clipping and odd stacking behaviors */
+  transform: none;           /* avoid creating its own stacking context */
+  opacity: 1;                /* ensure not < 1 (which creates a stacking context) */
+  isolation: auto;           /* avoid mixing/blending issues */
+  pointer-events: auto;      /* clickable */
 }
-	<!-- Live Chat button CSS...-->
+
+/* Ensure no ancestor can clip or overlay it */
+#miaw-start,
+#miaw-start * {
+  will-change: auto;         /* avoid GPU transforms that create new contexts */
+}
+
+/* Optional: increase hit area & spacing on small screens */
+@media (max-width: 480px) {
+  #miaw-start {
+    right: calc(16px + env(safe-area-inset-right));
+    bottom: calc(16px + env(safe-area-inset-bottom));
+    padding: 14px 24px;
+    font-size: 15px;         /* keep readable but compact */
+  }
+}
+
+/* Optional: if a sticky footer or other element overlaps,
+   you can reserve space visually with a subtle offset helper class */
+.footer-safe-offset #miaw-start {
+  bottom: calc(24px + env(safe-area-inset-bottom)); /* extra breathing room */
+}
+
+/* If you use a container/wrapper, ensure it cannot clip fixed children */
+html, body {
+  /* Avoid accidental overflow that can clip fixed-position elements */
+  overflow-x: hidden;
+}
+
+	
 
 /* Hover effect */
 #miaw-start:hover {
