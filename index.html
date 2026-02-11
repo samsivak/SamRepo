@@ -1973,34 +1973,33 @@ document.addEventListener("DOMContentLoaded", function () {
  
     let refreshTriggered = false;
  
-    // Wait until Embedded Messaging is fully ready
-    window.addEventListener("onEmbeddedMessagingReady", function () {
+    const observer = new MutationObserver(function () {
  
-        console.log("Messaging Ready - Monitoring for agent end");
+        if (refreshTriggered) return;
  
-        const checkInterval = setInterval(function () {
+        // Detect the input box
+        const inputBox = document.querySelector("input");
  
-            if (refreshTriggered) return;
+        if (!inputBox) return;
  
-            // Look for the exact system message
-            const chatContainer = document.querySelector("embedded-messaging");
+        const placeholderText = inputBox.getAttribute("placeholder") || "";
  
-            if (!chatContainer) return;
+        // When agent ends, placeholder becomes "Start a new chat..."
+        if (placeholderText.includes("Start a new chat")) {
  
-            const text = chatContainer.innerText || "";
+            refreshTriggered = true;
  
-            if (text.includes("Agent ended the chat")) {
+            console.log("🔥 Agent ended detected via placeholder change.");
+            console.log("Reloading page now...");
  
-                refreshTriggered = true;
-                clearInterval(checkInterval);
+            location.reload();   // Immediate reload
+        }
  
-                console.log("🔥 Agent ended detected. Refreshing immediately...");
+    });
  
-                location.reload();   // Immediate reload
-            }
- 
-        }, 500); // check every 0.5 seconds
- 
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
     });
  
 });
