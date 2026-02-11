@@ -1961,29 +1961,9 @@ and the
 					scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com'
 				}
 			);
-
-// MIAW: Detect when conversation ends (agent ended chat)
-			window.addEventListener("onEmbeddedMessagingConversationEnded", function (event) {
- 
-				console.log("Conversation Ended Event Fired:", event);
- 
-				// Delay prevents race condition
-				setTimeout(function () {
- 
-					// Clear session (returns a Promise in MIAW)
-					embeddedservice_bootstrap.userSessionAPI.clearSession()
-						.then(function () {
-							console.log("Session cleared successfully.");
-						})
-						.catch(function (error) {
-							console.error("Error clearing session:", error);
-						});
- 
-					// Close the chat window
-					embeddedservice_bootstrap.utilAPI.closeChat();
- 
-				}, 1500);
-			});
+window.addEventListener("message", function(event) {
+	console.log("All events:", event);
+});
 			
 		} catch (err) {
 			console.error('Error loading Embedded Messaging: ', err);
