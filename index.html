@@ -1947,6 +1947,7 @@ and the
 <div class="container">
 <h1>External Website to test the Customer Service Chat</h1>
 </div>
+
  
 <script type='text/javascript'>
 	function initEmbeddedMessaging() {
@@ -1967,44 +1968,37 @@ and the
 		}
 	}
  
-	// ✅ Wait for Messaging runtime to be ready
-	document.addEventListener("embeddedMessagingReady", function () {
-		console.log("✅ Embedded Messaging is Ready");
+	
+document.addEventListener("embeddedMessagingReady", function () {
  
-		// Listen for conversation status changes
-		if (
-			embeddedservice_bootstrap &&
-			embeddedservice_bootstrap.messagingAPI &&
-			typeof embeddedservice_bootstrap.messagingAPI.onConversationStatusChanged === "function"
-		) {
+	console.log("Messaging Ready - Attaching observer");
  
-			embeddedservice_bootstrap.messagingAPI.onConversationStatusChanged(function (status) {
+	const observer = new MutationObserver(function () {
  
-				console.log("Conversation status changed:", status);
+		// Look for the “conversation ended” system message
+		const endedMessage = document.querySelector('[data-testid="conversation-ended"]');
  
-				// When agent ends conversation
-				if (status === "Ended") {
+		if (endedMessage) {
  
-					console.log("🔥 Agent ended the chat");
+			console.log("🔥 Conversation ended detected via DOM");
  
-					// Clear session
-					embeddedservice_bootstrap.userSessionAPI.clearSession()
-						.then(function () {
-							console.log("✅ Session cleared");
-						})
-						.catch(function (error) {
-							console.error("Error clearing session:", error);
-						});
+			setTimeout(function () {
  
-					// Close chat UI
-					embeddedservice_bootstrap.utilAPI.closeChat();
-				}
-			});
+				embeddedservice_bootstrap.userSessionAPI.clearSession();
+				embeddedservice_bootstrap.utilAPI.closeChat();
  
-		} else {
-			console.error("❌ messagingAPI not available");
+			}, 1500);
+ 
+			observer.disconnect();
 		}
 	});
+ 
+	observer.observe(document.body, {
+		childList: true,
+		subtree: true
+	});
+});
+	
 </script>
  
 <!-- ✅ FIXED bootstrap script (removed %27) -->
