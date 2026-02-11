@@ -1961,14 +1961,32 @@ and the
 					scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com'
 				}
 			);
-window.addEventListener("message", function(event) {
-	console.log("All events:", event);
-});
 			
 		} catch (err) {
 			console.error('Error loading Embedded Messaging: ', err);
 		}
 	};
+
+document.addEventListener("embeddedMessagingReady", function () {
+ 
+		console.log("Embedded Messaging Ready");
+ 
+		embeddedservice_bootstrap.addEventHandler(
+			"onConversationEnded",
+			function (data) {
+ 
+				console.log("Conversation Ended:", data);
+ 
+				setTimeout(function () {
+ 
+					embeddedservice_bootstrap.userSessionAPI.clearSession();
+					embeddedservice_bootstrap.utilAPI.closeChat();
+ 
+				}, 1500);
+			}
+		);
+	});
+	
 </script>
 <script type='text/javascript' src='https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
  
