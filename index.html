@@ -1944,26 +1944,26 @@ and the
 </head>
 <body>
  
-<div class="container">
-<h1>External Website to test the Customer Service Chat</h1>
-</div>
-
-	<script>
+<h1>External Website to test Customer Service Chat</h1>
+ 
+<script>
 console.log("🔥 CUSTOM PAGE LOADED");
  
+// Initialize embedded chat immediately
 function initEmbeddedMessaging() {
     try {
         embeddedservice_bootstrap.settings.language = 'en_US';
  
         embeddedservice_bootstrap.init(
-            '00DAD000008PLr4',
-            'Messaging_Routing_Channel',
-            'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770',
+            '00DAD000008PLr4', // org Id
+            'Messaging_Routing_Channel', // developer name
+            'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770', // endpoint
             {
                 scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com'
             }
         );
  
+        // Start DOM observer to detect when conversation ends
         setTimeout(startConversationObserver, 4000);
  
     } catch (err) {
@@ -1971,25 +1971,25 @@ function initEmbeddedMessaging() {
     }
 }
  
+// Observer to detect when agent ends chat
 function startConversationObserver() {
+    console.log("👀 Starting conversation end observer");
  
     const observer = new MutationObserver(function () {
  
+        // Look for absence of message input (conversation ended)
         const composer = document.querySelector('[role="textbox"]');
  
-     if (!composer) {
+        if (!composer) {
+            console.log("🔥 Conversation ended detected");
  
-    console.log("🔥 Conversation ended detected");
+            setTimeout(function () {
+                // Reload page to reset chat session
+                location.reload();
+            }, 1500);
  
-    setTimeout(function () {
- 
-        // Fully reset by reloading page
-        location.reload();
- 
-    }, 1500);
- 
-    observer.disconnect();
-}
+            observer.disconnect();
+        }
     });
  
     observer.observe(document.body, {
@@ -1999,7 +1999,6 @@ function startConversationObserver() {
 }
 </script>
  
-<!-- ✅ FIXED bootstrap script (removed %27) -->
 <script type='text/javascript' src='https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
  
 </body>
