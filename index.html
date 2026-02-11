@@ -1962,46 +1962,53 @@ and the
 				}
 			);
  
-			// ✅ Wait a few seconds to ensure MIAW runtime is fully ready
-			setTimeout(function () {
-				console.log("Attaching Conversation Ended handler...");
- 
-				embeddedservice_bootstrap.addEventHandler(
-					"onConversationEnded",
-					function (data) {
-						console.log("🔥 Conversation Ended Event Fired:", data);
- 
-						// Clear session and close chat UI
-						embeddedservice_bootstrap.userSessionAPI.clearSession()
-							.then(function () {
-								console.log("Session cleared successfully.");
-							})
-							.catch(function (err) {
-								console.error("Error clearing session:", err);
-							});
- 
-						embeddedservice_bootstrap.utilAPI.closeChat();
-					}
-				);
- 
-			}, 3000); // 3-second delay ensures runtime is initialized
- 
 		} catch (err) {
 			console.error('Error loading Embedded Messaging: ', err);
 		}
 	}
  
-	// Optional: extra debug to ensure bootstrap loaded
+	// ✅ Wait for Messaging runtime to be ready
 	document.addEventListener("embeddedMessagingReady", function () {
-		console.log("✅ Embedded Messaging Ready event fired");
+		console.log("✅ Embedded Messaging is Ready");
+ 
+		// Listen for conversation status changes
+		if (
+			embeddedservice_bootstrap &&
+			embeddedservice_bootstrap.messagingAPI &&
+			typeof embeddedservice_bootstrap.messagingAPI.onConversationStatusChanged === "function"
+		) {
+ 
+			embeddedservice_bootstrap.messagingAPI.onConversationStatusChanged(function (status) {
+ 
+				console.log("Conversation status changed:", status);
+ 
+				// When agent ends conversation
+				if (status === "Ended") {
+ 
+					console.log("🔥 Agent ended the chat");
+ 
+					// Clear session
+					embeddedservice_bootstrap.userSessionAPI.clearSession()
+						.then(function () {
+							console.log("✅ Session cleared");
+						})
+						.catch(function (error) {
+							console.error("Error clearing session:", error);
+						});
+ 
+					// Close chat UI
+					embeddedservice_bootstrap.utilAPI.closeChat();
+				}
+			});
+ 
+		} else {
+			console.error("❌ messagingAPI not available");
+		}
 	});
 </script>
  
-<!-- Fixed script URL (removed %27) -->
-<script type='text/javascript'
-	src='https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770/assets/js/bootstrap.min.js'
-	onload='initEmbeddedMessaging()'>
-</script>
+<!-- ✅ FIXED bootstrap script (removed %27) -->
+<script type='text/javascript' src='https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
  
 </body>
 </html>
