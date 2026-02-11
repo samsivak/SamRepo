@@ -1977,21 +1977,19 @@ function startConversationObserver() {
  
         const composer = document.querySelector('[role="textbox"]');
  
-        if (!composer) {
+     if (!composer) {
  
-            console.log("🔥 Conversation ended detected");
+    console.log("🔥 Conversation ended detected");
  
-            setTimeout(function () {
+    setTimeout(function () {
  
-                // ✅ Properly remove messaging instance
-                if (embeddedservice_bootstrap) {
-                    embeddedservice_bootstrap.remove();
-                }
+        // Fully reset by reloading page
+        location.reload();
  
-            }, 1500);
+    }, 1500);
  
-            observer.disconnect();
-        }
+    observer.disconnect();
+}
     });
  
     observer.observe(document.body, {
