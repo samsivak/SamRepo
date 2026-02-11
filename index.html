@@ -1947,44 +1947,53 @@ and the
 <h1>External Website to test Customer Service Chat</h1>
  
 <script>
-console.log("🔥 CUSTOM PAGE LOADED");
+console.log("PAGE LOADED");
  
-// Initialize embedded chat immediately
 function initEmbeddedMessaging() {
     try {
         embeddedservice_bootstrap.settings.language = 'en_US';
  
         embeddedservice_bootstrap.init(
-            '00DAD000008PLr4', // org Id
-            'Messaging_Routing_Channel', // developer name
-            'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770', // endpoint
+            '00DAD000008PLr4', // Org Id
+            'Messaging_Routing_Channel', // Developer Name
+            'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770', // Endpoint
             {
                 scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com'
             }
         );
  
-        // Start DOM observer to detect when conversation ends
-        setTimeout(startConversationObserver, 4000);
+        // Wait for live chat composer to appear (user completed pre-chat)
+        waitForComposerThenObserve();
  
     } catch (err) {
         console.error('Error loading Embedded Messaging: ', err);
     }
 }
  
-// Observer to detect when agent ends chat
+// Wait until live chat composer exists (user finished pre-chat)
+function waitForComposerThenObserve() {
+    const interval = setInterval(() => {
+        const composer = document.querySelector('[role="textbox"]');
+        if (composer) {
+            console.log("🟢 Live chat composer detected - attaching observer");
+            clearInterval(interval);
+            startConversationObserver();
+        }
+    }, 500); // check every 0.5s
+}
+ 
+// Observe when agent ends chat (composer disappears)
 function startConversationObserver() {
     console.log("👀 Starting conversation end observer");
  
-    const observer = new MutationObserver(function () {
- 
-        // Look for absence of message input (conversation ended)
+    const observer = new MutationObserver(() => {
         const composer = document.querySelector('[role="textbox"]');
  
         if (!composer) {
-            console.log("🔥 Conversation ended detected");
+            console.log("🔥 Agent ended conversation detected");
  
-            setTimeout(function () {
-                // Reload page to reset chat session
+            // Give a small delay before refreshing
+            setTimeout(() => {
                 location.reload();
             }, 1500);
  
