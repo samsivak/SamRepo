@@ -1947,68 +1947,67 @@ and the
 <h1>External Website to test Customer Service Chat</h1>
  
 <script>
-console.log("PAGE LOADED");
+console.log("Fresh PAGE LOADED");
  
 function initEmbeddedMessaging() {
-	console.log("PAGE LOADED 1");
     try {
         embeddedservice_bootstrap.settings.language = 'en_US';
  
         embeddedservice_bootstrap.init(
-            '00DAD000008PLr4', // Org Id
+            '00DAD000008PLr4', // Org ID
             'Messaging_Routing_Channel', // Developer Name
-            'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770', // Endpoint
+            'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770', // Messaging Endpoint
             {
                 scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com'
             }
         );
- 		console.log("PAGE LOADED 2");
-        // Wait for live chat composer to appear (user completed pre-chat)
-        waitForComposerThenObserve();
- 	console.log("PAGE LOADED 3");
+ 
+        // Start polling for conversation end inside iframe
+        setTimeout(startConversationEndPoll, 3000);
+ 
     } catch (err) {
-        console.error('Error loading Embedded Messaging: ', err);
+        console.error('Error initializing Embedded Messaging:', err);
     }
 }
  
-// Wait until live chat composer exists (user finished pre-chat)
-function waitForComposerThenObserve() {
-	console.log("PAGE LOADED 4");
-    const interval = setInterval(() => {
-        const composer = document.querySelector('[role="textbox"]');
-		console.log("PAGE LOADED 5");
-        if (composer) {
-            console.log("🟢 Live chat composer detected - attaching observer");
-            clearInterval(interval);
-            startConversationObserver();
+/**
+* Polls the embedded messaging iframe every second to detect
+* if the conversation has ended.
+*/
+function startConversationEndPoll() {
+    console.log("👀 Starting polling for conversation end");
+ 
+    const pollInterval = setInterval(() => {
+        const chatIframe = document.querySelector('iframe[title="Embedded Messaging"]');
+ 
+        if (!chatIframe) return; // iframe not loaded yet
+ 
+        try {
+            const iframeDoc = chatIframe.contentDocument || chatIframe.contentWindow.document;
+            if (!iframeDoc) return;
+ 
+            // Look for system message indicating conversation ended
+            const endedMessage = iframeDoc.body.innerText.toLowerCase().includes("conversation has ended");
+ 
+            if (endedMessage) {
+                console.log("🔥 Agent ended conversation detected inside iframe");
+ 
+                clearInterval(pollInterval);
+ 
+                // Optional: small delay before refresh
+                setTimeout(() => {
+                    location.reload(); // refresh parent page
+                }, 1500);
+            }
+ 
+        } catch (err) {
+            // Cross-origin iframe? cannot access contentDocument
+            console.warn("Cannot access iframe content (possibly cross-origin)", err);
         }
-    }, 500); // check every 0.5s
+ 
+    }, 1000); // poll every second
 }
- 
-// Observe when agent ends chat (composer disappears)
-function startConversationObserver() {
-    console.log("👀 Starting conversation end observer");
- 
-    const observer = new MutationObserver(() => {
-        const composer = document.querySelector('[role="textbox"]');
- 
-        if (!composer) {
-            console.log("🔥 Agent ended conversation detected");
- 
-            // Give a small delay before refreshing
-            setTimeout(() => {
-                location.reload();
-            }, 1500);
- 
-            observer.disconnect();
-        }
-    });
- 
-    observer.observe(document.body, {
-        childList: true,
-        subtree: true
-    });
-}
+</script>
 </script>
  console.log("PAGE LOADED 6");
 <script type='text/javascript' src='https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
