@@ -1961,6 +1961,24 @@ and the
 					scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com'
 				}
 			);
+
+// Listen for conversation closed (Agent ended chat)
+			window.addEventListener("onEmbeddedMessagingConversationClosed", function () {
+ 
+				console.log("Conversation ended by agent.");
+ 
+				// Small delay to avoid timing issues
+				setTimeout(function () {
+ 
+					// Clear the user session
+					embeddedservice_bootstrap.userSessionAPI.clearSession();
+ 
+					// Close the chat window
+					embeddedservice_bootstrap.utilAPI.closeChat();
+ 
+				}, 1000);
+			});
+			
 		} catch (err) {
 			console.error('Error loading Embedded Messaging: ', err);
 		}
