@@ -1971,34 +1971,36 @@ and the
     <script>
 document.addEventListener("DOMContentLoaded", function () {
  
-    window.addEventListener("onEmbeddedMessagingReady", () => {
-        console.log("Messaging Ready");
+    let refreshTriggered = false;
  
-        if (window.embeddedservice_bootstrap &&
-            embeddedservice_bootstrap.messaging) {
+    // Wait until Embedded Messaging is fully ready
+    window.addEventListener("onEmbeddedMessagingReady", function () {
  
-            embeddedservice_bootstrap.messaging.addEventHandler(
-                "conversationClosed",
-                function (event) {
+        console.log("Messaging Ready - Monitoring for agent end");
  
-                    console.log("Conversation Closed Event Detected");
+        const checkInterval = setInterval(function () {
  
-                    // 🔥 Clear session completely
-                    embeddedservice_bootstrap.messaging.clearSession()
-                        .then(() => {
-                            console.log("Session Cleared Successfully");
-                        })
-                        .catch(err => {
-                            console.error("Clear Session Error:", err);
-                        });
+            if (refreshTriggered) return;
  
-                    // Optional: Hide chat button
-                    if (embeddedservice_bootstrap.utilAPI) {
-                        embeddedservice_bootstrap.utilAPI.hideChatButton();
-                    }
-                }
-            );
-        }
+            // Look for the exact system message
+            const chatContainer = document.querySelector("embedded-messaging");
+ 
+            if (!chatContainer) return;
+ 
+            const text = chatContainer.innerText || "";
+ 
+            if (text.includes("Agent ended the chat")) {
+ 
+                refreshTriggered = true;
+                clearInterval(checkInterval);
+ 
+                console.log("🔥 Agent ended detected. Refreshing immediately...");
+ 
+                location.reload();   // Immediate reload
+            }
+ 
+        }, 500); // check every 0.5 seconds
+ 
     });
  
 });
