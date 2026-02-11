@@ -1964,7 +1964,6 @@ function initEmbeddedMessaging() {
             }
         );
  
-        // Start observer after messaging loads
         setTimeout(startConversationObserver, 4000);
  
     } catch (err) {
@@ -1973,6 +1972,7 @@ function initEmbeddedMessaging() {
 }
  
 function startConversationObserver() {
+ 
     const observer = new MutationObserver(function () {
  
         const composer = document.querySelector('[role="textbox"]');
@@ -1983,8 +1983,10 @@ function startConversationObserver() {
  
             setTimeout(function () {
  
-                embeddedservice_bootstrap.userSessionAPI.clearSession();
-                embeddedservice_bootstrap.utilAPI.closeChat();
+                // ✅ Properly remove messaging instance
+                if (embeddedservice_bootstrap) {
+                    embeddedservice_bootstrap.remove();
+                }
  
             }, 1500);
  
@@ -1997,7 +1999,6 @@ function startConversationObserver() {
         subtree: true
     });
 }
- 
 </script>
  
 <!-- ✅ FIXED bootstrap script (removed %27) -->
