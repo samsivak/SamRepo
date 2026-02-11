@@ -1948,8 +1948,8 @@ and the
 <h1>External Website to test the Customer Service Chat</h1>
 </div>
 
-<script>
-console.log("CUSTOM PAGE LOADED");
+	<script>
+console.log("🔥 CUSTOM PAGE LOADED");
  
 function initEmbeddedMessaging() {
     try {
@@ -1964,7 +1964,7 @@ function initEmbeddedMessaging() {
             }
         );
  
-        // Start observing DOM after a short delay
+        // Start observer after messaging loads
         setTimeout(startConversationObserver, 4000);
  
     } catch (err) {
@@ -1973,16 +1973,13 @@ function initEmbeddedMessaging() {
 }
  
 function startConversationObserver() {
-    console.log("👀 Starting conversation end observer");
- 
     const observer = new MutationObserver(function () {
  
-        // Check if message composer no longer exists
         const composer = document.querySelector('[role="textbox"]');
  
         if (!composer) {
  
-            console.log("Conversation ended detected (composer removed)");
+            console.log("🔥 Conversation ended detected");
  
             setTimeout(function () {
  
@@ -2000,6 +1997,7 @@ function startConversationObserver() {
         subtree: true
     });
 }
+ 
 </script>
  
 <!-- ✅ FIXED bootstrap script (removed %27) -->
