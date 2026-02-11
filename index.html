@@ -1962,21 +1962,27 @@ and the
 				}
 			);
 
-// Listen for conversation closed (Agent ended chat)
-			window.addEventListener("onEmbeddedMessagingConversationClosed", function () {
+// MIAW: Detect when conversation ends (agent ended chat)
+			window.addEventListener("onEmbeddedMessagingConversationEnded", function (event) {
  
-				console.log("Conversation ended by agent.");
+				console.log("Conversation Ended Event Fired:", event);
  
-				// Small delay to avoid timing issues
+				// Delay prevents race condition
 				setTimeout(function () {
  
-					// Clear the user session
-					embeddedservice_bootstrap.userSessionAPI.clearSession();
+					// Clear session (returns a Promise in MIAW)
+					embeddedservice_bootstrap.userSessionAPI.clearSession()
+						.then(function () {
+							console.log("Session cleared successfully.");
+						})
+						.catch(function (error) {
+							console.error("Error clearing session:", error);
+						});
  
 					// Close the chat window
 					embeddedservice_bootstrap.utilAPI.closeChat();
  
-				}, 1000);
+				}, 1500);
 			});
 			
 		} catch (err) {
