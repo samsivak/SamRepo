@@ -1939,81 +1939,141 @@ and the
 </html> -->
 
 
+<!doctype html>
 <html>
-	<h1>Test End Chat</h1>
-		<body>
-			<script type='text/javascript'>
-  function initEmbeddedMessaging() {
-    try {
-      // Set your desired UI language
-      embeddedservice_bootstrap.settings.language = 'en_US';
+  <head>
+    <meta charset="utf-8"/>
+    <title>Test End Chat</title>
+    <style>
+      /* Optional: visible debug area on the page */
+      #m4w-debug { font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; 
+                   background:#0b1220; color:#c8e1ff; padding:8px; margin:8px 0; white-space:pre-wrap; }
+    </style>
+  </head>
+  <body>
+    <h1>Test End Chat</h1>
+    <pre id="m4w-debug"></pre>
 
-      // Initialize Embedded Messaging (from your snippet)
-      embeddedservice_bootstrap.init(
-        '00DAD000008PLr4', // Org ID
-        'Messaging_Routing_Channel', // Deployment / Channel
-        'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770',
-        {
-          scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com'
-        }
-      );
+    <script type="text/javascript">
+      (function () {
+        const dbg = document.getElementById('m4w-debug');
+        const log = (...args) => { console.log('[M4W]', ...args); if (dbg) dbg.textContent += args.map(a => (typeof a === 'string' ? a : JSON.stringify(a, null, 2))).join(' ') + '\n'; };
 
-
-      // Add listeners ONLY after the client is ready
-      window.addEventListener('onEmbeddedMessagingReady', () => {
-        let lastRouteTs = 0;
-
-        // Track routing to avoid false positives (agent leaves during a transfer)
-        window.addEventListener('onEmbeddedMessagingConversationRouted', (evt) => {
-          lastRouteTs = Date.now();
-          // You can inspect evt.detail if needed (CONVERSATION_ROUTING_RESULT payload).
-          // Ref: Event Listeners docs.
-        });
-
-        // Main heuristic: close when the agent/rep participant is REMOVED,
-        // and no route just happened (i.e., not a transfer).
-        window.addEventListener('onEmbeddedMessagingConversationParticipantChanged', (evt) => {
+        // ---- Helpers to close/reset the widget ----
+        let alreadyClosed = false;
+        function endClientSession(reason) {
+          if (alreadyClosed) return;
+          alreadyClosed = true;
           try {
-            const detail = evt?.detail || {};
-            // The SSE payload in docs includes operation + participant role information.
-            // Keys can evolve; inspect in console in your sandbox to confirm exact shape.
-            const op   = (detail.operation || '').toLowerCase(); // 'add' | 'remove'
-            const role = ((detail.participant && detail.participant.role) || '').toUpperCase(); // 'AGENT'/'REP'/'BOT'/...
+            log('→ Attempting userSession.endSession()', { reason });
+            // Primary: end the client-side Messaging session (closes widget state)
+            embeddedservice_bootstrap?.userSession?.endSession?.();
 
-            const isAgentRemoved   = (op === 'remove') && (role === 'AGENT' || role === 'REP');
-            const routedRecently   = (Date.now() - lastRouteTs) < 2000; // 2s debounce against transfers
-
-            if (isAgentRemoved && !routedRecently) {
-              // 1) End the client-side Messaging session (closes the widget UI/state)
-              embeddedservice_bootstrap?.userSession?.endSession?.();
-
-              // 2) OPTIONAL: also clear verification so the next open is a fresh start (pre-chat shown again).
-              //    Uncomment if you want this behavior:
-              // embeddedservice_bootstrap?.userVerificationAPI?.clearSession?.();
+            // Optional: also clear verification so next open is a clean start (pre-chat/reverify)
+            // Clear session may be async (Promise in some versions)
+            if (embeddedservice_bootstrap?.userVerificationAPI?.clearSession) {
+              log('→ Clearing verification via userVerificationAPI.clearSession()');
+              try {
+                const p = embeddedservice_bootstrap.userVerificationAPI.clearSession(true);
+                if (p?.then) {
+                  p.then(() => {
+                    // Hard fallback: remove all Messaging components from the page to ensure full cleanup
+                    embeddedservice_bootstrap?.utilAPI?.removeAllComponents?.();
+                  }).catch(() => {
+                    embeddedservice_bootstrap?.utilAPI?.removeAllComponents?.();
+                  });
+                } else {
+                  embeddedservice_bootstrap?.utilAPI?.removeAllComponents?.();
+                }
+              } catch (e) {
+                log('clearSession error', String(e));
+                embeddedservice_bootstrap?.utilAPI?.removeAllComponents?.();
+              }
+            } else {
+              // If no verification API, still try hard cleanup
+              embeddedservice_bootstrap?.utilAPI?.removeAllComponents?.();
             }
           } catch (e) {
-            console.warn('ConversationParticipantChanged handler error:', e);
+            log('endClientSession error', String(e));
           }
-        });
+        }
 
-        // Optional hygiene: if END USER closes the conversation themselves,
-        // you can mirror local app state here (we don't auto end again).
-        window.addEventListener('onEmbeddedMessagingConversationClosed', () => {
-          // No action needed to close (user initiated). Keep for state sync/logging if you wish.
-        });
+        function initEmbeddedMessaging() {
+          try {
+            embeddedservice_bootstrap.settings.language = 'en_US';
 
-      }); // end onEmbeddedMessagingReady
+            embeddedservice_bootstrap.init(
+              '00DAD000008PLr4', // Org ID
+              'Messaging_Routing_Channel', // Deployment / Channel
+              'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770',
+              { scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com' }
+            );
 
-    } catch (err) {
-      console.error('Error loading Embedded Messaging: ', err);
-    }
-  };
-</script>
+            // ---------------------------
+            // Event listeners (client side)
+            // ---------------------------
+            window.addEventListener('onEmbeddedMessagingReady', () => {
+              log('onEmbeddedMessagingReady');
 
-<!-- Load the Salesforce bootstrap and run init -->
-<script type='text/javascript' src='https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
-		</body>
+              let lastRouteTs = 0;
+
+              // Log everything we can to see real payloads from your org
+              const logEvent = (name) => (evt) => {
+                const detail = evt?.detail ?? null;
+                log(`EVENT: ${name}`, detail ? detail : {});
+              };
+
+              window.addEventListener('onEmbeddedMessagingConversationStarted', logEvent('onEmbeddedMessagingConversationStarted'));
+              window.addEventListener('onEmbeddedMessagingConversationOpened',  logEvent('onEmbeddedMessagingConversationOpened'));
+              window.addEventListener('onEmbeddedMessagingConversationClosed',  logEvent('onEmbeddedMessagingConversationClosed'));
+              window.addEventListener('onEmbeddedMessageDelivered',             logEvent('onEmbeddedMessageDelivered'));
+
+              // Routing (transfer) detector — used to suppress false positives
+              window.addEventListener('onEmbeddedMessagingConversationRouted', (evt) => {
+                lastRouteTs = Date.now();
+                logEvent('onEmbeddedMessagingConversationRouted')(evt); // also log payload
+              });
+
+              // Primary heuristic: AGENT/REP participant REMOVED and not followed by a route
+              window.addEventListener('onEmbeddedMessagingConversationParticipantChanged', (evt) => {
+                const detail = evt?.detail || {};
+                const op    = (detail.operation || '').toLowerCase(); // 'add' | 'remove' (per docs)
+                // The exact role string can vary by version/org; try to normalize a few possibilities
+                const rawRole = (detail.participant?.role || detail.participant?.participantRole || '').toString();
+                const role    = rawRole.trim().toUpperCase();
+
+                log('ParticipantChanged detail', { op, role, fullDetail: detail });
+
+                // Some orgs may use AGENT, REP, HUMAN_AGENT, LIVE_AGENT, INTERNAL_USER, etc.
+                const AGENT_ROLES = new Set(['AGENT', 'REP', 'HUMAN_AGENT', 'LIVE_AGENT', 'INTERNAL', 'INTERNAL_USER', 'SERVICE_REP']);
+                const isAgentish  = AGENT_ROLES.has(role);
+
+                const routedRecently = (Date.now() - lastRouteTs) < 2000; // 2s guard for transfers
+                const isRemoval      = (op === 'remove');
+
+                if (isRemoval && isAgentish && !routedRecently) {
+                  endClientSession('Agent participant removed (no recent routing)');
+                }
+              });
+
+              // Optional: if END USER closes, don’t double-close; just log.
+              window.addEventListener('onEmbeddedMessagingConversationClosed', () => {
+                log('End user closed conversation');
+              });
+            });
+
+          } catch (err) {
+            console.error('Error loading Embedded Messaging: ', err);
+          }
+        }
+
+        // export to window and kick off once bootstrap loads
+        window.initEmbeddedMessaging = initEmbeddedMessaging;
+      })();
+    </script>
+
+    <!-- Load the Salesforce bootstrap and run init -->
+    <script type="text/javascript"
+      src="https://teamglobalexp--tgedevan1762954054770/assets/js/bootstrap.min.js</script>
+  </body>
 </html>
-
-
-
