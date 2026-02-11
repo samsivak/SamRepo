@@ -1969,37 +1969,39 @@ and the
 <script type='text/javascript' src='https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
  
     <script>
-        window.addEventListener("onEmbeddedMessagingConversationClosed", function(event) {
+document.addEventListener("DOMContentLoaded", function () {
  
-            console.log("Agent ended the conversation.");
+    window.addEventListener("onEmbeddedMessagingReady", () => {
+        console.log("Messaging Ready");
  
-            // ✅ Optional: Call your backend API
-            fetch('/api/closeChatSession', {
-                method: 'POST'
-            }).then(response => {
-                console.log("Backend notified.");
-            }).catch(error => {
-                console.error("API error:", error);
-            });
+        if (window.embeddedservice_bootstrap &&
+            embeddedservice_bootstrap.messaging) {
  
-            // ✅ Clear Salesforce session completely
-            if (window.embeddedservice_bootstrap &&
-                embeddedservice_bootstrap.messaging) {
+            embeddedservice_bootstrap.messaging.addEventHandler(
+                "conversationClosed",
+                function (event) {
  
-                embeddedservice_bootstrap.messaging.clearSession()
-                    .then(() => {
-                        console.log("Session cleared successfully.");
-                    })
-                    .catch(err => {
-                        console.error("Error clearing session:", err);
-                    });
-            }
+                    console.log("Conversation Closed Event Detected");
  
-            // ✅ Hide chat button (optional)
-            if (embeddedservice_bootstrap.utilAPI) {
-                embeddedservice_bootstrap.utilAPI.hideChatButton();
-            }
-        });
+                    // 🔥 Clear session completely
+                    embeddedservice_bootstrap.messaging.clearSession()
+                        .then(() => {
+                            console.log("Session Cleared Successfully");
+                        })
+                        .catch(err => {
+                            console.error("Clear Session Error:", err);
+                        });
+ 
+                    // Optional: Hide chat button
+                    if (embeddedservice_bootstrap.utilAPI) {
+                        embeddedservice_bootstrap.utilAPI.hideChatButton();
+                    }
+                }
+            );
+        }
+    });
+ 
+});
     </script>
 </body>
 </html>
