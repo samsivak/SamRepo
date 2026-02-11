@@ -1940,9 +1940,6 @@ and the
 
 <html>
 <head>
-	<script>
-console.log("CUSTOM PAGE LOADED");
-</script>
 <title>Embedded Chat</title>
 </head>
 <body>
@@ -1951,35 +1948,8 @@ console.log("CUSTOM PAGE LOADED");
 <h1>External Website to test the Customer Service Chat</h1>
 </div>
 
- 
-<script type='text/javascript'>
-	console.log("🔥 CUSTOM PAGE LOADED");
- 
-// Attach READY listener FIRST
-document.addEventListener("embeddedMessagingReady", function () {
-    console.log("✅ Embedded Messaging Ready fired");
- 
-    if (
-        embeddedservice_bootstrap &&
-        embeddedservice_bootstrap.messagingAPI &&
-        typeof embeddedservice_bootstrap.messagingAPI.onConversationStatusChanged === "function"
-    ) {
-        embeddedservice_bootstrap.messagingAPI.onConversationStatusChanged(function (status) {
-            console.log("Conversation status:", status);
- 
-            if (status === "Ended") {
-                console.log("🔥 Agent ended chat");
- 
-                embeddedservice_bootstrap.userSessionAPI.clearSession()
-                    .then(() => console.log("Session cleared"));
- 
-                embeddedservice_bootstrap.utilAPI.closeChat();
-            }
-        });
-    } else {
-        console.log("⚠ messagingAPI not available yet");
-    }
-});
+<script>
+console.log("CUSTOM PAGE LOADED");
  
 function initEmbeddedMessaging() {
     try {
@@ -1994,9 +1964,41 @@ function initEmbeddedMessaging() {
             }
         );
  
+        // Start observing DOM after a short delay
+        setTimeout(startConversationObserver, 4000);
+ 
     } catch (err) {
         console.error('Error loading Embedded Messaging: ', err);
     }
+}
+ 
+function startConversationObserver() {
+    console.log("👀 Starting conversation end observer");
+ 
+    const observer = new MutationObserver(function () {
+ 
+        // Look for disabled message input (happens when chat ends)
+        const messageInput = document.querySelector("textarea");
+ 
+        if (messageInput && messageInput.disabled) {
+ 
+            console.log("Conversation ended detected (input disabled)");
+ 
+            setTimeout(function () {
+ 
+                embeddedservice_bootstrap.userSessionAPI.clearSession();
+                embeddedservice_bootstrap.utilAPI.closeChat();
+ 
+            }, 1500);
+ 
+            observer.disconnect();
+        }
+    });
+ 
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
 }
 </script>
  
