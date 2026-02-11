@@ -1412,7 +1412,7 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
 
 	// Customer Sales WebtoLead Prod Code
 
-<html><head><style>
+<!--<html><head><style>
   .hidden-selected {
     display: none;
     /*Hide the selected option */
@@ -1441,27 +1441,10 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
  function timestamp() { var response = document.getElementById("g-recaptcha-response"); if (response == null || response.value.trim() == "") {var elems = JSON.parse(document.getElementsByName("captcha_settings")[0].value);elems["ts"] = JSON.stringify(new Date().getTime());document.getElementsByName("captcha_settings")[0].value = JSON.stringify(elems); } } setInterval(timestamp, 500); 
 </script>
 
-<!--  ----------------------------------------------------------------------  -->
-<!--  NOTE: Please add the following <FORM> element to your page.             -->
-<!--  ----------------------------------------------------------------------  -->
-
-
-<!--  ----------------------------------------------------------------------  -->
-<!--  NOTE: Please add the following <META> element to your page <HEAD>.      -->
-<!--  If necessary, please modify the charset parameter to specify the        -->
-<!--  character set of your HTML page.                                        -->
-<!--  ----------------------------------------------------------------------  -->
 
 <meta http-equiv="Content-type" content="text/html; charset=UTF-8">
 
-<!--  ----------------------------------------------------------------------  -->
-<!--  NOTE: Please add the following <FORM> element to your page.             -->
-<!--  ----------------------------------------------------------------------  -->
-
 </head><body><form action="https://test.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&amp;orgId=00D9p000004KUXV" method="POST">
-
-<!--<input type="hidden" name="captcha_settings" value="{&quot;keyname&quot;:&quot;teamglobalexpProd&quot;,&quot;fallback&quot;:&quot;true&quot;,&quot;orgId&quot;:&quot;00D9p000004KUXV&quot;,&quot;ts&quot;:&quot;1767676812826&quot;}" tabindex="-1">
--->
 
 <input type="hidden" name="oid" value="00D9p000004KUXV">
 <input type="hidden" name="retURL" value="https://teamglobalexp.com/form-success" tabindex="-1">
@@ -1471,10 +1454,6 @@ Lead Type:<select  id="00N2P000000O4xt" name="00N2P000000O4xt" title="Lead Type"
 <input type="hidden" name="debugEmail" value="priyanka.sindhu@teamglobalexp.com">                               
 
 
-<!--  ----------------------------------------------------------------------  -->
-<!--  NOTE: These fields are optional debugging elements. Please uncomment    -->
-<!--  these lines if you wish to test in debug mode.                          -->
-<!--  ----------------------------------------------------------------------  -->
  <label for="lead_source" class="hidden-selected">Lead Source </label>
   <select id="lead_source" name="lead_source" class="hidden-selected" tabindex="-1">
     <option value="">--None--</option>
@@ -1672,12 +1651,12 @@ and the
 	};
 </script>
 <script type='text/javascript' src='https://teamglobalexp.my.site.com/ESWMessagingRoutingChan1770278637250/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
-</body></html>
+</body></html> -->
 
 
 
 	// Prod On Click Code
-<html lang="en">
+<!--<html lang="en">
 <head>
   <meta charset="utf-8" />
   <title>UAT Embedded Messaging Launcher</title>
@@ -1816,9 +1795,9 @@ and the
     }
   </script>
 </body>
-</html>
+</html> -->
 
-<html lang="en">
+<!--<html lang="en">
 <head>
   <meta charset="utf-8" />
   <title>UAT Embedded Messaging Launcher</title>
@@ -1957,4 +1936,84 @@ and the
     }
   </script>
 </body>
+</html> -->
+
+
+<html>
+	<h1>Test End Chat</h1>
+		<body>
+			<script type='text/javascript'>
+  function initEmbeddedMessaging() {
+    try {
+      // Set your desired UI language
+      embeddedservice_bootstrap.settings.language = 'en_US';
+
+      // Initialize Embedded Messaging (from your snippet)
+      embeddedservice_bootstrap.init(
+        '00DAD000008PLr4', // Org ID
+        'Messaging_Routing_Channel', // Deployment / Channel
+        'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770',
+        {
+          scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com'
+        }
+      );
+
+
+      // Add listeners ONLY after the client is ready
+      window.addEventListener('onEmbeddedMessagingReady', () => {
+        let lastRouteTs = 0;
+
+        // Track routing to avoid false positives (agent leaves during a transfer)
+        window.addEventListener('onEmbeddedMessagingConversationRouted', (evt) => {
+          lastRouteTs = Date.now();
+          // You can inspect evt.detail if needed (CONVERSATION_ROUTING_RESULT payload).
+          // Ref: Event Listeners docs.
+        });
+
+        // Main heuristic: close when the agent/rep participant is REMOVED,
+        // and no route just happened (i.e., not a transfer).
+        window.addEventListener('onEmbeddedMessagingConversationParticipantChanged', (evt) => {
+          try {
+            const detail = evt?.detail || {};
+            // The SSE payload in docs includes operation + participant role information.
+            // Keys can evolve; inspect in console in your sandbox to confirm exact shape.
+            const op   = (detail.operation || '').toLowerCase(); // 'add' | 'remove'
+            const role = ((detail.participant && detail.participant.role) || '').toUpperCase(); // 'AGENT'/'REP'/'BOT'/...
+
+            const isAgentRemoved   = (op === 'remove') && (role === 'AGENT' || role === 'REP');
+            const routedRecently   = (Date.now() - lastRouteTs) < 2000; // 2s debounce against transfers
+
+            if (isAgentRemoved && !routedRecently) {
+              // 1) End the client-side Messaging session (closes the widget UI/state)
+              embeddedservice_bootstrap?.userSession?.endSession?.();
+
+              // 2) OPTIONAL: also clear verification so the next open is a fresh start (pre-chat shown again).
+              //    Uncomment if you want this behavior:
+              // embeddedservice_bootstrap?.userVerificationAPI?.clearSession?.();
+            }
+          } catch (e) {
+            console.warn('ConversationParticipantChanged handler error:', e);
+          }
+        });
+
+        // Optional hygiene: if END USER closes the conversation themselves,
+        // you can mirror local app state here (we don't auto end again).
+        window.addEventListener('onEmbeddedMessagingConversationClosed', () => {
+          // No action needed to close (user initiated). Keep for state sync/logging if you wish.
+        });
+
+      }); // end onEmbeddedMessagingReady
+
+    } catch (err) {
+      console.error('Error loading Embedded Messaging: ', err);
+    }
+  };
+</script>
+
+<!-- Load the Salesforce bootstrap and run init -->
+<script type='text/javascript' src='https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
+		</body>
 </html>
+
+
+
