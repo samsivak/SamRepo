@@ -1947,201 +1947,117 @@ and the
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
     <style>
-      /* Shown only if you set ACTION = 'disable' (see code below).
-         This overlay tries to block input clicks; we attach & position it dynamically.
-         If you keep ACTION='close', this CSS has no effect. */
-      .m4w-input-disabled-overlay {
-        position: fixed;
-        z-index: 2147483647; /* very high to sit above the widget */
-        background: rgba(255,255,255,0); /* invisible click blocker */
-        pointer-events: auto;
-      }
-
-      /* Optional: a small on-page debug area. Remove if you prefer. */
+      /* Optional: small debug console on the page; remove if not needed */
       #m4w-debug {
         font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
         background: #0b1220; color: #c8e1ff; padding: 8px; margin: 8px 0;
-        white-space: pre-wrap; max-height: 200px; overflow: auto;
+        white-space: pre-wrap; max-height: 220px; overflow: auto;
       }
     </style>
-  </head>
-  <body>
-    <h1>Test End Chat</h1>
-    <pre id="m4w-debug"></pre>
 
     <script type="text/javascript">
+      /**
+       * Client-only auto-close:
+       * Watches the DOM for the transcript string "Agent ended the chat" and then:
+       *   1) ends the local Messaging session,
+       *   2) clears verification (so next open shows prechat/re-verify),
+       *   3) removes all Messaging components from the page (hard cleanup).
+       *
+       * Rationale:
+       * - Salesforce currently does NOT provide a dedicated client event when the agent/server ends
+       *   the Messaging session. (Known limitation; future SSE planned). [1](https://developer.salesforce.com/docs/atlas.en-us.snapins_web_dev.meta/snapins_web_dev/snapins_web_overview.htm)
+       * - utilAPI.removeAllComponents() is the documented way to fully remove Enhanced Web Chat
+       *   components, and should be called after clearSession() for a full cleanup. [2](https://www.infallibletechie.com/2023/11/how-to-listen-salesforce-chat-close-event.html)
+       */
       (function () {
-        // ======== CONFIG: choose what to do when “Agent ended …” is detected ========
-        // 'close'   → End session + clear + remove widget (recommended).
-        // 'disable' → Keep transcript visible but block user input (best-effort overlay).
-        const ACTION = 'close';
-
-        // ======== Internal debug log (optional) ========
-        const dbgEl = document.getElementById('m4w-debug');
-        function log(...args) {
-          console.log('[M4W]', ...args);
-          if (dbgEl) {
-            dbgEl.textContent += args.map(a => (typeof a === 'string' ? a : JSON.stringify(a, null, 2))).join(' ') + '\n';
-          }
-        }
-
-        // ======== Actions ========
         let alreadyHandled = false;
 
-        function endAndResetWidget(reason) {
+        function log(...args) {
+          console.log('[M4W]', ...args);
+          const el = document.getElementById('m4w-debug');
+          if (el) el.textContent += args.map(a => (typeof a === 'string' ? a : JSON.stringify(a, null, 2))).join(' ') + '\n';
+        }
+
+        function endClearRemove(reason) {
           if (alreadyHandled) return;
           alreadyHandled = true;
-          try {
-            log('→ Ending session (reason):', reason);
-            // Actively end the client-side Messaging session (closes the widget state)
-            embeddedservice_bootstrap?.userSession?.endSession?.(); // Client API
 
-            // Ensure a fresh start next time: clear verification, then remove all components (hard cleanup)
-            // utilAPI.removeAllComponents() is documented to remove all Messaging components; Salesforce
-            // recommends clearing session first for complete cleanup. [2](https://www.infallibletechie.com/2023/11/how-to-listen-salesforce-chat-close-event.html)
-            const clear = embeddedservice_bootstrap?.userVerificationAPI?.clearSession?.(true);
-            if (clear?.then) {
-              clear.finally(() => {
-                embeddedservice_bootstrap?.utilAPI?.removeAllComponents?.();
-              });
-            } else {
-              embeddedservice_bootstrap?.utilAPI?.removeAllComponents?.();
-            }
+          try {
+            log('→ Ending Messaging session:', reason);
+            // 1) End the client-side session (closes widget state)
+            embeddedservice_bootstrap?.userSession?.endSession?.();
+
+            // 2) Clear verification → ensures clean start next time (pre-chat / re-verify)
+            const p = embeddedservice_bootstrap?.userVerificationAPI?.clearSession?.(true);
+
+            // 3) Remove all components after clear completes (or immediately if not a Promise)
+            const doRemove = () => embeddedservice_bootstrap?.utilAPI?.removeAllComponents?.();
+            if (p?.then) { p.finally(doRemove); } else { doRemove(); }
+
           } catch (e) {
-            log('endAndResetWidget error:', String(e));
+            log('Hard close error:', String(e));
           }
         }
 
-        // Best-effort overlay to block the input area if you choose ACTION='disable'.
-        // NOTE: Selectors inside the Salesforce widget can change; this is a best‑effort block.
-        let overlayEl = null;
-        function disableComposer(reason) {
+        // DOM watcher: triggers when the rendered transcript shows "Agent ended the chat"
+        const mo = new MutationObserver((mutations) => {
           if (alreadyHandled) return;
-          alreadyHandled = true;
-          log('→ Disabling composer (reason):', reason);
 
-          // Create a transparent overlay; by default we cover the entire viewport. If you want to
-          // target just the widget region, you can compute & position over that rectangle instead.
-          overlayEl = document.createElement('div');
-          overlayEl.className = 'm4w-input-disabled-overlay';
-          Object.assign(overlayEl.style, { left: '0', top: '0', right: '0', bottom: '0' });
-          document.body.appendChild(overlayEl);
-        }
+          for (const m of mutations) {
+            if (!m.addedNodes) continue;
 
-        function performAction(reason) {
-          if (ACTION === 'disable') disableComposer(reason);
-          else endAndResetWidget(reason); // default 'close'
-        }
+            for (const n of m.addedNodes) {
+              // Read the text content of newly added nodes
+              const txt = (n.textContent || '').trim();
 
-        // ======== Initialization from your snippet ========
-        function initEmbeddedMessaging() {
+              // Adjust this regex if your org localizes/changes the phrase
+              if (/Agent ended the chat/i.test(txt)) {
+                log('Detected system line in DOM:', txt);
+                endClearRemove('DOM detected "Agent ended the chat"');
+                mo.disconnect();
+                return;
+              }
+            }
+          }
+        });
+
+        // Start observing the entire document (safe for GitHub Pages)
+        mo.observe(document.documentElement, { childList: true, subtree: true });
+
+        // --- Your original init code is below; we leave it unchanged ---
+        window.initEmbeddedMessaging = function initEmbeddedMessaging() {
           try {
-            // Your original settings
-            embeddedservice_bootstrap.settings.language = 'en_US'; // e.g., 'en' or 'en-US'
+            embeddedservice_bootstrap.settings.language = 'en_US'; // For example, 'en' or 'en-US'
 
             embeddedservice_bootstrap.init(
-              '00DAD000008PLr4',                               // Org ID
-              'Messaging_Routing_Channel',                    // Deployment / Channel
+              '00DAD000008PLr4',
+              'Messaging_Routing_Channel',
               'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770',
-              { scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com' }
+              {
+                scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com'
+              }
             );
 
-            // -----------------------------
-            // Client event listeners (M4W)
-            // -----------------------------
-            // These listener names and behaviors come from Salesforce’s Messaging for Web docs. [3](https://help.salesforce.com/s/articleView?id=005225185&language=en_US&type=1)
-            window.addEventListener('onEmbeddedMessagingReady', () => {
-              log('onEmbeddedMessagingReady');
-
-              let lastRouteTs = 0;
-
-              // 1) Routing detector — to avoid closing during transfers
-              window.addEventListener('onEmbeddedMessagingConversationRouted', (evt) => {
-                lastRouteTs = Date.now();
-                log('EVENT: onEmbeddedMessagingConversationRouted', evt?.detail || {});
-              }); // [3](https://help.salesforce.com/s/articleView?id=005225185&language=en_US&type=1)
-
-              // 2) Participant changes — detect when the agent truly leaves (not just a transfer)
-              window.addEventListener('onEmbeddedMessagingConversationParticipantChanged', (evt) => {
-                if (alreadyHandled) return;
-
-                const detail = evt?.detail || {};
-                const op = (detail.operation || '').toLowerCase(); // 'add' | 'remove'
-                // Different orgs/versions may expose role strings differently; normalize aggressively.
-                const rawRole = (detail.participant?.role || detail.participant?.participantRole || '').toString();
-                const role = rawRole.trim().toUpperCase();
-                const AGENT_ROLES = new Set(['AGENT','REP','HUMAN_AGENT','LIVE_AGENT','INTERNAL','INTERNAL_USER','SERVICE_REP']);
-
-                const routedRecently = (Date.now() - lastRouteTs) < 2000; // 2s guard against transfers
-                const isAgentRemoval = (op === 'remove') && AGENT_ROLES.has(role);
-
-                log('EVENT: onEmbeddedMessagingConversationParticipantChanged', { op, role, routedRecently, detail });
-
-                if (isAgentRemoval && !routedRecently) {
-                  performAction('Agent participant removed (no recent routing)');
-                }
-              }); // [3](https://help.salesforce.com/s/articleView?id=005225185&language=en_US&type=1)
-
-              // 3) Message‑delivered — look for the system “Agent ended the chat …” entry
-              //    (Exact payload fields can vary; we check multiple candidates and fallback to regex on text)
-              window.addEventListener('onEmbeddedMessageDelivered', (evt) => {
-                if (alreadyHandled) return;
-                try {
-                  const d  = evt?.detail || {};
-                  const ce = d.conversationEntry || d.entry || {};
-                  const type = (ce.entryType || '').toUpperCase();     // e.g., 'SYSTEM'
-                  const sub  = (ce.entrySubType || '').toUpperCase();  // may contain agent-ended subtype in some builds
-                  const txt  = (ce.text || ce.body || '').toString();
-
-                  const looksSystem = type.includes('SYSTEM');
-                  const looksAgentEnded = (sub.includes('AGENT') && sub.includes('END')) || /Agent ended the chat/i.test(txt);
-
-                  log('EVENT: onEmbeddedMessageDelivered', { type, sub, text: txt });
-
-                  if (looksSystem && looksAgentEnded) {
-                    performAction('System message indicates agent ended');
-                  }
-                } catch (e) {
-                  // ignore
-                }
-              }); // [3](https://help.salesforce.com/s/articleView?id=005225185&language=en_US&type=1)
-
-              // (Optional) Log conversation start/open/close for diagnostics
-              window.addEventListener('onEmbeddedMessagingConversationStarted', (evt) => log('EVENT: onEmbeddedMessagingConversationStarted', evt?.detail || {}));
-              window.addEventListener('onEmbeddedMessagingConversationOpened',  (evt) => log('EVENT: onEmbeddedMessagingConversationOpened',  evt?.detail || {}));
-              window.addEventListener('onEmbeddedMessagingConversationClosed',  (evt) => log('EVENT: onEmbeddedMessagingConversationClosed',  evt?.detail || {}));
-            });
-
-            // 4) DOM fallback — if the exact system text renders but no event fires (rare),
-            //    watch for the phrase and take action. This is intentionally last‑resort & brittle.
-            const mo = new MutationObserver((muts) => {
-              if (alreadyHandled) return;
-              for (const m of muts) {
-                if (!m.addedNodes) continue;
-                for (const n of m.addedNodes) {
-                  const t = (n.textContent || '').trim();
-                  if (/Agent ended the chat/i.test(t)) {
-                    log('DOM fallback detected "Agent ended the chat"');
-                    performAction('DOM fallback: agent ended text seen');
-                    mo.disconnect();
-                    return;
-                  }
-                }
-              }
-            });
-            mo.observe(document.documentElement, { subtree: true, childList: true });
+            // Optional: hook other documented events here for logging/diagnostics
+            // (Event list: onEmbeddedMessagingConversationOpened/Closed/Started/etc.) [3](https://help.salesforce.com/s/articleView?id=005225185&language=en_US&type=1)
+            window.addEventListener('onEmbeddedMessagingReady', () => log('onEmbeddedMessagingReady'));
+            window.addEventListener('onEmbeddedMessagingConversationOpened',  e => log('EVENT: ConversationOpened',  e?.detail || {}));
+            window.addEventListener('onEmbeddedMessagingConversationClosed',  e => log('EVENT: ConversationClosed',  e?.detail || {}));
+            window.addEventListener('onEmbeddedMessagingConversationStarted', e => log('EVENT: ConversationStarted', e?.detail || {}));
 
           } catch (err) {
             console.error('Error loading Embedded Messaging: ', err);
           }
-        }
-
-        // expose for bootstrap onload
-        window.initEmbeddedMessaging = initEmbeddedMessaging;
+        };
       })();
     </script>
+  </head>
 
- <!-- Load the Salesforce bootstrap and run init -->
+  <body>
+    <h1>Test End Chat</h1>
+    <pre id="m4w-debug"></pre>
+
+    <!-- Your Salesforce bootstrap, loaded LAST, with onload calling init -->
 <script type='text/javascript' src='https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
 		</body>
 </html>
