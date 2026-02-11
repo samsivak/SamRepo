@@ -1977,12 +1977,12 @@ function startConversationObserver() {
  
     const observer = new MutationObserver(function () {
  
-        // Look for disabled message input (happens when chat ends)
-        const messageInput = document.querySelector("textarea");
+        // Check if message composer no longer exists
+        const composer = document.querySelector('[role="textbox"]');
  
-        if (messageInput && messageInput.disabled) {
+        if (!composer) {
  
-            console.log("Conversation ended detected (input disabled)");
+            console.log("Conversation ended detected (composer removed)");
  
             setTimeout(function () {
  
