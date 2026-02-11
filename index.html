@@ -1950,6 +1950,7 @@ and the
 console.log("PAGE LOADED");
  
 function initEmbeddedMessaging() {
+	console.log("PAGE LOADED 1");
     try {
         embeddedservice_bootstrap.settings.language = 'en_US';
  
@@ -1961,10 +1962,10 @@ function initEmbeddedMessaging() {
                 scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com'
             }
         );
- 
+ 		console.log("PAGE LOADED 2");
         // Wait for live chat composer to appear (user completed pre-chat)
         waitForComposerThenObserve();
- 
+ 	console.log("PAGE LOADED 3");
     } catch (err) {
         console.error('Error loading Embedded Messaging: ', err);
     }
@@ -1972,8 +1973,10 @@ function initEmbeddedMessaging() {
  
 // Wait until live chat composer exists (user finished pre-chat)
 function waitForComposerThenObserve() {
+	console.log("PAGE LOADED 4");
     const interval = setInterval(() => {
         const composer = document.querySelector('[role="textbox"]');
+		console.log("PAGE LOADED 5");
         if (composer) {
             console.log("🟢 Live chat composer detected - attaching observer");
             clearInterval(interval);
@@ -2007,7 +2010,7 @@ function startConversationObserver() {
     });
 }
 </script>
- 
+ console.log("PAGE LOADED 6");
 <script type='text/javascript' src='https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
  
 </body>
