@@ -1938,126 +1938,57 @@ and the
 </body>
 </html> -->
 
-
-<!doctype html>
 <html>
-  <head>
-    <meta charset="utf-8"/>
-    <title>Test End Chat</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-
-    <style>
-      /* Optional: small debug console on the page; remove if not needed */
-      #m4w-debug {
-        font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-        background: #0b1220; color: #c8e1ff; padding: 8px; margin: 8px 0;
-        white-space: pre-wrap; max-height: 220px; overflow: auto;
-      }
-    </style>
-
-    <script type="text/javascript">
-      /**
-       * Client-only auto-close:
-       * Watches the DOM for the transcript string "Agent ended the chat" and then:
-       *   1) ends the local Messaging session,
-       *   2) clears verification (so next open shows prechat/re-verify),
-       *   3) removes all Messaging components from the page (hard cleanup).
-       *
-       * Rationale:
-       * - Salesforce currently does NOT provide a dedicated client event when the agent/server ends
-       *   the Messaging session. (Known limitation; future SSE planned). [1](https://developer.salesforce.com/docs/atlas.en-us.snapins_web_dev.meta/snapins_web_dev/snapins_web_overview.htm)
-       * - utilAPI.removeAllComponents() is the documented way to fully remove Enhanced Web Chat
-       *   components, and should be called after clearSession() for a full cleanup. [2](https://www.infallibletechie.com/2023/11/how-to-listen-salesforce-chat-close-event.html)
-       */
-      (function () {
-        let alreadyHandled = false;
-
-        function log(...args) {
-          console.log('[M4W]', ...args);
-          const el = document.getElementById('m4w-debug');
-          if (el) el.textContent += args.map(a => (typeof a === 'string' ? a : JSON.stringify(a, null, 2))).join(' ') + '\n';
-        }
-
-        function endClearRemove(reason) {
-          if (alreadyHandled) return;
-          alreadyHandled = true;
-
-          try {
-            log('→ Ending Messaging session:', reason);
-            // 1) End the client-side session (closes widget state)
-            embeddedservice_bootstrap?.userSession?.endSession?.();
-
-            // 2) Clear verification → ensures clean start next time (pre-chat / re-verify)
-            const p = embeddedservice_bootstrap?.userVerificationAPI?.clearSession?.(true);
-
-            // 3) Remove all components after clear completes (or immediately if not a Promise)
-            const doRemove = () => embeddedservice_bootstrap?.utilAPI?.removeAllComponents?.();
-            if (p?.then) { p.finally(doRemove); } else { doRemove(); }
-
-          } catch (e) {
-            log('Hard close error:', String(e));
-          }
-        }
-
-        // DOM watcher: triggers when the rendered transcript shows "Agent ended the chat"
-        const mo = new MutationObserver((mutations) => {
-          if (alreadyHandled) return;
-
-          for (const m of mutations) {
-            if (!m.addedNodes) continue;
-
-            for (const n of m.addedNodes) {
-              // Read the text content of newly added nodes
-              const txt = (n.textContent || '').trim();
-
-              // Adjust this regex if your org localizes/changes the phrase
-              if (/Agent ended the chat/i.test(txt)) {
-                log('Detected system line in DOM:', txt);
-                endClearRemove('DOM detected "Agent ended the chat"');
-                mo.disconnect();
-                return;
-              }
-            }
-          }
-        });
-
-        // Start observing the entire document (safe for GitHub Pages)
-        mo.observe(document.documentElement, { childList: true, subtree: true });
-
-        // --- Your original init code is below; we leave it unchanged ---
-        window.initEmbeddedMessaging = function initEmbeddedMessaging() {
-          try {
-            embeddedservice_bootstrap.settings.language = 'en_US'; // For example, 'en' or 'en-US'
-
-            embeddedservice_bootstrap.init(
-              '00DAD000008PLr4',
-              'Messaging_Routing_Channel',
-              'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770',
-              {
-                scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com'
-              }
-            );
-
-            // Optional: hook other documented events here for logging/diagnostics
-            // (Event list: onEmbeddedMessagingConversationOpened/Closed/Started/etc.) [3](https://help.salesforce.com/s/articleView?id=005225185&language=en_US&type=1)
-            window.addEventListener('onEmbeddedMessagingReady', () => log('onEmbeddedMessagingReady'));
-            window.addEventListener('onEmbeddedMessagingConversationOpened',  e => log('EVENT: ConversationOpened',  e?.detail || {}));
-            window.addEventListener('onEmbeddedMessagingConversationClosed',  e => log('EVENT: ConversationClosed',  e?.detail || {}));
-            window.addEventListener('onEmbeddedMessagingConversationStarted', e => log('EVENT: ConversationStarted', e?.detail || {}));
-
-          } catch (err) {
-            console.error('Error loading Embedded Messaging: ', err);
-          }
-        };
-      })();
-    </script>
-  </head>
-
-  <body>
-    <h1>Test End Chat</h1>
-    <pre id="m4w-debug"></pre>
-
-    <!-- Your Salesforce bootstrap, loaded LAST, with onload calling init -->
-<script type='text/javascript' src='https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
-		</body>
+<head>
+<title>Embedded Chat</title>
+</head>
+<body>
+ 
+<div class="container">
+<h1>External Website to test the Customer Service Chat</h1>
+</div>
+ 
+<script type='text/javascript'>
+	function initEmbeddedMessaging() {
+		try {
+			embeddedservice_bootstrap.settings.language = 'en_US';
+ 
+			embeddedservice_bootstrap.init(
+				'00DAD000008PLr4',
+				'Customer_Service_Bot',
+				'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWCustomerServiceBot1764747826568',
+				{
+					scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com'
+				}
+			);
+ 
+			// Listen for conversation closed (Agent ended chat)
+			window.addEventListener("onEmbeddedMessagingConversationClosed", function () {
+ 
+				console.log("Conversation ended by agent.");
+ 
+				// Small delay to avoid timing issues
+				setTimeout(function () {
+ 
+					// Clear the user session
+					embeddedservice_bootstrap.userSessionAPI.clearSession();
+ 
+					// Close the chat window
+					embeddedservice_bootstrap.utilAPI.closeChat();
+ 
+				}, 1000);
+			});
+ 
+		} catch (err) {
+			console.error('Error loading Embedded Messaging: ', err);
+		}
+	};
+</script>
+ 
+<script type='text/javascript'
+	src='https://teamglobalexp--tgedev.sandbox.my.site.com/ESWCustomerServiceBot1764747826568/assets/js/bootstrap.min.js%27
+	onload='initEmbeddedMessaging()'>
+</script>
+ 
+</body>
 </html>
