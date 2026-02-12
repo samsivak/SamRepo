@@ -1941,68 +1941,170 @@ and the
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Salesforce Enhanced Chat Test</title>
+  <meta charset="utf-8" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Enhanced Web Chat with Business Hours Refresh</title>
+
+  <!--
+    Enhanced Web Chat – Business Hours “Refresh” Controller
+    Hours: Weekdays, 08:00–17:00 AEDT/AEST (Australia/Sydney)
+    Behavior:
+      - During business hours: show the chat button (optionally auto-launch).
+      - After hours/weekends: clear the current session and hide the button.
+    Notes:
+      - Requires the embeddedservice_bootstrap snippet on the page.
+      - Uses Salesforce’s public utilAPI for visibility & session control.  (Ref) 
+        https://developer.salesforce.com/docs/service/messaging-web/references/m4w-reference/utilAPI.html
+  -->
+  <script>
+    (function () {
+      // ---------- Configuration ----------
+      const TZ = 'Australia/Sydney';     // Handles AEDT/AEST automatically
+      const OPEN_HOUR = 8;               // 08:00 local
+      const CLOSE_HOUR = 17;             // 17:00 local (exclusive)
+      const AUTO_LAUNCH_AT_OPEN = false; // Set true to auto-open at 08:00
+
+      // ---------- Helpers ----------
+      function nowSydney() {
+        // Use Intl.DateTimeFormat to reliably get local parts (DST-safe)
+        const now = new Date();
+        const parts = new Intl.DateTimeFormat('en-AU', {
+          timeZone: TZ,
+          hour12: false,
+          weekday: 'short',
+          year: 'numeric', month: '2-digit', day: '2-digit',
+          hour: '2-digit', minute: '2-digit', second: '2-digit'
+        }).formatToParts(now).reduce((acc, p) => (acc[p.type] = p.value, acc), {});
+        const weekdayMap = { Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6, Sun: 7 };
+        return {
+          weekday: weekdayMap[parts.weekday], // 1..7 (Mon..Sun)
+          hour: Number(parts.hour),
+          minute: Number(parts.minute),
+          second: Number(parts.second),
+          raw: now
+        };
+      }
+
+      // Business hours are [08:00, 17:00) Mon–Fri
+      function isBusinessOpen() {
+        const t = nowSydney();
+        const isWeekday = t.weekday >= 1 && t.weekday <= 5;
+        const inHours =
+          (t.hour > OPEN_HOUR && t.hour < CLOSE_HOUR) ||
+          (t.hour === OPEN_HOUR); // open from 08:00:00 onwards
+        return isWeekday && inHours;
+      }
+
+      let lastStateOpen = null;
+      let apiReady = false;
+
+      function safeUtilApi(methodName) {
+        const api = window.embeddedservice_bootstrap && window.embeddedservice_bootstrap.utilAPI;
+        return api && typeof api[methodName] === 'function' ? api[methodName].bind(api) : null;
+      }
+
+      function applyState(openNow, { explicitBoundary = false } = {}) {
+        if (!apiReady) return;
+
+        const showChat = safeUtilApi('showChat');
+        const hideChat = safeUtilApi('hideChat');
+        const clearSession = safeUtilApi('clearSession');
+        const launchChat = safeUtilApi('launchChat');
+
+        // Avoid redundant calls unless we hit an exact boundary
+        if (openNow === lastStateOpen && !explicitBoundary) return;
+
+        if (openNow) {
+          // Opening: ensure visible, optionally auto-launch
+          showChat && showChat();
+          if (AUTO_LAUNCH_AT_OPEN && launchChat) {
+            launchChat().catch(() => {});
+          }
+        } else {
+          // Closing: reset end-user UI and hide
+          if (clearSession) {
+            try { clearSession(); } catch (e) {}
+          }
+          hideChat && hideChat();
+        }
+        lastStateOpen = openNow;
+        // console.log(`[CHAT-BH] state => ${openNow ? 'OPEN' : 'CLOSED'}`);
+      }
+
+      function tick() {
+        applyState(isBusinessOpen());
+      }
+
+      // Compute milliseconds until next target HH:MM:SS in Australia/Sydney
+      function millisUntilNext(timezone, targetHour, targetMinute, targetSecond) {
+        const now = new Date();
+        const nowInTZ = new Date(now.toLocaleString('en-AU', { timeZone: timezone }));
+
+        const target = new Date(nowInTZ);
+        target.setHours(targetHour, targetMinute, targetSecond, 0);
+
+        if (target <= nowInTZ) {
+          target.setDate(target.getDate() + 1);
+        }
+
+        const targetUTC = new Date(target.toLocaleString('en-AU', { timeZone: 'UTC' }));
+        return targetUTC - new Date(now.toLocaleString('en-AU', { timeZone: 'UTC' }));
+      }
+
+      function scheduleNextBoundary(hour, minute, second) {
+        const ms = millisUntilNext(TZ, hour, minute, second);
+        setTimeout(() => {
+          applyState(isBusinessOpen(), { explicitBoundary: true });
+          // Reschedule for the following day
+          scheduleNextBoundary(hour, minute, second);
+        }, Math.max(ms, 100));
+      }
+
+      function startScheduler() {
+        // First sync right away
+        tick();
+        // Recheck every minute in case the page stays open
+        setInterval(tick, 60 * 1000);
+        // Snap at exact 08:00:00 and 17:00:00 boundaries
+        scheduleNextBoundary(OPEN_HOUR, 0, 0);
+        scheduleNextBoundary(CLOSE_HOUR, 0, 0);
+      }
+
+      // Start once the Enhanced Messaging client is ready
+      window.addEventListener('onEmbeddedMessagingReady', () => {
+        apiReady = true;
+        startScheduler();
+      });
+
+      // Optional: react as soon as the button is created
+      window.addEventListener('onEmbeddedMessagingButtonCreated', () => {
+        if (apiReady) tick();
+      });
+    })();
+  </script>
+
+  <!-- Your Salesforce Embedded Messaging bootstrap (from your org) -->
+  <script type="text/javascript">
+    function initEmbeddedMessaging() {
+      try {
+        embeddedservice_bootstrap.settings.language = 'en_US'; // e.g., 'en' or 'en-US'
+        embeddedservice_bootstrap.init(
+          '00DAD000008PLr4',
+          'Messaging_Routing_Channel',
+          'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770',
+          {
+            scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com'
+          }
+        );
+      } catch (err) {
+        console.error('Error loading Embedded Messaging: ', err);
+      }
+    };
+  </script>
+ <script type='text/javascript' src='https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
 </head>
 <body>
-    <h1>Enhanced Web Chat Test Page</h1>
-    <p>Testing agent end → customer session close functionality.</p>
- 
-    <script type='text/javascript'>
-	function initEmbeddedMessaging() {
-		try {
-			embeddedservice_bootstrap.settings.language = 'en_US'; // For example, enter 'en' or 'en-US'
-
-			embeddedservice_bootstrap.init(
-				'00DAD000008PLr4',
-				'Messaging_Routing_Channel',
-				'https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770',
-				{
-					scrt2URL: 'https://teamglobalexp--tgedev.sandbox.my.salesforce-scrt.com'
-				}
-			);
-		} catch (err) {
-			console.error('Error loading Embedded Messaging: ', err);
-		}
-	};
-</script>
-<script type='text/javascript' src='https://teamglobalexp--tgedev.sandbox.my.site.com/ESWMessagingRoutingChan1762954054770/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
- 
-    <script>
-document.addEventListener("DOMContentLoaded", function () {
- 
-    let refreshTriggered = false;
- 
-    const observer = new MutationObserver(function () {
- 
-        if (refreshTriggered) return;
- 
-        // Detect the input box
-        const inputBox = document.querySelector("input");
- 
-        if (!inputBox) return;
- 
-        const placeholderText = inputBox.getAttribute("placeholder") || "";
- 
-        // When agent ends, placeholder becomes "Start a new chat..."
-        if (placeholderText.includes("Start a new chat")) {
- 
-            refreshTriggered = true;
- 
-            console.log("🔥 Agent ended detected via placeholder change.");
-            console.log("Reloading page now...");
- 
-            location.reload();   // Immediate reload
-        }
- 
-    });
- 
-    observer.observe(document.body, {
-        childList: true,
-        subtree: true
-    });
- 
-});
-    </script>
+  <!-- Your page content -->
 </body>
 </html>
